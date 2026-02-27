@@ -1,16 +1,27 @@
 "use client";
-
 import React, { useState, useRef } from 'react';
 import { Chessboard } from 'react-chessboard';
 import { Chess, Square } from 'chess.js';
+import { usePartidaSocket } from '../../lib/socket';
 
 export const TableroAjedrez = () => {
+  //WebSockets
+  const {  partida,
+        setPartida,
+        movimiento,
+        setMovimiento,
+        unirse_partida,
+        handleSubmit } = usePartidaSocket(); 
+
+  //Logica del tablero
   const chessGameRef = useRef(new Chess());
   const chessGame = chessGameRef.current;
 
   const [chessPosition, setChessPosition] = useState(chessGame.fen());
   const [moveFrom, setMoveFrom] = useState('');
   const [optionSquares, setOptionSquares] = useState({});
+
+
 
  
   function getMoveOptions(square: Square) {
@@ -72,7 +83,7 @@ export const TableroAjedrez = () => {
 
  
   function onPieceDrop({ sourceSquare, targetSquare, piece }: { sourceSquare: string, targetSquare: string | null, piece: any }) {
-    // Si la sueltan fuera del tablero (null), cancelamos el movimiento
+    // Si la sueltan fuera del tablero (null), cancelamos el estadoPartida
     if (!targetSquare) return false;
 
     try {
@@ -85,6 +96,9 @@ export const TableroAjedrez = () => {
       setChessPosition(chessGame.fen());
       setMoveFrom('');
       setOptionSquares({});
+      handleSubmit();
+      setPartida(chessGame.fen());
+      setMovimiento(chessGame.fen());
       return true;
     } catch {
       return false;
@@ -107,6 +121,10 @@ export const TableroAjedrez = () => {
     <div style={{ width: '20%',margin: '0 auto' }}>
       {/* Solo le pasamos la propiedad 'options' al componente */}
       <Chessboard options={chessboardOptions} />
+      <button onClick={()=>{
+        setPartida("10")
+        unirse_partida();
+      }}>Unirse a la Partida</button>
     </div>
   );
 };
