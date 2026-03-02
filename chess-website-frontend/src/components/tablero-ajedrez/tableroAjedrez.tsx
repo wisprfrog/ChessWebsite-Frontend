@@ -6,7 +6,8 @@ import { io,Socket } from 'socket.io-client';
 import { on } from 'events';
 
 export const TableroAjedrez = ({sala}: {sala: string}) => {
-  
+  //Rol del jugador
+const [rolJugador, setRolJugador] = useState<'b'| 'w'| 's'>('w')
   //Logica del tablero
   const chessGameRef = useRef(new Chess());
   const chessGame = chessGameRef.current;
@@ -76,7 +77,12 @@ export const TableroAjedrez = ({sala}: {sala: string}) => {
   function onPieceDrop({ sourceSquare, targetSquare, piece }: { sourceSquare: string, targetSquare: string | null, piece: any }) {
     // Si la sueltan fuera del tablero (null), cancelamos el estadoPartida
     if (!targetSquare) return false;
-    
+
+    //si no es tu turno no te deja mover
+    console.log("Este es el rol del jugador: ",rolJugador)
+    console.log("Turno real: ",chessGame.turn())
+    if (rolJugador != chessGame.turn()) return false;
+
     try {
       chessGame.move({
         from: sourceSquare,
@@ -101,18 +107,12 @@ export const TableroAjedrez = ({sala}: {sala: string}) => {
   
   }
   
-  const chessboardOptions = {
-    position: chessPosition,
-    onPieceDrop : onPieceDrop,
-    onSquareClick : onSquareClick,
-    customSquareStyles: optionSquares,
-    squareStyles: optionSquares,
-    id: 'jugador1-vs-jugador2-yyyy-mm-dd' 
-  };
+  
 
 
   // --- 2. Lógica de WebSockets ---
   const socketRef = useRef<Socket | null>(null);
+  const [orientacionTablero, setOrientacionTablero] = useState<"white" | "black">("white");
 
   useEffect(() => {
     // Inicializamos el socket dentro de useEffect para que solo ocurra una vez.
@@ -125,6 +125,14 @@ export const TableroAjedrez = ({sala}: {sala: string}) => {
     //});
     
     socketRef.current.emit('unirse_sala', sala);
+
+    
+    socketRef.current.on("asignar_rol", (rol) => {
+      if(rol=='black') setRolJugador('b')
+      else if (rol == 'white') setRolJugador('w')
+      else setRolJugador('s')
+      setOrientacionTablero(rol==='black'?'black':'white');
+    });
 
 
     // Escuchar los movimientos del otro jugador
@@ -145,6 +153,18 @@ export const TableroAjedrez = ({sala}: {sala: string}) => {
   const enviarMovimiento = (fenMovimiento: string): void => {
     //console.log("Movimiento enviado:", fenMovimiento);
     socketRef.current?.emit('movimiento', {fenMovimiento, sala});
+  };
+
+  // --- 3. Configuración del componente Chessboard ---
+
+  const chessboardOptions = {
+    position: chessPosition,
+    onPieceDrop : onPieceDrop,
+    onSquareClick : onSquareClick,
+    customSquareStyles : optionSquares,
+    boardOrientation : orientacionTablero,
+    squareStyles: optionSquares,
+    id: 'jugador1-vs-jugador2-yyyy-mm-dd' 
   };
 
 
