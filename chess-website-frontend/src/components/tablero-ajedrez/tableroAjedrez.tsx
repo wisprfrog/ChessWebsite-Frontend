@@ -5,9 +5,8 @@ import { Chess, Square } from 'chess.js';
 import { io,Socket } from 'socket.io-client';
 import { on } from 'events';
 
-export const TableroAjedrez = () => {
+export const TableroAjedrez = ({sala}: {sala: string}) => {
   
-
   //Logica del tablero
   const chessGameRef = useRef(new Chess());
   const chessGame = chessGameRef.current;
@@ -16,9 +15,6 @@ export const TableroAjedrez = () => {
   const [moveFrom, setMoveFrom] = useState('');
   const [optionSquares, setOptionSquares] = useState({});
 
-
-
- 
   function getMoveOptions(square: Square) {
     const moves = chessGame.moves({ square, verbose: true });
     
@@ -105,10 +101,6 @@ export const TableroAjedrez = () => {
   
   }
   
-
-  
-
-  
   const chessboardOptions = {
     position: chessPosition,
     onPieceDrop : onPieceDrop,
@@ -117,6 +109,7 @@ export const TableroAjedrez = () => {
     squareStyles: optionSquares,
     id: 'jugador1-vs-jugador2-yyyy-mm-dd' 
   };
+
 
   // --- 2. Lógica de WebSockets ---
   const socketRef = useRef<Socket | null>(null);
@@ -127,15 +120,18 @@ export const TableroAjedrez = () => {
     socketRef.current = io("http://192.168.0.1:4000");
 
     // 'connect' es el evento predeterminado de Socket.io cuando la conexión es exitosa
-    socketRef.current.on('connect', () => {
-      console.log('Conectado al servidor de WebSockets con ID:', socketRef.current?.id);
-    });
+    //socketRef.current.on('connect', () => {
+      //console.log('Conectado al servidor de WebSockets con ID:', socketRef.current?.id);
+    //});
+    
+    socketRef.current.emit('unirse_sala', sala);
+
 
     // Escuchar los movimientos del otro jugador
-    socketRef.current.on('movimiento', (fenRecibido: string) => {
-      console.log('Movimiento recibido:', fenRecibido);
+    socketRef.current.on('movimiento', (data) => {
+     // console.log('Movimiento recibido:', data.fenMovimiento);
       // Actualizamos la lógica del ajedrez con la nueva posición
-      chessGame.load(fenRecibido);
+      chessGame.load(data.fenMovimiento);
       // Actualizamos la vista del tablero
       setChessPosition(chessGame.fen());
     });
@@ -147,8 +143,8 @@ export const TableroAjedrez = () => {
   }, [chessGame]);
 
   const enviarMovimiento = (fenMovimiento: string): void => {
-    console.log("Movimiento enviado:", fenMovimiento);
-    socketRef.current?.emit('movimiento', fenMovimiento);
+    //console.log("Movimiento enviado:", fenMovimiento);
+    socketRef.current?.emit('movimiento', {fenMovimiento, sala});
   };
 
 
