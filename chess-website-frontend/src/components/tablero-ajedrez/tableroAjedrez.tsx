@@ -1,17 +1,12 @@
 "use client";
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Chessboard } from 'react-chessboard';
 import { Chess, Square } from 'chess.js';
-import { usePartidaSocket } from '../../lib/socket';
+import { io,Socket } from 'socket.io-client';
+import { on } from 'events';
 
 export const TableroAjedrez = () => {
-  //WebSockets
-  const {  partida,
-        setPartida,
-        movimiento,
-        setMovimiento,
-        unirse_partida,
-        handleSubmit } = usePartidaSocket(); 
+  
 
   //Logica del tablero
   const chessGameRef = useRef(new Chess());
@@ -85,7 +80,7 @@ export const TableroAjedrez = () => {
   function onPieceDrop({ sourceSquare, targetSquare, piece }: { sourceSquare: string, targetSquare: string | null, piece: any }) {
     // Si la sueltan fuera del tablero (null), cancelamos el estadoPartida
     if (!targetSquare) return false;
-
+    
     try {
       chessGame.move({
         from: sourceSquare,
@@ -93,16 +88,21 @@ export const TableroAjedrez = () => {
         promotion: 'q' 
       });
 
+      enviarMovimiento(chessGame.fen());
+
+
+
+
       setChessPosition(chessGame.fen());
       setMoveFrom('');
       setOptionSquares({});
-      handleSubmit();
-      setPartida(chessGame.fen());
-      setMovimiento(chessGame.fen());
+
       return true;
-    } catch {
+
+    } catch (error) {
       return false;
     }
+  
   }
   
 
@@ -111,20 +111,51 @@ export const TableroAjedrez = () => {
   
   const chessboardOptions = {
     position: chessPosition,
-    onPieceDrop,
-    onSquareClick,
+    onPieceDrop : onPieceDrop,
+    onSquareClick : onSquareClick,
+    customSquareStyles: optionSquares,
     squareStyles: optionSquares,
     id: 'jugador1-vs-jugador2-yyyy-mm-dd' 
   };
+
+  // --- 2. Lógica de WebSockets ---
+  const socketRef = useRef<Socket | null>(null);
+
+  useEffect(() => {
+    // Inicializamos el socket dentro de useEffect para que solo ocurra una vez.
+    // OJO: Asegúrate de poner 'http://'
+    socketRef.current = io("http://192.168.0.1:4000");
+
+    // 'connect' es el evento predeterminado de Socket.io cuando la conexión es exitosa
+    socketRef.current.on('connect', () => {
+      console.log('Conectado al servidor de WebSockets con ID:', socketRef.current?.id);
+    });
+
+    // Escuchar los movimientos del otro jugador
+    socketRef.current.on('movimiento', (fenRecibido: string) => {
+      console.log('Movimiento recibido:', fenRecibido);
+      // Actualizamos la lógica del ajedrez con la nueva posición
+      chessGame.load(fenRecibido);
+      // Actualizamos la vista del tablero
+      setChessPosition(chessGame.fen());
+    });
+
+    // Limpieza: desconectar el socket si el usuario sale de la pantalla
+    return () => {
+      socketRef.current?.disconnect();
+    };
+  }, [chessGame]);
+
+  const enviarMovimiento = (fenMovimiento: string): void => {
+    console.log("Movimiento enviado:", fenMovimiento);
+    socketRef.current?.emit('movimiento', fenMovimiento);
+  };
+
 
   return (
     <div style={{ width: '20%',margin: '0 auto' }}>
       {/* Solo le pasamos la propiedad 'options' al componente */}
       <Chessboard options={chessboardOptions} />
-      <button onClick={()=>{
-        setPartida("10")
-        unirse_partida();
-      }}>Unirse a la Partida</button>
     </div>
   );
 };
