@@ -35,7 +35,7 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
     "**/*.mts",
-    "src/components/tablero-ajedrez/tableroAjedrez.tsx"
+    "src/components/tablero-ajedrez/tableroAjedrez.jsx"
   ],
   "exclude": [
     "node_modules"

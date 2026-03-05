@@ -1,10 +1,14 @@
 "use client";
-
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Chessboard } from 'react-chessboard';
 import { Chess, Square } from 'chess.js';
+import { io,Socket } from 'socket.io-client';
+import { on } from 'events';
 
-export const TableroAjedrez = () => {
+export const TableroAjedrez = ({sala}: {sala: string}) => {
+  //Rol del jugador
+const [rolJugador, setRolJugador] = useState<'b'| 'w'| 's'>('w')
+  //Logica del tablero
   const chessGameRef = useRef(new Chess());
   const chessGame = chessGameRef.current;
 
@@ -12,7 +16,6 @@ export const TableroAjedrez = () => {
   const [moveFrom, setMoveFrom] = useState('');
   const [optionSquares, setOptionSquares] = useState({});
 
- 
   function getMoveOptions(square: Square) {
     const moves = chessGame.moves({ square, verbose: true });
     
@@ -72,8 +75,13 @@ export const TableroAjedrez = () => {
 
  
   function onPieceDrop({ sourceSquare, targetSquare, piece }: { sourceSquare: string, targetSquare: string | null, piece: any }) {
-    // Si la sueltan fuera del tablero (null), cancelamos el movimiento
+    // Si la sueltan fuera del tablero (null), cancelamos el estadoPartida
     if (!targetSquare) return false;
+
+    //si no es tu turno no te deja mover
+    console.log("Este es el rol del jugador: ",rolJugador)
+    console.log("Turno real: ",chessGame.turn())
+    if (rolJugador != chessGame.turn()) return false;
 
     try {
       chessGame.move({
@@ -82,26 +90,83 @@ export const TableroAjedrez = () => {
         promotion: 'q' 
       });
 
+      enviarMovimiento(chessGame.fen());
+
+
+
+
       setChessPosition(chessGame.fen());
       setMoveFrom('');
       setOptionSquares({});
+
       return true;
-    } catch {
+
+    } catch (error) {
       return false;
     }
+  
   }
   
-
   
 
-  
+
+  // --- 2. Lógica de WebSockets ---
+  const socketRef = useRef<Socket | null>(null);
+  const [orientacionTablero, setOrientacionTablero] = useState<"white" | "black">("white");
+
+  useEffect(() => {
+    // Inicializamos el socket dentro de useEffect para que solo ocurra una vez.
+    // OJO: Asegúrate de poner 'http://'
+    socketRef.current = io("http://192.168.0.1:4000");
+
+    // 'connect' es el evento predeterminado de Socket.io cuando la conexión es exitosa
+    //socketRef.current.on('connect', () => {
+      //console.log('Conectado al servidor de WebSockets con ID:', socketRef.current?.id);
+    //});
+    
+    socketRef.current.emit('unirse_sala', sala);
+
+    
+    socketRef.current.on("asignar_rol", (rol) => {
+      if(rol=='black') setRolJugador('b')
+      else if (rol == 'white') setRolJugador('w')
+      else setRolJugador('s')
+      setOrientacionTablero(rol==='black'?'black':'white');
+    });
+
+
+    // Escuchar los movimientos del otro jugador
+    socketRef.current.on('movimiento', (data) => {
+     // console.log('Movimiento recibido:', data.fenMovimiento);
+      // Actualizamos la lógica del ajedrez con la nueva posición
+      chessGame.load(data.fenMovimiento);
+      // Actualizamos la vista del tablero
+      setChessPosition(chessGame.fen());
+    });
+
+    // Limpieza: desconectar el socket si el usuario sale de la pantalla
+    return () => {
+      socketRef.current?.disconnect();
+    };
+  }, [chessGame]);
+
+  const enviarMovimiento = (fenMovimiento: string): void => {
+    //console.log("Movimiento enviado:", fenMovimiento);
+    socketRef.current?.emit('movimiento', {fenMovimiento, sala});
+  };
+
+  // --- 3. Configuración del componente Chessboard ---
+
   const chessboardOptions = {
     position: chessPosition,
-    onPieceDrop,
-    onSquareClick,
+    onPieceDrop : onPieceDrop,
+    onSquareClick : onSquareClick,
+    customSquareStyles : optionSquares,
+    boardOrientation : orientacionTablero,
     squareStyles: optionSquares,
     id: 'jugador1-vs-jugador2-yyyy-mm-dd' 
   };
+
 
   return (
     <div style={{ width: '20%',margin: '0 auto' }}>
