@@ -129,7 +129,7 @@ export const TableroAjedrez = ({sala}: {sala: string}) => {
     // Inicializamos el socket dentro de useEffect para que solo ocurra una vez.
     // OJO: Asegúrate de poner 'http://'
     // socketRef.current = io("http://192.168.0.1:4000");
-    socketRef.current = io("http://localhost:4000");
+    socketRef.current = io(process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000");
 
     // 'connect' es el evento predeterminado de Socket.io cuando la conexión es exitosa
     //socketRef.current.on('connect', () => {
