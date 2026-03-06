@@ -17,9 +17,11 @@ export default function Home() {
 
   let room = '';
 
+
+  console.log("Los mejores commits 2026")
   return (
     <main>
-      <h1>Página de inicio de ajedrez</h1>
+      <h1>Página de inicio de ajedrez mi bro</h1>
       <input
       type="text"
       placeholder='Ingrese la sala'
