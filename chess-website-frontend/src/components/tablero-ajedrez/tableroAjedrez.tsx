@@ -2,13 +2,14 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Chessboard } from 'react-chessboard';
 import { Chess, Square } from 'chess.js';
-import { io,Socket } from 'socket.io-client';
-import { on } from 'events';
+import { io, Socket } from 'socket.io-client';
 
 export const TableroAjedrez = ({sala}: {sala: string}) => {
   //Rol del jugador
-const [rolJugador, setRolJugador] = useState<'b'| 'w'| 's'>('w')
-  //Logica del tablero
+  const [rolJugador, setRolJugador] = useState<'b'| 'w'| 's'>('w')
+  const rolJugadorRef = useRef<'b'| 'w'| 's'>('w');
+  
+  // --------------- Logica del tablero ---------------
   const chessGameRef = useRef(new Chess());
   const chessGame = chessGameRef.current;
 
@@ -92,9 +93,6 @@ const [rolJugador, setRolJugador] = useState<'b'| 'w'| 's'>('w')
 
       enviarMovimiento(chessGame.fen());
 
-
-
-
       setChessPosition(chessGame.fen());
       setMoveFrom('');
       setOptionSquares({});
@@ -107,17 +105,31 @@ const [rolJugador, setRolJugador] = useState<'b'| 'w'| 's'>('w')
   
   }
   
+  // --------------- Logica de los relojes ---------------
+  const [tiempo_jugador, setTiempoJugador] = useState('10:00');
+  const [tiempo_oponente, setTiempoOponente] = useState('10:00');
+
+  function ms_a_minutos_segundos(tiempo_ms: any) {
+    const totalSeconds = Math.max(0, Math.floor(tiempo_ms / 1000));
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+  }
+
+  // --------------- Logica de los nombres ---------------
+  const [Nombre_jugador, setNombreJugador] = useState('Jugador');
+  const [Nombre_oponente, setNombreOponente] = useState('Oponente');
   
-
-
-  // --- 2. Lógica de WebSockets ---
+  // --------------- Lógica de WebSockets ---------------
   const socketRef = useRef<Socket | null>(null);
   const [orientacionTablero, setOrientacionTablero] = useState<"white" | "black">("white");
 
   useEffect(() => {
     // Inicializamos el socket dentro de useEffect para que solo ocurra una vez.
     // OJO: Asegúrate de poner 'http://'
-    socketRef.current = io("http://192.168.0.1:4000");
+    // socketRef.current = io("http://192.168.0.1:4000");
+    socketRef.current = io(process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000");
 
     // 'connect' es el evento predeterminado de Socket.io cuando la conexión es exitosa
     //socketRef.current.on('connect', () => {
@@ -126,11 +138,19 @@ const [rolJugador, setRolJugador] = useState<'b'| 'w'| 's'>('w')
     
     socketRef.current.emit('unirse_sala', sala);
 
-    
     socketRef.current.on("asignar_rol", (rol) => {
-      if(rol=='black') setRolJugador('b')
-      else if (rol == 'white') setRolJugador('w')
-      else setRolJugador('s')
+      if(rol=='black'){
+        setRolJugador('b')
+        rolJugadorRef.current = 'b';
+      }
+      else if (rol == 'white') {
+        setRolJugador('w')
+        rolJugadorRef.current = 'w';
+      }
+      else {
+        setRolJugador('s')
+        rolJugadorRef.current = 's';
+      }
       setOrientacionTablero(rol==='black'?'black':'white');
     });
 
@@ -144,6 +164,14 @@ const [rolJugador, setRolJugador] = useState<'b'| 'w'| 's'>('w')
       setChessPosition(chessGame.fen());
     });
 
+    socketRef.current.on('actualizar_tiempos', (tiempo_restante) => {
+      let tiempo_restante_jugador = rolJugadorRef.current === 'w' ? tiempo_restante.blancas : tiempo_restante.negras;
+      let tiempo_restante_oponente = rolJugadorRef.current === 'w' ? tiempo_restante.negras : tiempo_restante.blancas;
+
+      setTiempoJugador(ms_a_minutos_segundos(tiempo_restante_jugador));
+      setTiempoOponente(ms_a_minutos_segundos(tiempo_restante_oponente));
+    });
+
     // Limpieza: desconectar el socket si el usuario sale de la pantalla
     return () => {
       socketRef.current?.disconnect();
@@ -155,7 +183,7 @@ const [rolJugador, setRolJugador] = useState<'b'| 'w'| 's'>('w')
     socketRef.current?.emit('movimiento', {fenMovimiento, sala});
   };
 
-  // --- 3. Configuración del componente Chessboard ---
+  // --------------- Configuración del componente Chessboard ---------------
 
   const chessboardOptions = {
     position: chessPosition,
@@ -169,9 +197,20 @@ const [rolJugador, setRolJugador] = useState<'b'| 'w'| 's'>('w')
 
 
   return (
-    <div style={{ width: '20%',margin: '0 auto' }}>
-      {/* Solo le pasamos la propiedad 'options' al componente */}
-      <Chessboard options={chessboardOptions} />
+    <div style={{width: '20%',margin: '0 auto'}}>
+      <div style={{width: '100%', display: 'flex', flexDirection: 'row'}}>
+        <p style={{width: '80%'}}>{Nombre_oponente}</p>
+        <div style={{backgroundColor: 'grey', padding: '5px', marginBottom: '20px', fontSize: '30px'}}>
+          {tiempo_oponente}
+        </div>
+      </div>
+      <Chessboard options={chessboardOptions} /> {/* Solo le pasamos la propiedad 'options' al componente */}
+      <div style={{width: '100%', display: 'flex', flexDirection: 'row-reverse'}}>
+        <p style={{width: '80%', textAlign: 'right'}}>{Nombre_jugador}</p>
+        <div style={{backgroundColor: 'grey', padding: '5px', marginTop: '20px', fontSize: '30px'}}>
+          {tiempo_jugador}
+        </div>
+      </div>
     </div>
   );
 };
