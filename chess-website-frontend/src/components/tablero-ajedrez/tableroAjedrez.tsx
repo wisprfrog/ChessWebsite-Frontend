@@ -44,6 +44,7 @@ export const TableroAjedrez = ({sala}: {sala: string}) => {
 
  
   function onSquareClick({ square, piece }: { square: string, piece?: any }) {
+    if(rolJugadorRef.current !== chessGame.turn()) return;
     const sq = square as Square;
     
     if (!moveFrom && piece) {
@@ -79,7 +80,7 @@ export const TableroAjedrez = ({sala}: {sala: string}) => {
  
   function onPieceDrop({ sourceSquare, targetSquare, piece }: { sourceSquare: string, targetSquare: string | null, piece: any }) {
     // Si la sueltan fuera del tablero (null), cancelamos el estadoPartida
-    if (!targetSquare) return false;
+    if (!targetSquare || rolJugadorRef.current !== chessGame.turn()) return false;
 
     //si no es tu turno no te deja mover
     console.log("Este es el rol del jugador: ", rolJugadorRef.current)
@@ -94,7 +95,6 @@ export const TableroAjedrez = ({sala}: {sala: string}) => {
       });
 
       enviarMovimiento(chessGame.fen());
-
       setChessPosition(chessGame.fen());
       setMoveFrom('');
       setOptionSquares({});
