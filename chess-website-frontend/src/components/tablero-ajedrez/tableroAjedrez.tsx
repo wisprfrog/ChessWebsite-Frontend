@@ -69,6 +69,8 @@ export const TableroAjedrez = ({sala}: {sala: string}) => {
       return;
     }
 
+    enviarMovimiento(chessGame.fen());
+
     setChessPosition(chessGame.fen());
     setMoveFrom('');
     setOptionSquares({});
@@ -80,9 +82,9 @@ export const TableroAjedrez = ({sala}: {sala: string}) => {
     if (!targetSquare) return false;
 
     //si no es tu turno no te deja mover
-    console.log("Este es el rol del jugador: ",rolJugador)
-    console.log("Turno real: ",chessGame.turn())
-    if (rolJugador != chessGame.turn()) return false;
+    console.log("Este es el rol del jugador: ", rolJugadorRef.current)
+    console.log("Turno real: ", chessGame.turn())
+    if (rolJugadorRef.current != chessGame.turn()) return false;
 
     try {
       chessGame.move({
@@ -127,59 +129,60 @@ export const TableroAjedrez = ({sala}: {sala: string}) => {
 
   useEffect(() => {
     // Inicializamos el socket dentro de useEffect para que solo ocurra una vez.
-    // OJO: Asegúrate de poner 'http://'
-    // socketRef.current = io("http://192.168.0.1:4000");
     socketRef.current = io(process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000");
-
-    // 'connect' es el evento predeterminado de Socket.io cuando la conexión es exitosa
-    //socketRef.current.on('connect', () => {
-      //console.log('Conectado al servidor de WebSockets con ID:', socketRef.current?.id);
-    //});
     
-    socketRef.current.emit('unirse_sala', sala);
+    socketRef.current.on('connect', () => {
+      console.log('Conectado al servidor de WebSockets con ID:', socketRef.current?.id);
 
-    socketRef.current.on("asignar_rol", (rol) => {
-      if(rol=='black'){
-        setRolJugador('b')
-        rolJugadorRef.current = 'b';
-      }
-      else if (rol == 'white') {
+      socketRef.current?.emit('unirse_sala', sala);
+    });
+
+    socketRef.current.on("asignar_rol", (rol_asignado: string) => {
+      // console.log("Rol asignado por el servidor:", rol_asignado);
+
+      if (rol_asignado === 'white') {
         setRolJugador('w')
         rolJugadorRef.current = 'w';
+      }
+      else if(rol_asignado === 'black'){
+        setRolJugador('b')
+        rolJugadorRef.current = 'b';
       }
       else {
         setRolJugador('s')
         rolJugadorRef.current = 's';
       }
-      setOrientacionTablero(rol==='black'?'black':'white');
+      
+      setOrientacionTablero(rolJugadorRef.current === 'b' ? 'black':'white');
     });
-
-
+    
+    
     // Escuchar los movimientos del otro jugador
     socketRef.current.on('movimiento', (data) => {
-     // console.log('Movimiento recibido:', data.fenMovimiento);
-      // Actualizamos la lógica del ajedrez con la nueva posición
-      chessGame.load(data.fenMovimiento);
-      // Actualizamos la vista del tablero
-      setChessPosition(chessGame.fen());
-    });
 
+      // Actualizamos la lógica del ajedrez con la nueva posición
+     chessGame.load(data.fenMovimiento);
+
+     // Actualizamos la vista del tablero
+     setChessPosition(chessGame.fen());
+    });
+    
     socketRef.current.on('actualizar_tiempos', (tiempo_restante) => {
       let tiempo_restante_jugador = rolJugadorRef.current === 'w' ? tiempo_restante.blancas : tiempo_restante.negras;
       let tiempo_restante_oponente = rolJugadorRef.current === 'w' ? tiempo_restante.negras : tiempo_restante.blancas;
-
+      
       setTiempoJugador(ms_a_minutos_segundos(tiempo_restante_jugador));
       setTiempoOponente(ms_a_minutos_segundos(tiempo_restante_oponente));
     });
-
+    
+    
     // Limpieza: desconectar el socket si el usuario sale de la pantalla
     return () => {
       socketRef.current?.disconnect();
     };
-  }, [chessGame]);
+  }, []);
 
   const enviarMovimiento = (fenMovimiento: string): void => {
-    //console.log("Movimiento enviado:", fenMovimiento);
     socketRef.current?.emit('movimiento', {fenMovimiento, sala});
   };
 
