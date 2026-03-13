@@ -72,7 +72,7 @@ export const TableroAjedrez = ({sala, id_usuario}: {sala: string, id_usuario: nu
       return;
     }
 
-    enviarMovimiento(chessGame.fen());
+    enviarMovimiento({from: moveFrom, to: sq, promotion: 'q'} as {from: string, to: string, promotion: string});
 
     setChessPosition(chessGame.fen());
     setMoveFrom('');
@@ -94,7 +94,7 @@ export const TableroAjedrez = ({sala, id_usuario}: {sala: string, id_usuario: nu
         promotion: 'q' 
       });
 
-      enviarMovimiento(chessGame.fen());
+      enviarMovimiento({from: sourceSquare, to: targetSquare, promotion: 'q'} as {from: string, to: string, promotion: string});
       setChessPosition(chessGame.fen());
       setMoveFrom('');
       setOptionSquares({});
@@ -173,10 +173,10 @@ export const TableroAjedrez = ({sala, id_usuario}: {sala: string, id_usuario: nu
     
     
     // Escuchar los movimientos del otro jugador
-    socketRef.current.on('movimiento', (data) => {
+    socketRef.current.on('movimiento', (fenMovimiento) => {
 
       // Actualizamos la lógica del ajedrez con la nueva posición
-     chessGame.load(data.fenMovimiento);
+     chessGame.load(fenMovimiento);
 
      // Actualizamos la vista del tablero
      setChessPosition(chessGame.fen());
@@ -202,8 +202,8 @@ export const TableroAjedrez = ({sala, id_usuario}: {sala: string, id_usuario: nu
     };
   }, []);
 
-  const enviarMovimiento = (fenMovimiento: string): void => {
-    socketRef.current?.emit('movimiento', {fenMovimiento, sala});
+  const enviarMovimiento = (estructura_movimiento: {from?: string, to?: string, promotion?: string} | string): void => {
+      socketRef.current?.emit('movimiento', { estructura_movimiento, sala });
   };
 
   // --------------- Configuración del componente Chessboard ---------------
