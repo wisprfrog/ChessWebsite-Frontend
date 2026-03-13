@@ -4,7 +4,7 @@ import { Chessboard } from 'react-chessboard';
 import { Chess, Square } from 'chess.js';
 import { io, Socket } from 'socket.io-client';
 
-export const TableroAjedrez = ({sala}: {sala: string}) => {
+export const TableroAjedrez = ({sala, id_usuario}: {sala: string, id_usuario: number}) => {
   //Rol del jugador
   const [rolJugador, setRolJugador] = useState<'b'| 'w'| 's'>('w')
   const rolJugadorRef = useRef<'b'| 'w'| 's'>('w');
@@ -83,8 +83,6 @@ export const TableroAjedrez = ({sala}: {sala: string}) => {
     if (!targetSquare || rolJugadorRef.current !== chessGame.turn()) return false;
 
     //si no es tu turno no te deja mover
-    console.log("Este es el rol del jugador: ", rolJugadorRef.current)
-    console.log("Turno real: ", chessGame.turn())
     if (rolJugadorRef.current != chessGame.turn()) return false;
 
     try {
@@ -128,18 +126,33 @@ export const TableroAjedrez = ({sala}: {sala: string}) => {
   const [orientacionTablero, setOrientacionTablero] = useState<"white" | "black">("white");
 
   useEffect(() => {
+    if(!id_usuario) return;
+
     // Inicializamos el socket dentro de useEffect para que solo ocurra una vez.
-    socketRef.current = io(process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000");
+    socketRef.current = io(process.env.NEXT_PUBLIC_API_URL || "http://192.168.0.2:4000", {
+      auth: {
+        id_usuario_actual: id_usuario
+      }
+    });
     
     socketRef.current.on('connect', () => {
-      console.log('Conectado al servidor de WebSockets con ID:', socketRef.current?.id);
+      socketRef.current?.on('intentar_reconexion', (sala_a_reconectar: any, id_usuario_conectado : any) => {
+        if(id_usuario_conectado === id_usuario){
+          // si el servidor envía una sala de reconexión, la usamos; de lo contrario, mantenemos la sala actual.
+          sala = sala_a_reconectar ? sala_a_reconectar : sala;
+        }
+      });
 
-      socketRef.current?.emit('unirse_sala', sala);
+      socketRef.current?.emit('unirse_sala', {sala, id_usuario});
+
+      socketRef.current?.on('cargar_juego', (fenPartida: any) => {
+        // Procesar los datos del juego
+        chessGame.load(fenPartida);
+        setChessPosition(chessGame.fen());
+      });
     });
 
     socketRef.current.on("asignar_rol", (rol_asignado: string) => {
-      // console.log("Rol asignado por el servidor:", rol_asignado);
-
       if (rol_asignado === 'white') {
         setRolJugador('w')
         rolJugadorRef.current = 'w';
