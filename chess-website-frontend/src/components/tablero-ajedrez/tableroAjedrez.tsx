@@ -16,6 +16,8 @@ export const TableroAjedrez = ({sala, id_usuario}: {sala: string, id_usuario: nu
   const [chessPosition, setChessPosition] = useState(chessGame.fen());
   const [moveFrom, setMoveFrom] = useState('');
   const [optionSquares, setOptionSquares] = useState({});
+  const [causa_fin_partida, setCausaFinPartida] = useState('');
+  const [ganador, setGanador] = useState('');
 
   function getMoveOptions(square: Square) {
     const moves = chessGame.moves({ square, verbose: true });
@@ -187,6 +189,11 @@ export const TableroAjedrez = ({sala, id_usuario}: {sala: string, id_usuario: nu
       setTiempoJugador(ms_a_minutos_segundos(tiempo_restante_jugador));
       setTiempoOponente(ms_a_minutos_segundos(tiempo_restante_oponente));
     });
+
+    socketRef.current.on('terminar_partida', ({causa, ganador}: {causa : string, ganador : string}) => {
+      setCausaFinPartida(causa);
+      setGanador(ganador === 'Empate' ? ganador : `Ganador: ${ganador}`);
+    });
     
     
     // Limpieza: desconectar el socket si el usuario sale de la pantalla
@@ -226,6 +233,14 @@ export const TableroAjedrez = ({sala, id_usuario}: {sala: string, id_usuario: nu
         <div style={{backgroundColor: 'grey', padding: '5px', marginTop: '20px', fontSize: '30px'}}>
           {tiempo_jugador}
         </div>
+      </div>
+      <div>
+        <p>
+          {causa_fin_partida}
+        </p>
+        <p>
+          {ganador}
+        </p>
       </div>
     </div>
   );
