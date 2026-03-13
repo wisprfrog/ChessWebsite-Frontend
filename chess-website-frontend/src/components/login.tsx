@@ -87,11 +87,11 @@ export default function LoginForm() {
 
         {/* Botón secundario para registrarse */}
         <button 
-          onClick={(e) => enviarFormulario(e, 'registro')} 
-          disabled={cargando || !username || !password}
-          style={{ padding: '10px', background: '#333', color: 'white', border: 'none', cursor: 'pointer' }}
-        >
-          Crear cuenta nueva
+            type="button" /* ¡ESTA ES LA MAGIA! Evita que recargue la página */
+            onClick={() => router.push('/register')} /* Asegúrate de que el nombre coincida con tu carpeta (register o registro) */
+            style={{ padding: '10px', background: '#333', color: 'white', border: 'none', cursor: 'pointer' }}
+            >
+            Crear cuenta nueva
         </button>
       </form>
 
