@@ -4,11 +4,10 @@ import { useRouter } from 'next/navigation'
 export default function Home() {
   const router = useRouter();
 
-  const manejarEntrarPartida = (tipo_de_partida:string, sala?:string) => {
-    router.push(`./partida_ajedrez?tipo_partida=${tipo_de_partida}`);
+  const manejarEntrarPartida = (tipo_de_partida:string, sala?:string, id_usuario?:number) => {
 
     if(tipo_de_partida === 'jugador'){
-      router.push(`./partida_ajedrez?tipo_partida=${tipo_de_partida}&sala=${sala}`);
+      router.push(`./partida_ajedrez?tipo_partida=${tipo_de_partida}&sala=${sala}&id_usuario=${id_usuario}`);
     }
     else{
       router.push(`./partida_ajedrez?tipo_partida=${tipo_de_partida}`);
@@ -27,7 +26,7 @@ export default function Home() {
       placeholder='Ingrese la sala'
       onChange = {(e) => room = e.target.value}/>
       
-      <button onClick={() => manejarEntrarPartida('jugador', room)}>
+      <button onClick={() => manejarEntrarPartida('jugador', room, new Date().getSeconds())}>
         Entrar a la partida contra jugador
       </button>
       <button onClick={() => manejarEntrarPartida('cpu')}>

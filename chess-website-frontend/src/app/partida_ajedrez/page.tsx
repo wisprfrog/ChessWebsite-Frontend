@@ -9,11 +9,12 @@ function PartidaAjedrezContent() {
   const searchParams = useSearchParams();
   const tipo_partida = searchParams.get('tipo_partida');
   const sala = searchParams.get('sala');
+  const id_usuario_conectado = searchParams.get('id_usuario');
 
   return (
     <main>
       <h1>Partida de Ajedrez Contra {tipo_partida === 'cpu' ? 'CPU' : `Jugador en sala ${sala}`}</h1>
-      {tipo_partida === 'cpu' ? <TableroAjedrezCPU/> : <TableroAjedrez sala={sala as string}/>}
+      {tipo_partida === 'cpu' ? <TableroAjedrezCPU/> : <TableroAjedrez sala={sala as string} id_usuario={Number(id_usuario_conectado)}/>}
     </main>
   );
 }
