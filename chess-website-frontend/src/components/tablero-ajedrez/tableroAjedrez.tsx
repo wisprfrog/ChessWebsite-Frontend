@@ -16,6 +16,8 @@ export const TableroAjedrez = ({sala, id_usuario}: {sala: string, id_usuario: nu
   const [chessPosition, setChessPosition] = useState(chessGame.fen());
   const [moveFrom, setMoveFrom] = useState('');
   const [optionSquares, setOptionSquares] = useState({});
+  const [causa_fin_partida, setCausaFinPartida] = useState('');
+  const [ganador, setGanador] = useState('');
 
   function getMoveOptions(square: Square) {
     const moves = chessGame.moves({ square, verbose: true });
@@ -70,7 +72,7 @@ export const TableroAjedrez = ({sala, id_usuario}: {sala: string, id_usuario: nu
       return;
     }
 
-    enviarMovimiento(chessGame.fen());
+    enviarMovimiento({from: moveFrom, to: sq, promotion: 'q'} as {from: string, to: string, promotion: string});
 
     setChessPosition(chessGame.fen());
     setMoveFrom('');
@@ -92,7 +94,7 @@ export const TableroAjedrez = ({sala, id_usuario}: {sala: string, id_usuario: nu
         promotion: 'q' 
       });
 
-      enviarMovimiento(chessGame.fen());
+      enviarMovimiento({from: sourceSquare, to: targetSquare, promotion: 'q'} as {from: string, to: string, promotion: string});
       setChessPosition(chessGame.fen());
       setMoveFrom('');
       setOptionSquares({});
@@ -171,10 +173,10 @@ export const TableroAjedrez = ({sala, id_usuario}: {sala: string, id_usuario: nu
     
     
     // Escuchar los movimientos del otro jugador
-    socketRef.current.on('movimiento', (data) => {
+    socketRef.current.on('movimiento', (fenMovimiento) => {
 
       // Actualizamos la lógica del ajedrez con la nueva posición
-     chessGame.load(data.fenMovimiento);
+     chessGame.load(fenMovimiento);
 
      // Actualizamos la vista del tablero
      setChessPosition(chessGame.fen());
@@ -187,6 +189,11 @@ export const TableroAjedrez = ({sala, id_usuario}: {sala: string, id_usuario: nu
       setTiempoJugador(ms_a_minutos_segundos(tiempo_restante_jugador));
       setTiempoOponente(ms_a_minutos_segundos(tiempo_restante_oponente));
     });
+
+    socketRef.current.on('terminar_partida', ({causa, ganador}: {causa : string, ganador : string}) => {
+      setCausaFinPartida(causa);
+      setGanador(ganador === 'Empate' ? ganador : `Ganador: ${ganador}`);
+    });
     
     
     // Limpieza: desconectar el socket si el usuario sale de la pantalla
@@ -195,8 +202,8 @@ export const TableroAjedrez = ({sala, id_usuario}: {sala: string, id_usuario: nu
     };
   }, []);
 
-  const enviarMovimiento = (fenMovimiento: string): void => {
-    socketRef.current?.emit('movimiento', {fenMovimiento, sala});
+  const enviarMovimiento = (estructura_movimiento: {from?: string, to?: string, promotion?: string} | string): void => {
+      socketRef.current?.emit('movimiento', { estructura_movimiento, sala });
   };
 
   // --------------- Configuración del componente Chessboard ---------------
@@ -226,6 +233,14 @@ export const TableroAjedrez = ({sala, id_usuario}: {sala: string, id_usuario: nu
         <div style={{backgroundColor: 'grey', padding: '5px', marginTop: '20px', fontSize: '30px'}}>
           {tiempo_jugador}
         </div>
+      </div>
+      <div>
+        <p>
+          {causa_fin_partida}
+        </p>
+        <p>
+          {ganador}
+        </p>
       </div>
     </div>
   );
