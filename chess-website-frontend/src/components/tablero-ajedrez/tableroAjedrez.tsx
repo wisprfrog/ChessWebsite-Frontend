@@ -147,10 +147,14 @@ export const TableroAjedrez = ({sala, nombre_usuario}: {sala: string, nombre_usu
 
       socketRef.current?.emit('unirse_sala', {sala, nombre_usuario});
 
-      socketRef.current?.on('cargar_juego', (fenPartida: any) => {
+      socketRef.current?.on('cargar_juego', ({fenPartida, nombre_usuario_blancas, nombre_usuario_negras}: {fenPartida: any | null, nombre_usuario_blancas: string, nombre_usuario_negras: string}) => {
         // Procesar los datos del juego
-        chessGame.load(fenPartida);
-        setChessPosition(chessGame.fen());
+        if (fenPartida !== null) {
+          chessGame.load(fenPartida);
+          setChessPosition(chessGame.fen());
+        }
+        setNombreJugador(nombre_usuario == nombre_usuario_blancas ? nombre_usuario_blancas : nombre_usuario_negras);
+        setNombreOponente(nombre_usuario == nombre_usuario_blancas ? nombre_usuario_negras : nombre_usuario_blancas);
       });
     });
 
