@@ -58,7 +58,7 @@ export default function PaginaInicio() {
         placeholder='Ingrese la sala'
         onChange = {(e) => setRoom(e.target.value)}/>
         
-        <BotonEntrarPartida tipo_de_partida="jugador" sala={'10'} nombre_usuario={localStorage.getItem('nombre_usuario')} />
+        <BotonEntrarPartida tipo_de_partida="jugador" nombre_usuario={localStorage.getItem('nombre_usuario')} />
         <BotonEntrarPartida tipo_de_partida="cpu" />
       </main>
     );

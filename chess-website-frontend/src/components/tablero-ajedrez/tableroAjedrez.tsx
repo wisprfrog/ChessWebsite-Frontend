@@ -4,7 +4,9 @@ import { Chessboard } from 'react-chessboard';
 import { Chess, Square } from 'chess.js';
 import { io, Socket } from 'socket.io-client';
 
-export const TableroAjedrez = ({sala, nombre_usuario}: {sala: string, nombre_usuario: string | null}) => {
+export const TableroAjedrez = ({nombre_usuario}: {nombre_usuario: string | null}) => {
+  const [sala, setSala] = useState('');
+
   //Rol del jugador
   const [rolJugador, setRolJugador] = useState<'b'| 'w'| 's'>('w')
   const rolJugadorRef = useRef<'b'| 'w'| 's'>('w');
@@ -129,7 +131,7 @@ export const TableroAjedrez = ({sala, nombre_usuario}: {sala: string, nombre_usu
 
   useEffect(() => {
     if(!nombre_usuario) return;
-
+    
     // Inicializamos el socket dentro de useEffect para que solo ocurra una vez.
     socketRef.current = io(process.env.NEXT_PUBLIC_API_URL || "http://192.168.0.1:4000", {
       auth: {
@@ -141,11 +143,20 @@ export const TableroAjedrez = ({sala, nombre_usuario}: {sala: string, nombre_usu
       socketRef.current?.on('intentar_reconexion', (sala_a_reconectar: any, nombre_usuario_conectado : any) => {
         if(nombre_usuario_conectado === nombre_usuario){
           // si el servidor envía una sala de reconexión, la usamos; de lo contrario, mantenemos la sala actual.
-          sala = sala_a_reconectar ? sala_a_reconectar : sala;
+          setSala(sala_a_reconectar ? sala_a_reconectar : sala);
         }
       });
 
-      socketRef.current?.emit('unirse_sala', {sala, nombre_usuario});
+      if(sala === ''){ //no hay partida a la que reconectar, así que el servidor nos asigna una nueva sala
+        socketRef.current?.emit('buscar_partida', ({nombre_usuario}));
+
+        socketRef.current?.on('partida_encontrada', ({sala_asignada, nombre_usuario1, nombre_usuario2}: {sala_asignada: string, nombre_usuario1: string, nombre_usuario2: string}) => {
+          console.log(`Sala asignada: ${sala_asignada} para usuario ${nombre_usuario1} vs ${nombre_usuario2}`);
+          if(nombre_usuario1 === nombre_usuario || nombre_usuario2 === nombre_usuario){
+            socketRef.current?.emit('unirse_sala', {sala_asignada, nombre_usuario});
+          }
+        });
+      }
 
       socketRef.current?.on('cargar_juego', ({fenPartida, nombre_usuario_blancas, nombre_usuario_negras}: {fenPartida: any | null, nombre_usuario_blancas: string, nombre_usuario_negras: string}) => {
         // Procesar los datos del juego
@@ -208,7 +219,7 @@ export const TableroAjedrez = ({sala, nombre_usuario}: {sala: string, nombre_usu
   }, []);
 
   const enviarMovimiento = (estructura_movimiento: {from?: string, to?: string, promotion?: string} | string): void => {
-      socketRef.current?.emit('movimiento', { estructura_movimiento, sala });
+      socketRef.current?.emit('movimiento', { estructura_movimiento, sala: sala });
   };
 
   // --------------- Configuración del componente Chessboard ---------------
