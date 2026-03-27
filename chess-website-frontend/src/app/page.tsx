@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 export default function PaginaInicio() {
   const router = useRouter();
   const [accederInicio, setAccederInicio] = useState(false);
+  const [verificandoToken, setVerificandoToken] = useState(true);
 
   const manejarEntrarPartida = (tipo_de_partida:string, sala?:string, id_usuario?:number) => {
 
@@ -37,6 +38,8 @@ export default function PaginaInicio() {
         })
 
         if(respuesta.ok) setAccederInicio(true);
+
+        setVerificandoToken(false);
     }
 
     if(localStorage.getItem('token')){
@@ -46,9 +49,15 @@ export default function PaginaInicio() {
       catch(error){
         console.error('Error al verificar el token:', error);
         localStorage.removeItem('token');
+        setVerificandoToken(false);
       }
-    }   
+    }
+    else setVerificandoToken(false);
   }, []);
+
+  useEffect(() => {
+    if(!verificandoToken && !accederInicio) router.push('./inicio_sesion');
+  }, [verificandoToken, accederInicio, router]);
 
   if(accederInicio){
     return (
@@ -68,5 +77,6 @@ export default function PaginaInicio() {
       </main>
     );
   }
-  router.push('./inicio_sesion');
+
+  return null;
 }

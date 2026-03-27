@@ -17,24 +17,31 @@ export default function FormularioRegistro() {
         try {
             // Nota: Verifica si tu endpoint necesita una ruta final, ej: /api/registro
             const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
-            const respuesta = await fetch(`${apiUrl}/api/usuario/`, {
+            const respuesta = await fetch(`${apiUrl}/api/usuario`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ nombre_usuario, correo, contrasenia })
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Origin': 'http://localhost:3000'
+                 },
+                body: JSON.stringify({
+                    nombre_usuario,
+                    correo,
+                    contrasenia
+                })
             });
 
-            const res = await respuesta.json();
+            
 
             // Comprobamos si la petición fue exitosa (status 200-299)
-            if (respuesta.ok) {
+            if (!respuesta.ok) {
+                // Si el backend manda un error (ej. el correo ya existe)
+                setMensaje('Hubo un error al registrar');
+            } else {
                 setMensaje('¡Usuario registrado con éxito!');
                 // Opcional: Limpiar el formulario
                 setUsername('');
                 setCorreo('');
                 setPassword('');
-            } else {
-                // Si el backend manda un error (ej. el correo ya existe)
-                setMensaje(res.mensaje || 'Hubo un error al registrar');
             }
 
         } catch (error) {

@@ -8,7 +8,9 @@ export default function PaginaRegistro() {
                 <p>Ingresa tus datos a continuación:</p>
                 
                 <FormularioRegistro />
-                
+                <p>
+                    ¿Ya tienes una cuenta? <a href="../inicio_sesion">Inicia sesión aquí</a>
+                </p>
             </div>
         </main>
     );
