@@ -4,7 +4,7 @@ import { Chessboard } from 'react-chessboard';
 import { Chess, Square } from 'chess.js';
 import { io, Socket } from 'socket.io-client';
 
-export const TableroAjedrez = ({sala, id_usuario}: {sala: string, id_usuario: number}) => {
+export const TableroAjedrez = ({sala, nombre_usuario}: {sala: string, nombre_usuario: string | null}) => {
   //Rol del jugador
   const [rolJugador, setRolJugador] = useState<'b'| 'w'| 's'>('w')
   const rolJugadorRef = useRef<'b'| 'w'| 's'>('w');
@@ -120,32 +120,32 @@ export const TableroAjedrez = ({sala, id_usuario}: {sala: string, id_usuario: nu
   }
 
   // --------------- Logica de los nombres ---------------
-  const [Nombre_jugador, setNombreJugador] = useState('Jugador');
-  const [Nombre_oponente, setNombreOponente] = useState('Oponente');
+  const [nombre_jugador, setNombreJugador] = useState(nombre_usuario || 'Jugador');
+  const [nombre_oponente, setNombreOponente] = useState('Oponente');
   
   // --------------- Lógica de WebSockets ---------------
   const socketRef = useRef<Socket | null>(null);
   const [orientacionTablero, setOrientacionTablero] = useState<"white" | "black">("white");
 
   useEffect(() => {
-    if(!id_usuario) return;
+    if(!nombre_usuario) return;
 
     // Inicializamos el socket dentro de useEffect para que solo ocurra una vez.
     socketRef.current = io(process.env.NEXT_PUBLIC_API_URL || "http://192.168.0.1:4000", {
       auth: {
-        id_usuario_actual: id_usuario
+        nombre_usuario_actual: nombre_usuario
       }
     });
     
     socketRef.current.on('connect', () => {
-      socketRef.current?.on('intentar_reconexion', (sala_a_reconectar: any, id_usuario_conectado : any) => {
-        if(id_usuario_conectado === id_usuario){
+      socketRef.current?.on('intentar_reconexion', (sala_a_reconectar: any, nombre_usuario_conectado : any) => {
+        if(nombre_usuario_conectado === nombre_usuario){
           // si el servidor envía una sala de reconexión, la usamos; de lo contrario, mantenemos la sala actual.
           sala = sala_a_reconectar ? sala_a_reconectar : sala;
         }
       });
 
-      socketRef.current?.emit('unirse_sala', {sala, id_usuario});
+      socketRef.current?.emit('unirse_sala', {sala, nombre_usuario});
 
       socketRef.current?.on('cargar_juego', (fenPartida: any) => {
         // Procesar los datos del juego
@@ -168,6 +168,7 @@ export const TableroAjedrez = ({sala, id_usuario}: {sala: string, id_usuario: nu
         rolJugadorRef.current = 's';
       }
       
+      console.log(`Rol asignado: ${rol_asignado}`);
       setOrientacionTablero(rolJugadorRef.current === 'b' ? 'black':'white');
     });
     
@@ -222,14 +223,14 @@ export const TableroAjedrez = ({sala, id_usuario}: {sala: string, id_usuario: nu
   return (
     <div style={{width: '20%',margin: '0 auto'}}>
       <div style={{width: '100%', display: 'flex', flexDirection: 'row'}}>
-        <p style={{width: '80%'}}>{Nombre_oponente}</p>
+        <p style={{width: '80%'}}>{nombre_oponente}</p>
         <div style={{backgroundColor: 'grey', padding: '5px', marginBottom: '20px', fontSize: '30px'}}>
           {tiempo_oponente}
         </div>
       </div>
       <Chessboard options={chessboardOptions} /> {/* Solo le pasamos la propiedad 'options' al componente */}
       <div style={{width: '100%', display: 'flex', flexDirection: 'row-reverse'}}>
-        <p style={{width: '80%', textAlign: 'right'}}>{Nombre_jugador}</p>
+        <p style={{width: '80%', textAlign: 'right'}}>{nombre_jugador}</p>
         <div style={{backgroundColor: 'grey', padding: '5px', marginTop: '20px', fontSize: '30px'}}>
           {tiempo_jugador}
         </div>

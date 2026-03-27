@@ -37,6 +37,7 @@ export default function FormularioInicioSesion() {
 
                 //token guardado en navegador para futuras peticiones
                 localStorage.setItem('token', res.token);
+                localStorage.setItem('nombre_usuario', res.datos_usuario.nombre_usuario);
 
                 router.push('/');
                 setIniciarSesion(true);

@@ -2,23 +2,13 @@
 
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react';
+import BotonEntrarPartida from '../components/botonEntrarPartida';
 
 export default function PaginaInicio() {
   const router = useRouter();
   const [accederInicio, setAccederInicio] = useState(false);
   const [verificandoToken, setVerificandoToken] = useState(true);
-
-  const manejarEntrarPartida = (tipo_de_partida:string, sala?:string, id_usuario?:number) => {
-
-    if(tipo_de_partida === 'jugador'){
-      router.push(`./partida_ajedrez?tipo_partida=${tipo_de_partida}&sala=${sala}&id_usuario=${id_usuario}`);
-    }
-    else{
-      router.push(`./partida_ajedrez?tipo_partida=${tipo_de_partida}`);
-    }
-  }
-
-  let room = '';
+  const [room, setRoom] = useState('');
 
 
   console.log("Los mejores commits 2026")
@@ -66,14 +56,10 @@ export default function PaginaInicio() {
         <input
         type="text"
         placeholder='Ingrese la sala'
-        onChange = {(e) => room = e.target.value}/>
+        onChange = {(e) => setRoom(e.target.value)}/>
         
-        <button onClick={() => manejarEntrarPartida('jugador', room, new Date().getSeconds())}>
-          Entrar a la partida contra jugador
-        </button>
-        <button onClick={() => manejarEntrarPartida('cpu')}>
-          Entrar a la partida contra CPU
-        </button>
+        <BotonEntrarPartida tipo_de_partida="jugador" sala={'10'} nombre_usuario={localStorage.getItem('nombre_usuario')} />
+        <BotonEntrarPartida tipo_de_partida="cpu" />
       </main>
     );
   }
