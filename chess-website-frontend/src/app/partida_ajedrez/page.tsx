@@ -19,7 +19,7 @@ function PartidaAjedrezContent() {
   );
 }
 
-export default function Home() {
+export default function PaginaPartidaAjedrez() {
   return (
     <Suspense fallback={<main><h1>Cargando partida...</h1></main>}>
       <PartidaAjedrezContent />

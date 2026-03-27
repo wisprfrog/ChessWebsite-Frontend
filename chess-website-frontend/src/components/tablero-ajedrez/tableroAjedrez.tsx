@@ -131,7 +131,7 @@ export const TableroAjedrez = ({sala, id_usuario}: {sala: string, id_usuario: nu
     if(!id_usuario) return;
 
     // Inicializamos el socket dentro de useEffect para que solo ocurra una vez.
-    socketRef.current = io(process.env.NEXT_PUBLIC_API_URL || "http://192.168.0.2:4000", {
+    socketRef.current = io(process.env.NEXT_PUBLIC_API_URL || "http://192.168.0.1:4000", {
       auth: {
         id_usuario_actual: id_usuario
       }
