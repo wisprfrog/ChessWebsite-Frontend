@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react';
 import BotonEntrarPartida from '../components/botonEntrarPartida';
+import NavBar from '../components/navBar';
 
 export default function PaginaInicio() {
   const router = useRouter();
@@ -52,6 +53,7 @@ export default function PaginaInicio() {
   if(accederInicio){
     return (
       <main>
+        <NavBar />
         <h1>Página de inicio de ajedrez mi bro</h1>
         <input
         type="text"
