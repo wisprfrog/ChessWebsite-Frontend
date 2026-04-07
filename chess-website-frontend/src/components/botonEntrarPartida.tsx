@@ -5,12 +5,7 @@ export default function BotonEntrarPartida({tipo_de_partida, sala, nombre_usuari
   const router = useRouter();
 
   const manejarEntrarPartida = () => {
-    if(tipo_de_partida === 'jugador'){
-      router.push(`./partida_ajedrez?tipo_partida=${tipo_de_partida}&sala=${sala}&nombre_usuario=${nombre_usuario}`);
-    }
-    else{
-      router.push(`./partida_ajedrez?tipo_partida=${tipo_de_partida}`);
-    }
+    router.push(`./partida_ajedrez?tipo_partida=${tipo_de_partida}`);
   }
 
   return(

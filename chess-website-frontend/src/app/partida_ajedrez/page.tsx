@@ -15,7 +15,7 @@ function PartidaAjedrezContent() {
     <main>
       <NavBar />
       <h1>Partida de Ajedrez Contra {tipo_partida === 'cpu' ? 'CPU' : `Jugador`}</h1>
-      {tipo_partida === 'cpu' ? <TableroAjedrezCPU/> : <TableroAjedrez nombre_usuario={nombre_usuario}/>}
+      {tipo_partida === 'cpu' ? <TableroAjedrezCPU/> : <TableroAjedrez/>}
     </main>
   );
 }

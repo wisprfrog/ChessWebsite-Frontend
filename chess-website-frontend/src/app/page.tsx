@@ -55,10 +55,6 @@ export default function PaginaInicio() {
       <main>
         <NavBar />
         <h1>Página de inicio de ajedrez mi bro</h1>
-        <input
-        type="text"
-        placeholder='Ingrese la sala'
-        onChange = {(e) => setRoom(e.target.value)}/>
         
         <BotonEntrarPartida tipo_de_partida="jugador" nombre_usuario={localStorage.getItem('nombre_usuario')} />
         <BotonEntrarPartida tipo_de_partida="cpu" />
