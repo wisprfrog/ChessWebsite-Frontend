@@ -4,7 +4,7 @@ import { Chessboard } from "react-chessboard";
 import { Chess, Square } from "chess.js";
 import { io, Socket } from "socket.io-client";
 
-export const TableroAjedrez = () => {
+export const TableroAjedrez = ({nombre_jugador} : { nombre_jugador: string }) => {
   //Rol del jugador
   const [rolJugador, setRolJugador] = useState<"b" | "w" | "s">("w");
   const rolJugadorRef = useRef<"b" | "w" | "s">("s");
@@ -139,7 +139,6 @@ export const TableroAjedrez = () => {
   }
 
   // --------------- Logica de los nombres ---------------
-  const [nombre_jugador, setNombreJugador] = useState<string | null>(null);
   const [nombre_oponente, setNombreOponente] = useState("Oponente");
 
   // --------------- Lógica de WebSockets ---------------
@@ -148,11 +147,6 @@ export const TableroAjedrez = () => {
   const [orientacionTablero, setOrientacionTablero] = useState<
     "white" | "black"
   >("white");
-
-  useEffect(() => {
-    const nombre_usuario_ls = localStorage.getItem("nombre_usuario");
-    setNombreJugador(nombre_usuario_ls);
-  }, []);
 
   useEffect(() => {
     if(!nombre_jugador) return;
@@ -178,7 +172,9 @@ export const TableroAjedrez = () => {
       "intentar_reconexion",
       ({ sala_a_reconectar, nombre_usuario_conectado }) => {
         if(nombre_usuario_conectado == nombre_jugador){
+          console.log(`Intentando reconectar a la sala ${sala_a_reconectar}...`);
           if(sala_a_reconectar !== null){
+            console.log(`Reconexion exitosa a la sala ${sala_a_reconectar}`);
             setSala(sala_a_reconectar);
           }
           else{
@@ -217,11 +213,7 @@ export const TableroAjedrez = () => {
           chessGame.load(fenPartida);
           setChessPosition(chessGame.fen());
         }
-        setNombreJugador(
-          nombre_jugador == nombre_usuario_blancas
-            ? nombre_usuario_blancas
-            : nombre_usuario_negras,
-        );
+        
         setNombreOponente(
           nombre_jugador == nombre_usuario_blancas
             ? nombre_usuario_negras
@@ -271,14 +263,16 @@ export const TableroAjedrez = () => {
     return () => {
       socketRef.current?.disconnect();
     };
-  }, [nombre_jugador]);
+  }, []);
 
   useEffect(() => {
-    console.log(`Uniendose a la sala a la sala: ${sala}`);
-    socketRef.current?.emit("unirse_sala", {
-      sala: sala,
-      nombre_jugador,
-    });
+    if(sala !== null){
+      console.log(`Uniendose a la sala a la sala: ${sala}`);
+      socketRef.current?.emit("unirse_sala", {
+        sala: sala,
+        nombre_jugador,
+      });
+    }
   }, [sala]);
 
   const enviarMovimiento = (
