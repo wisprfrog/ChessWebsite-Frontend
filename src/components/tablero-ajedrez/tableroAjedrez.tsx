@@ -143,7 +143,7 @@ export const TableroAjedrez = () => {
   const [nombre_oponente, setNombreOponente] = useState("Oponente");
 
   // --------------- Lógica de WebSockets ---------------
-  const sala = useRef("");
+  const [sala, setSala] = useState<string | null>(null);
   const socketRef = useRef<Socket | null>(null);
   const [orientacionTablero, setOrientacionTablero] = useState<
     "white" | "black"
@@ -157,7 +157,6 @@ export const TableroAjedrez = () => {
   useEffect(() => {
     if(!nombre_jugador) return;
 
-    console.log(`Estableciendo conexión para usuario: ${nombre_jugador}`);
     socketRef.current = io(
       process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000",
       {
@@ -178,15 +177,9 @@ export const TableroAjedrez = () => {
     socketRef.current?.on(
       "intentar_reconexion",
       ({ sala_a_reconectar, nombre_usuario_conectado }) => {
-        console.log(`Reconexion detectada para usuario: ${nombre_usuario_conectado} en sala: ${sala_a_reconectar}`);
         if(nombre_usuario_conectado == nombre_jugador){
           if(sala_a_reconectar !== null){
-            console.log(`Intento de reconexión para usuario: ${nombre_usuario_conectado} en sala: ${sala_a_reconectar}`);
-            sala.current = sala_a_reconectar;
-            socketRef.current?.emit("unirse_sala", {
-              sala: sala.current,
-              nombre_jugador,
-            });
+            setSala(sala_a_reconectar);
           }
           else{
             socketRef.current?.emit("buscar_partida", nombre_jugador);
@@ -202,21 +195,8 @@ export const TableroAjedrez = () => {
         nombre_usuario1,
         nombre_usuario2,
       }) => {
-        console.log(
-          `Sala asignada: ${sala_asignada} para usuario ${nombre_usuario1} vs ${nombre_usuario2}`,
-        );
-
-        if (
-          nombre_usuario1 === nombre_jugador ||
-          nombre_usuario2 === nombre_jugador
-        ) {
-          sala.current = sala_asignada;
-
-          console.log(`Uniéndose a la sala: ${sala.current}`);
-          socketRef.current?.emit("unirse_sala", {
-            sala: sala.current,
-            nombre_jugador,
-          });
+        if(sala_asignada !== null && (nombre_usuario1 === nombre_jugador || nombre_usuario2 === nombre_jugador)){
+          setSala(sala_asignada);
         }
       },
     );
@@ -262,7 +242,6 @@ export const TableroAjedrez = () => {
         rolJugadorRef.current = "s";
       }
 
-      console.log(`Rol asignado: ${rol_asignado}`);
       setOrientacionTablero(rolJugadorRef.current === "b" ? "black" : "white");
     });
 
@@ -294,6 +273,14 @@ export const TableroAjedrez = () => {
     };
   }, [nombre_jugador]);
 
+  useEffect(() => {
+    console.log(`Uniendose a la sala a la sala: ${sala}`);
+    socketRef.current?.emit("unirse_sala", {
+      sala: sala,
+      nombre_jugador,
+    });
+  }, [sala]);
+
   const enviarMovimiento = (
     estructura_movimiento:
       | { from?: string; to?: string; promotion?: string }
@@ -301,7 +288,7 @@ export const TableroAjedrez = () => {
   ): void => {
     socketRef.current?.emit("movimiento", {
       estructura_movimiento,
-      sala: sala.current,
+      sala: sala,
     });
   };
 
@@ -317,7 +304,9 @@ export const TableroAjedrez = () => {
     id: "jugador1-vs-jugador2-yyyy-mm-dd",
   };
 
-  if(!nombre_jugador) return <p>Cargando...</p>
+  if(!nombre_jugador || !sala){
+    return <p>Buscando partida...</p>
+  }
 
   return (
     <div style={{ width: "20%", margin: "0 auto" }}>
