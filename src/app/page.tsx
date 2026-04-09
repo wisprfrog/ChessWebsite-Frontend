@@ -13,7 +13,7 @@ export default function PaginaInicio() {
   if(funcionaToken === false || nombreUsuario === null) return null;
 
   return (
-    <main>
+    <main className="w-full h-full">
       <NavBar />
       <h1>Página de inicio de ajedrez mi bro</h1>
 
@@ -22,6 +22,7 @@ export default function PaginaInicio() {
         nombre_usuario={nombreUsuario}
       />
       <BotonEntrarPartida tipo_de_partida="cpu" />
+      
     </main>
   );
 }
