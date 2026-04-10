@@ -23,11 +23,11 @@ export default function NavBar() {
   }
 
   return (
-    <nav className='w-full h-16 m-0 p-0 flex items-center justify-between bg-gray-900 text-white'>
-      <div className='w-1/3 h-full flex items-center justify-between p-4 bg-pink-500'>
+    <nav className='w-full h-min-16 h-16 m-0 p-4 flex items-center justify-between bg-gray-900 text-white'>
+      <div className='w-2/3 h-full flex items-center justify-between'>
         <h1>Monster Chess of Clans</h1>
       </div>
-      <div className='w-2/3 h-full flex items-center justify-between p-4 bg-red-500'>    
+      <div className='w-1/3 h-full flex items-center justify-between mr-4'>    
         <Link href="/">Inicio</Link>
         <Link href="/amigos">Amigos</Link>
         <Link href={`/perfil?usuario=${nombreUsuario}`}>Perfil</Link>

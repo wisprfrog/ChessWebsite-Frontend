@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { generarToken } from '@/services/api';
 
 export default function FormularioInicioSesion() {
     const router = useRouter();
@@ -21,15 +22,7 @@ export default function FormularioInicioSesion() {
             if(/^[a-zA-Z0-9._%+-]+@[a-z]+\.[a-zA-Z]{2,}$/.test(usuario)) correo = usuario;
             else nombre_usuario = usuario;
 
-            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
-            const respuesta = await fetch(`${apiUrl}/api/usuario/login/token`, {
-                method: 'POST',
-                headers: { 
-                    'Content-Type': 'application/json',
-                    'Origin': 'http://localhost:3000'
-                },
-                body: JSON.stringify({ nombre_usuario, correo, contrasenia })
-            });
+            const respuesta = await generarToken(nombre_usuario, correo, contrasenia);
 
             // Comprobamos si la petición fue exitosa (status 200-299)
             if (respuesta.ok) {

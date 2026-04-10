@@ -2,9 +2,10 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { usarAutenticar } from "../hooks/usarAutenticar";
 import BotonEntrarPartida from "../components/botonEntrarPartida";
 import NavBar from "../components/navBar";
-import { usarAutenticar } from "../hooks/usarAutenticar";
+import Footer from "../components/footer";
 
 export default function PaginaInicio() {
   const router = useRouter();
@@ -22,7 +23,7 @@ export default function PaginaInicio() {
         nombre_usuario={nombreUsuario}
       />
       <BotonEntrarPartida tipo_de_partida="cpu" />
-      
+      <Footer />
     </main>
   );
 }

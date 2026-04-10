@@ -45,7 +45,7 @@ const cambiarNombreUsuario = async (token, nombre_usuario, nuevo_nombre) => {
 }
 
 const cambiarContrasena = async (token, contrasena_anterior, contrasena_nueva) => {
-  const respuesta = await fetch(`${url_api}/api/usuario/id_usuario/contrasena`, {
+  const respuesta = await fetch(`${url_api}/api/usuario/id_usuario/contrasenia`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
