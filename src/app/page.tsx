@@ -23,6 +23,7 @@ export default function PaginaInicio() {
         nombre_usuario={nombreUsuario}
       />
       <BotonEntrarPartida tipo_de_partida="cpu" />
+      
       <Footer />
     </main>
   );
