@@ -58,4 +58,53 @@ const cambiarContrasena = async (token, contrasena_anterior, contrasena_nueva) =
   return respuesta;
 }
 
-export { validarToken, generarToken, cambiarNombreUsuario, cambiarContrasena };
+const obtenerListaAmigos = async (id_usuario) => {
+  const respuesta = await fetch(`${url_api}/api/amigo/id_usuario/amigo`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Origin': origin
+    },
+    body: JSON.stringify({ 'id_usuario': id_usuario })
+  });
+
+  const res = await respuesta.json();
+  const listaAmigos = res.amigos.map(amigo => amigo.id_amigo);
+
+  return listaAmigos;
+}
+
+const obtenerIdUsuario = async (nombre_usuario) => {
+  const respuesta = await fetch(`${url_api}/api/usuario/id_usuario`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Origin': origin
+    },
+    body: JSON.stringify({'nombre_usuario': nombre_usuario})
+  });
+
+  const res = await respuesta.json();
+  const idUsuario = res?.nombres?.[0]?.id_usuario;
+
+  return idUsuario;
+}
+
+const obtenerEstadisticasUsuario = async (id_usuario) => {
+  const respuesta = await fetch(`${url_api}/api/estadistica/id_usuario`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Origin': origin
+    },
+    body: JSON.stringify({ 'id_usuario': id_usuario })
+  });
+
+  const res = await respuesta.json();
+  const estadistica = res?.estadistica?.[0];
+
+  return estadistica;
+}
+
+
+export { validarToken, generarToken, cambiarNombreUsuario, cambiarContrasena, obtenerListaAmigos, obtenerIdUsuario, obtenerEstadisticasUsuario };

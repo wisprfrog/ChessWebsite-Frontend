@@ -9,6 +9,7 @@ import Footer from "../../components/footer";
 // Componente de perfil de usuario
 import FormularioEditarNombreUsuario from "../../components/formularioEditarNombre";
 import FormularioEditarContrasena from "../../components/formularioEditarContrasena";
+import TablaEstadisticas from "@/components/tablaEstadisticas";
 
 export default function Perfil() {
   const searchParams = useSearchParams();
@@ -74,7 +75,7 @@ export default function Perfil() {
                           >
                             Editar Perfil
                           </button>
-                          <p className="mt-10">Tabla de estadisticas</p>
+                          <TablaEstadisticas nombreUsuario={nombreUsuarioParam} />
                         </div>
                       </div>
                     </div>
@@ -99,13 +100,13 @@ export default function Perfil() {
                   <p className="text-center">
                     {nombreUsuarioParam}
                   </p>
-                  <p className="mt-10">
-                    Tabla de estadisticas
-                  </p>
+                  <TablaEstadisticas nombreUsuario={nombreUsuarioParam} />
                 </div>
             }
           </div>
-          <div className="flex flex-col w-3/5 h-full ">Mas informacion</div>
+          <div className="flex flex-col w-3/5 h-full ">
+          Mas informacion
+          </div>
         </div>
         <Footer />
       </div>
