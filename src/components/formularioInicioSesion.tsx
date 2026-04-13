@@ -32,11 +32,12 @@ export default function FormularioInicioSesion() {
                 localStorage.setItem('token', res.token);
                 localStorage.setItem('nombre_usuario', res.datos_usuario.nombre_usuario);
 
-                router.push('/');
                 setIniciarSesion(true);
+                router.push('/');
+                return;
             } else {
                 // Si el backend manda un error (ej. el correo ya existe)
-                setMensaje('Hubo un error al registrar');
+                setMensaje('Hubo un error al iniciar sesión');
             }
 
         } catch (error) {

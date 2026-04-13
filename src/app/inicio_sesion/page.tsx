@@ -1,9 +1,9 @@
 "use client";
 
-import FormularioInicioSesion from "../../components/formularioInicioSesion";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { validarToken } from "../../services/api";
+import Login from "../../components/formularioLogin";
 
 export default function PaginaInicioSesion() {
   const router = useRouter();
@@ -51,13 +51,7 @@ export default function PaginaInicioSesion() {
       style={{ padding: "50px", display: "flex", justifyContent: "center" }}
     >
       <div>
-        <h1>Inicia Sesion</h1>
-        <p>Ingresa tus datos a continuación:</p>
-
-        <FormularioInicioSesion />
-        <p>
-          ¿No tienes cuenta? <a href="../registrarse">Regístrate aquí</a>
-        </p>
+        <Login/>
       </div>
     </main>
   );

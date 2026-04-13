@@ -1,10 +1,10 @@
 "use client";
 
-import NavBar from '@/src/components/navBar';
-import { TableroAjedrez } from '@/src/components/tablero-ajedrez/tableroAjedrez';
-import { TableroAjedrezCPU } from '@/src/components/tablero-ajedrez/tableroAjedrezCPU';
+import NavBar from '@/components/navBar';
+import { TableroAjedrez } from '@/components/tablero-ajedrez/tableroAjedrez';
+import { TableroAjedrezCPU } from '@/components/tablero-ajedrez/tableroAjedrezCPU';
 import { useSearchParams } from 'next/navigation';
-import { usarAutenticar } from '@/src/hooks/usarAutenticar';
+import { usarAutenticar } from '@/hooks/usarAutenticar';
 
 export default function PaginaPartidaAjedrez() {
   const searchParams = useSearchParams();
