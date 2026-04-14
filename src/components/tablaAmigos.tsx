@@ -1,4 +1,4 @@
-'use client'
+/* 'use client'
 import { useEffect, useState } from 'react';
 import tailwindcss from "@tailwindcss/vite";
 import { Table } from 'antd';
@@ -44,3 +44,4 @@ export default function TablaAmigos(){
 
     );
 }
+    */
