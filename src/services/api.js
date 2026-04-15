@@ -59,17 +59,29 @@ const cambiarContrasena = async (token, contrasena_anterior, contrasena_nueva) =
 }
 
 const obtenerListaAmigos = async (id_usuario) => {
+  if (!id_usuario) {
+    return [];
+  }
+
   const respuesta = await fetch(`${url_api}/api/amigo/id_usuario/amigo`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       'Origin': origin
     },
-    body: JSON.stringify({ 'id_usuario': id_usuario })
+    body: JSON.stringify({ 'id_usuario': id_usuario ,  })
   });
 
+  if (!respuesta.ok) {
+    return [];
+  }
+
   const res = await respuesta.json();
-  const listaAmigos = res.amigos.map(amigo => amigo.id_amigo);
+  const amigos = Array.isArray(res?.amigos) ? res.amigos : [];
+
+  const listaAmigos = amigos
+    .map((amigo) => ({ id: amigo?.id_amigo, nombre_usuario: amigo?.nombre_amigo }))
+    .filter(Boolean);
 
   return listaAmigos;
 }
@@ -106,5 +118,19 @@ const obtenerEstadisticasUsuario = async (id_usuario) => {
   return estadistica;
 }
 
+const eliminarAmigo = async (token, id_usuario, id_amigo) => {
+  const respuesta = await fetch(`${url_api}/api/amigo/id_usuario/id_amigo`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+      'Origin': origin
+    },
+    body: JSON.stringify({ 'id_usuario': id_usuario, 'id_amigo': id_amigo })
+  });
 
-export { validarToken, generarToken, cambiarNombreUsuario, cambiarContrasena, obtenerListaAmigos, obtenerIdUsuario, obtenerEstadisticasUsuario };
+  return respuesta;
+}
+
+
+export { validarToken, generarToken, cambiarNombreUsuario, cambiarContrasena, obtenerListaAmigos, obtenerIdUsuario, obtenerEstadisticasUsuario, eliminarAmigo };
