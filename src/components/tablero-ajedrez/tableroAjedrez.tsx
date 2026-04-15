@@ -4,7 +4,7 @@ import { Chessboard } from "react-chessboard";
 import { Chess, Square } from "chess.js";
 import { io, Socket } from "socket.io-client";
 
-export const TableroAjedrez = ({nombre_jugador} : { nombre_jugador: string }) => {
+export const TableroAjedrez = ({nombre_jugador, mostrar_tabla_movimientos} : { nombre_jugador: string, mostrar_tabla_movimientos: (lista_movimientos: string[]) => void }) => {
   //Rol del jugador
   const [rolJugador, setRolJugador] = useState<"b" | "w" | "s">("w");
   const rolJugadorRef = useRef<"b" | "w" | "s">("s");
@@ -16,7 +16,7 @@ export const TableroAjedrez = ({nombre_jugador} : { nombre_jugador: string }) =>
   const [chessPosition, setChessPosition] = useState(chessGame.fen());
   const [moveFrom, setMoveFrom] = useState("");
   const [optionSquares, setOptionSquares] = useState({});
-  const [causa_fin_partida, setCausaFinPartida] = useState("");
+  const [causa_fin_partida, setCausaFinPartida] = useState<string | null>(null);
   const [ganador, setGanador] = useState("");
 
   function getMoveOptions(square: Square) {
@@ -152,7 +152,7 @@ export const TableroAjedrez = ({nombre_jugador} : { nombre_jugador: string }) =>
     if(!nombre_jugador) return;
 
     socketRef.current = io(
-      process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000",
+      process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/juego",
       {
         auth: {
           nombre_usuario_actual: nombre_jugador,
@@ -161,7 +161,7 @@ export const TableroAjedrez = ({nombre_jugador} : { nombre_jugador: string }) =>
     );
 
     socketRef.current?.on("connect", () => {
-      console.log("Conectando mi bro");
+      console.log("Conectando al chess mi bro");
     });
 
     socketRef.current?.on("connect_error", (error) => {
@@ -197,21 +197,13 @@ export const TableroAjedrez = ({nombre_jugador} : { nombre_jugador: string }) =>
       },
     );
 
-    socketRef.current?.on(
-      "cargar_juego",
-      ({
-        fenPartida,
-        nombre_usuario_blancas,
-        nombre_usuario_negras,
-      }: {
-        fenPartida: any | null;
-        nombre_usuario_blancas: string;
-        nombre_usuario_negras: string;
-      }) => {
+    socketRef.current?.on("cargar_juego", ({fenPartida, nombre_usuario_blancas, nombre_usuario_negras, historial_juego}: {
+        fenPartida: any | null; nombre_usuario_blancas: string; nombre_usuario_negras: string; historial_juego: string[];}) => {
         // Procesar los datos del juego
         if (fenPartida !== null) {
           chessGame.load(fenPartida);
           setChessPosition(chessGame.fen());
+          mostrar_tabla_movimientos([]);
         }
         
         setNombreOponente(
@@ -253,8 +245,9 @@ export const TableroAjedrez = ({nombre_jugador} : { nombre_jugador: string }) =>
 
     socketRef.current?.on(
       "terminar_partida",
-      ({ causa, ganador }: { causa: string; ganador: string }) => {
-        setCausaFinPartida(causa);
+      ({ causa_fin_partida, ganador }: { causa_fin_partida: string; ganador: string }) => {
+        setCausaFinPartida(causa_fin_partida);
+        console.log(`Causa de fin de partida: ${causa_fin_partida}, ganador: ${ganador}`);
         setGanador(ganador === "Empate" ? ganador : `Ganador: ${ganador}`);
       },
     );
@@ -303,40 +296,23 @@ export const TableroAjedrez = ({nombre_jugador} : { nombre_jugador: string }) =>
   }
 
   return (
-    <div style={{ width: "20%", margin: "0 auto" }}>
-      <div style={{ width: "100%", display: "flex", flexDirection: "row" }}>
-        <p style={{ width: "80%" }}>{nombre_oponente}</p>
-        <div
-          style={{
-            backgroundColor: "grey",
-            padding: "5px",
-            marginBottom: "20px",
-            fontSize: "30px",
-          }}
-        >
-          {tiempo_oponente}
+    <div className="flex w-full mx-0 my-auto gap-x-10">
+      <div className="flex flex-col w-full justify-between items-center mb-4">
+        <div className="flex flex-row-reverse w-full">
+          <p className="text-sm w-8/10 px-4 text-right">{nombre_oponente}</p>
+          <div className="bg-gray-500 p-1 mb-5 text-3xl">
+            {tiempo_oponente}
+          </div>
         </div>
-      </div>
-      <Chessboard options={chessboardOptions} />{" "}
-      {/* Solo le pasamos la propiedad 'options' al componente */}
-      <div
-        style={{ width: "100%", display: "flex", flexDirection: "row-reverse" }}
-      >
-        <p style={{ width: "80%", textAlign: "right" }}>{nombre_jugador}</p>
-        <div
-          style={{
-            backgroundColor: "grey",
-            padding: "5px",
-            marginTop: "20px",
-            fontSize: "30px",
-          }}
-        >
-          {tiempo_jugador}
+
+        <Chessboard options={chessboardOptions} />
+        
+        <div className="flex w-full">
+          <p className="text-sm w-8/10 px-4 text-left">{nombre_jugador}</p>
+          <div className="bg-gray-500 p-1 mb-5 text-3xl">
+            {tiempo_jugador}
+          </div>
         </div>
-      </div>
-      <div>
-        <p>{causa_fin_partida}</p>
-        <p>{ganador}</p>
       </div>
     </div>
   );

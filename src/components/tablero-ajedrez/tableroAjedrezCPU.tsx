@@ -1,16 +1,18 @@
 "use client";
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, use, useEffect } from 'react';
 import { Chessboard } from 'react-chessboard';
 import { Chess, Square } from 'chess.js';
 
-export const TableroAjedrezCPU = () => {
+export const TableroAjedrezCPU = ({ mostrar_tabla_movimientos }: { mostrar_tabla_movimientos: (lista_movimientos: string[]) => void }) => {
   const chessGameRef = useRef(new Chess());
   const chessGame = chessGameRef.current;
 
   const [chessPosition, setChessPosition] = useState(chessGame.fen());
   const [moveFrom, setMoveFrom] = useState('');
   const [optionSquares, setOptionSquares] = useState({});
+
+  const [nombre_jugador, setNombreJugador] = useState<string | null>(null);
 
   function makeRandomMove() {
     const possibleMoves = chessGame.moves();
@@ -74,6 +76,7 @@ export const TableroAjedrezCPU = () => {
     }
 
     setChessPosition(chessGame.fen());
+    mostrar_tabla_movimientos(chessGame.history());
     setTimeout(makeRandomMove, 300);
     setMoveFrom('');
     setOptionSquares({});
@@ -92,6 +95,7 @@ export const TableroAjedrezCPU = () => {
       });
 
       setChessPosition(chessGame.fen());
+      mostrar_tabla_movimientos(chessGame.history());
       setMoveFrom('');
       setOptionSquares({});
       setTimeout(makeRandomMove, 500);
@@ -101,10 +105,6 @@ export const TableroAjedrezCPU = () => {
     }
   }
   
-
-  
-
-  
   const chessboardOptions = {
     position: chessPosition,
     onPieceDrop,
@@ -113,10 +113,26 @@ export const TableroAjedrezCPU = () => {
     id: 'jugador1-vs-jugador2-yyyy-mm-dd' 
   };
 
+  useEffect(() => {
+    const nombre_usuario_ls = localStorage.getItem("nombre_usuario");
+    setNombreJugador(nombre_usuario_ls);
+  })
+
+  if (!nombre_jugador) return null;
+
   return (
-    <div style={{ width: '20%',margin: '0 auto' }}>
-      {/* Solo le pasamos la propiedad 'options' al componente */}
-      <Chessboard options={chessboardOptions} />
-    </div>
+    <div className="flex w-full mx-0 my-auto gap-x-10">
+          <div className="flex flex-col w-full justify-between items-center mb-4">
+            <div className="flex justify-end w-full">
+              <p className="text-sm w-content px-4">{"CPU"}</p>
+            </div>
+    
+            <Chessboard options={chessboardOptions} />
+            
+            <div className="flex w-full justify-start">
+              <p className="text-sm w-content px-4">{'nombre_jugador'}</p>
+            </div>
+          </div>
+        </div>
   );
 };

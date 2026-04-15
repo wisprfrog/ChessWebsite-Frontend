@@ -2,18 +2,21 @@
 export default function Footer() {
 
     return (
-    <footer className='w-full h-50 m-0 p-4 flex items-center justify-start bg-green-900 text-white '>
-        <div className='w-2/5 h-full flex flex-col items-start justify-between p-4'>
-            <p>Universidad Autonoma del Estado de Hidalgo</p>
-            <p>Licenciatura en Ciencias Computacionales</p>
-            <p>Bases de datos distribuidas</p>
-            <p>6° 1</p>
+    <footer className='w-full h-content m-0 p-5 flex flex-col items-center justify-start bg-green-900 text-white gap-y-5'>
+        <div className='w-full h-content flex justify-center items-between gap-x-30'>
+            <p className="text-sm h-content">Universidad Autonoma del Estado de Hidalgo</p>
+            <p className="text-sm h-content">Licenciatura en Ciencias Computacionales</p>
+            <p className="text-sm h-content">Bases de datos distribuidas</p>
+            <p className="text-sm h-content">6° 1</p>
         </div>
-        <div className='w-2/5 h-full flex flex-col items-start justify-between p-4'>
-            <p>Mauricio Daniel Manzanilla Hornung</p>
-            <p>Brandom Galder Hernandez Franco</p>
-            <p>Felipe de Jesus Orta Escobar</p>
-            <p>Mario André Lozada Alfaro</p>
+        <div className='w-full h-content flex justify-center items-between gap-x-5'>
+            <p className="text-sm h-content">Mauricio Daniel Manzanilla Hornung</p>
+            <p className="text-sm h-content">|</p>
+            <p className="text-sm h-content">Brandom Galder Hernandez Franco</p>
+            <p className="text-sm h-content">|</p>
+            <p className="text-sm h-content">Felipe de Jesus Orta Escobar</p>
+            <p className="text-sm h-content">|</p>
+            <p className="text-sm h-content">Mario André Lozada Alfaro</p>
         </div>
     </footer>
     );

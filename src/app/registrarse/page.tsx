@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from 'react';
 import FormularioRegistro from "../../components/formularioRegistro";
-import { validarToken } from '@/services/api';
+import { validarToken } from '../../services/api';
 
 export default function PaginaRegistro() {
   const router = useRouter();
