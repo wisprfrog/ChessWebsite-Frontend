@@ -55,8 +55,8 @@ export default function TablaEstadisticas({nombreUsuario} : {nombreUsuario: stri
   }, []);
 
   return (
-    <div className="p-4">
-      <h2>Estadísticas del jugador {nombreUsuario}</h2>
+    <div className="p-4 bg-gray-100 rounded-lg shadow-sm border border-gray-100 w-full">
+      <h2 className='text-lg font-bold mb-4'>Estadísticas del jugador {nombreUsuario}</h2>
       <Table<DataType> 
         columns={columns} 
         dataSource={data} 
