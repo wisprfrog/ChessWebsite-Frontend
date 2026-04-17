@@ -68,7 +68,7 @@ export default function Perfil() {
               nombreUsuarioLocal && nombreUsuarioLocal === nombreUsuarioParam ?
                 (
                   <div className="flex flex-col justify-start items-center w-full h-2/5 gap-5">
-                    <p className="text-center">
+                    <p className="text-center font-bold text-l">
                       Usuario: {nombreUsuarioParam}
                     </p>
                     <div
@@ -118,7 +118,7 @@ export default function Perfil() {
           
           <div className="flex flex-col w-3/5 h-full ">
             <div className="flex flex-col justify-start items-center gap-5 bg-gray-100 p-6"> 
-                <p className="text-center font-bold">
+                <p className="text-left font-bold text-xl">
                   Amigos de {nombreUsuarioParam}
                 </p>
                 <TablaAmigos

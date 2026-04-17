@@ -148,6 +148,20 @@ const eliminarAmigo = async (token, id_usuario, id_amigo) => {
   return respuesta;
 }
 
+const agregarAmigo = async (token, id_usuario, id_amigo) => {
+  const respuesta = await fetch(`${url_api}/api/amigo/id_usuario/id_amigo`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+      'Origin': origin
+    },
+    body: JSON.stringify({ 'id_usuario': id_usuario, 'id_amigo': id_amigo })
+  });
+
+  return respuesta;
+}
+
 const obtenerIdPartida = async (token, id_usuario) => {
   const respuesta = await fetch(`${url_api}/api/partida/id_usuario/partidas`, {
     method: 'POST',
@@ -239,4 +253,4 @@ const obtenerHistorialCompleto = async (nombre_usuario) => {
 }
 
 
-export { validarToken, generarToken, cambiarNombreUsuario, cambiarContrasena, obtenerListaAmigos, obtenerIdUsuario, obtenerEstadisticasUsuario, eliminarAmigo, obtenerIdPartida, obtenerPartidaUsuario, obtenerNombrePorId, obtenerListaPartidas, obtenerHistorialCompleto };
+export { validarToken, generarToken, cambiarNombreUsuario, cambiarContrasena, obtenerListaAmigos, obtenerIdUsuario, obtenerEstadisticasUsuario, eliminarAmigo, agregarAmigo, obtenerIdPartida, obtenerPartidaUsuario, obtenerNombrePorId, obtenerListaPartidas, obtenerHistorialCompleto };
