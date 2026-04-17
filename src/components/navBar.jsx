@@ -32,7 +32,7 @@ export default function NavBar() {
       <div className='w-1/3 h-full flex items-center justify-between mr-4'>    
         <Link href="/">Inicio</Link>
         
-        <Link href={`/amigos?usuario=${nombreUsuario}`} className="relative">
+        <Link href={`/amigos`} className="relative">
           Amigos
           
           {}

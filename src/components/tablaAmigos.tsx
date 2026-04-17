@@ -3,7 +3,7 @@
 import React, { useEffect } from 'react';
 import { Table } from 'antd';
 import type { TableProps } from 'antd';
-import { useSearchParams } from 'next/navigation';
+import Link from 'next/link';
 import { eliminarAmigo, obtenerListaAmigos, obtenerIdUsuario } from '@/services/api';
 import BotonConIcono from './boton';
 
@@ -20,10 +20,12 @@ interface FriendApiItem {
   nombre_amigo?: string;
 }
 
-export default function TablaAmigos() {
+interface TablaAmigosProps {
+  nombreUsuario?: string | null;
+  mostrarEliminar?: boolean;
+}
 
-  const searchParams = useSearchParams();
-  const nombreUsuario = searchParams.get('usuario');
+export default function TablaAmigos({ nombreUsuario, mostrarEliminar = true }: TablaAmigosProps) {
   const [data, setData] = React.useState<DataType[]>([]);
   const [idUsuarioActual, setIdUsuarioActual] = React.useState<string | number | null>(null);
 
@@ -54,9 +56,19 @@ export default function TablaAmigos() {
       title: 'Amigo',
       dataIndex: 'amigo',
       key: 'amigo',
-      render: (text) => <strong>{text}</strong>,
+      render: (text) => (
+        <Link
+          href={`/perfil?usuario=${encodeURIComponent(String(text))}`}
+          className="font-medium text-blue-600 hover:text-blue-800 hover:underline"
+        >
+          {text}
+        </Link>
+      ),
     },
-    {
+  ];
+
+  if (mostrarEliminar) {
+    columns.push({
       title: 'Eliminar',
       key: 'eliminar',
       render: (_, record) => (
@@ -68,8 +80,8 @@ export default function TablaAmigos() {
           tamanioIcon="h-4 w-4"
         />
       ),
-    },
-  ];
+    });
+  }
 
   useEffect(() => {
     const fetchData = async () => {
@@ -79,7 +91,7 @@ export default function TablaAmigos() {
       }
 
       try {
-        const idUsuario = await obtenerIdUsuario(searchParams.get('usuario') ?? '');
+        const idUsuario = await obtenerIdUsuario(nombreUsuario ?? '');
         setIdUsuarioActual(idUsuario ?? null);
         const listaAmigos = (await obtenerListaAmigos(idUsuario)) as FriendApiItem[];
 

@@ -10,11 +10,13 @@ import Footer from "../../components/footer";
 import FormularioEditarNombreUsuario from "../../components/formularioEditarNombre";
 import FormularioEditarContrasena from "../../components/formularioEditarContrasena";
 import TablaEstadisticas from "@/components/tablaEstadisticas";
+import TablaAmigos from "@/components/tablaAmigos";
 
 export default function Perfil() {
   const searchParams = useSearchParams();
   const nombreUsuarioParam = searchParams.get("usuario");
   const [mostrarEditar, setMostrarEditar] = useState(false);
+  const [mostrarEliminar, setMostrarEliminar] = useState(false);
   const [nombreUsuarioLocal, setNombreUsuarioLocal] = useState<string | null>(
     null,
   );
@@ -41,6 +43,7 @@ export default function Perfil() {
 
   useEffect(() => {
     setMostrarEditar(false);
+    setMostrarEliminar(false);
   }, [nombreUsuarioParam]);
 
   const puedeEditar = nombreUsuarioParam === nombreUsuarioLocal;
@@ -96,16 +99,26 @@ export default function Perfil() {
                   </div>
                 )
                 :
-                <div className="flex flex-col justify-start items-center w-1/2 h-2/5 gap-5">
-                  <p className="text-center">
-                    {nombreUsuarioParam}
-                  </p>
-                  <TablaEstadisticas nombreUsuario={nombreUsuarioParam} />
-                </div>
+                <>
+                  <div className="flex flex-col justify-start items-center w-1/2 h-2/5 gap-5">
+                    <p className="text-center">
+                      {nombreUsuarioParam}
+                    </p>
+                    <TablaEstadisticas nombreUsuario={nombreUsuarioParam} />
+                  </div>
+                </>
             }
           </div>
           <div className="flex flex-col w-3/5 h-full ">
-          Mas informacion
+                            <div className="flex flex-col justify-start items-center w-full h-2/5 gap-5"> 
+                      <p className="text-center">
+                        Amigos de {nombreUsuarioParam}
+                      </p>
+                      <TablaAmigos
+                        nombreUsuario={nombreUsuarioParam}
+                        mostrarEliminar={puedeEditar}
+                      />
+                  </div>
           </div>
         </div>
         <Footer />
