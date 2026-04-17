@@ -148,6 +148,39 @@ const eliminarAmigo = async (token, id_usuario, id_amigo) => {
   return respuesta;
 }
 
+const obtenerMovimientosPartida = async (id_partida) => {
+  const respuesta = await fetch(`${url_api}/api/partida/id_partida/repeticion`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Origin': origin
+    },
+    body: JSON.stringify({ 'id_partida': id_partida })
+  });
+
+  if (!respuesta.ok) {
+    throw new Error(`Error al obtener movimientos de la partida:`);
+  }
+
+  const res = await respuesta.json();
+  const movimientos = res?.movimientos;
+
+  if (Array.isArray(movimientos)) {
+    return movimientos
+      .map((movimiento) => (typeof movimiento === 'string' ? movimiento.trim() : ''))
+      .filter(Boolean);
+  }
+
+  if (typeof movimientos === 'string') {
+    return movimientos
+      .split(',')
+      .map((movimiento) => movimiento.trim())
+      .filter(Boolean);
+  }
+
+  return [];
+}
+
 const agregarAmigo = async (token, id_usuario, id_amigo) => {
   const respuesta = await fetch(`${url_api}/api/amigo/id_usuario/id_amigo`, {
     method: 'POST',
@@ -252,5 +285,24 @@ const obtenerHistorialCompleto = async (nombre_usuario) => {
   }
 }
 
+const obtenerUsuariosEnPartida = async (id_partida) => {
+  const respuesta = await fetch(`${url_api}/api/partida/id_partida`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Origin': origin
+    },
+    body: JSON.stringify({ 'id_partida': id_partida })
+  });
 
-export { validarToken, generarToken, cambiarNombreUsuario, cambiarContrasena, obtenerListaAmigos, obtenerIdUsuario, obtenerEstadisticasUsuario, eliminarAmigo, agregarAmigo, obtenerIdPartida, obtenerPartidaUsuario, obtenerNombrePorId, obtenerListaPartidas, obtenerHistorialCompleto };
+  if (!respuesta.ok) {
+    console.error("Error al obtener los usuarios en la partida");
+    return [];
+  }
+
+  const res = await respuesta.json();
+  return [res.partida[0].id_usuario_blancas, res.partida[0].id_usuario_negras] || [];
+}
+
+
+export { validarToken, generarToken, cambiarNombreUsuario, cambiarContrasena, obtenerListaAmigos, obtenerIdUsuario, obtenerEstadisticasUsuario, eliminarAmigo, obtenerMovimientosPartida, agregarAmigo, obtenerIdPartida, obtenerPartidaUsuario, obtenerNombrePorId, obtenerListaPartidas, obtenerHistorialCompleto, obtenerUsuariosEnPartida };
