@@ -20,6 +20,7 @@ export const TableroAjedrezCPU = ({ mostrar_tabla_movimientos }: { mostrar_tabla
 
     const randomMove = possibleMoves[Math.floor(Math.random() * possibleMoves.length)];
     chessGame.move(randomMove);
+    mostrar_tabla_movimientos(chessGame.history());
     setChessPosition(chessGame.fen());
   }
 

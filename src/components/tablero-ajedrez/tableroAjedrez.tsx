@@ -18,6 +18,7 @@ export const TableroAjedrez = ({nombre_jugador, mostrar_tabla_movimientos} : { n
   const [optionSquares, setOptionSquares] = useState({});
   const [causa_fin_partida, setCausaFinPartida] = useState<string | null>(null);
   const [ganador, setGanador] = useState("");
+  const [lista_movimientos, setListaMovimientos] = useState<string[]>([]);
 
   function getMoveOptions(square: Square) {
     const moves = chessGame.moves({ square, verbose: true });
@@ -117,9 +118,9 @@ export const TableroAjedrez = ({nombre_jugador, mostrar_tabla_movimientos} : { n
         promotion: "q",
       } as { from: string; to: string; promotion: string });
       setChessPosition(chessGame.fen());
+      //mostrar_tabla_movimientos(chessGame.history());
       setMoveFrom("");
       setOptionSquares({});
-
       return true;
     } catch (error) {
       return false;
@@ -152,7 +153,7 @@ export const TableroAjedrez = ({nombre_jugador, mostrar_tabla_movimientos} : { n
     if(!nombre_jugador) return;
 
     socketRef.current = io(
-      process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/juego",
+      process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000",
       {
         auth: {
           nombre_usuario_actual: nombre_jugador,
@@ -203,8 +204,11 @@ export const TableroAjedrez = ({nombre_jugador, mostrar_tabla_movimientos} : { n
         if (fenPartida !== null) {
           chessGame.load(fenPartida);
           setChessPosition(chessGame.fen());
-          mostrar_tabla_movimientos([]);
+          setListaMovimientos(historial_juego);
+          console.log("lista", historial_juego);
         }
+
+        mostrar_tabla_movimientos(historial_juego ?? []);
         
         setNombreOponente(
           nombre_jugador == nombre_usuario_blancas
@@ -277,6 +281,7 @@ export const TableroAjedrez = ({nombre_jugador, mostrar_tabla_movimientos} : { n
       estructura_movimiento,
       sala: sala,
     });
+    mostrar_tabla_movimientos(lista_movimientos);
   };
 
   // --------------- Configuración del componente Chessboard ---------------
