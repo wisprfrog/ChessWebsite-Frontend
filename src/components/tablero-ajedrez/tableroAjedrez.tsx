@@ -153,7 +153,7 @@ export const TableroAjedrez = ({nombre_jugador, mostrar_tabla_movimientos} : { n
     if(!nombre_jugador) return;
 
     socketRef.current = io(
-      process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000",
+      process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/juego",
       {
         auth: {
           nombre_usuario_actual: nombre_jugador,

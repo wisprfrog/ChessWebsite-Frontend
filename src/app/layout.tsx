@@ -1,6 +1,7 @@
 import './globals.css';
 import { Geist } from "next/font/google";
 import { cn } from "@/lib/utils";
+import { SocketProvider } from "@/context/socketMonsterProvider";
 
 const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
@@ -18,7 +19,9 @@ export default function RootLayout({
         <title>Monster Chess of Clans</title>
       </head>
       <body className="w-screen h-screen m-0 p-0 overflow-x-hidden">
-        {children}
+        <SocketProvider>
+          {children}
+        </SocketProvider>
       </body>
     </html>
   );

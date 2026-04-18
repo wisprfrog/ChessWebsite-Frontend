@@ -5,13 +5,13 @@ import { Chessboard } from "react-chessboard";
 import { Chess } from "chess.js";
 
 export default function TableroRepeticion({
-  movimientos = [],
-  fenInicial,
-  nombreBlancas = "Blancas",
-  nombreNegras = "Negras",
-  orientacion = "white",
+  movimientos = [] as Array<string>,
+  fenInicial = "" as string,
+  nombreBlancas = "" as string,
+  nombreNegras = "" as string,
+  orientacion = "white" as "white" | "black",
   intervaloMs = 1200,
-  onIndiceCambio = () => {},
+  onIndiceCambio = (indice: number) => {},
 }) {
   const [indiceActual, setIndiceActual] = useState(0);
   const [reproduciendo, setReproduciendo] = useState(false);
@@ -26,7 +26,7 @@ export default function TableroRepeticion({
     const juego = new Chess();
     const fenes = [fenInicial || juego.fen()];
 
-    const convertirUciAMovimiento = (movimiento) => {
+    const convertirUciAMovimiento = (movimiento : string) => {
       if (typeof movimiento !== "string") return null;
       const valor = movimiento.trim();
       if (!/^[a-h][1-8][a-h][1-8][qrbn]?$/i.test(valor)) return null;
@@ -39,13 +39,16 @@ export default function TableroRepeticion({
     };
 
     if (fenInicial) {
-      const cargaOk = juego.load(fenInicial);
-      if (!cargaOk) {
-        return {
+      try{
+        juego.load(fenInicial);
+      }
+      catch(error) {
+         return {
           fenes: [new Chess().fen()],
           error: "FEN inicial invalido. Se usa posicion inicial por defecto.",
         };
       }
+
       fenes[0] = juego.fen();
     }
 
@@ -73,7 +76,7 @@ export default function TableroRepeticion({
 
   const totalJugadas = posiciones.fenes.length - 1;
   const fenActual = posiciones.fenes[Math.min(indiceActual, totalJugadas)] || new Chess().fen();
-  const intervaloRef = useRef(null);
+  const intervaloRef = useRef<number | null>(null);
 
   const chessboardOptions = {
     position: fenActual,
@@ -92,29 +95,44 @@ export default function TableroRepeticion({
   }, [indiceActual, onIndiceCambio]);
 
   useEffect(() => {
-    if (!reproduciendo) return undefined;
+    if (!reproduciendo) {
+      return undefined;
+    }
+
     if (indiceActual >= totalJugadas) {
       setReproduciendo(false);
       return undefined;
     }
 
+    if (intervaloRef.current !== null) {
+      window.clearInterval(intervaloRef.current);
+      intervaloRef.current = null;
+    }
+
+    const duracionIntervalo = Math.max(1200, Number(intervaloMs) || 1200);
+
     intervaloRef.current = window.setInterval(() => {
       setIndiceActual((prev) => {
         if (prev >= totalJugadas) {
-          window.clearInterval(intervaloRef.current);
+          if (intervaloRef.current !== null) {
+            window.clearInterval(intervaloRef.current);
+            intervaloRef.current = null;
+          }
           setReproduciendo(false);
           return prev;
         }
+
         return prev + 1;
       });
-    }, Math.max(200, intervaloMs));
+    }, duracionIntervalo);
 
     return () => {
-      if (intervaloRef.current) {
+      if (intervaloRef.current !== null) {
         window.clearInterval(intervaloRef.current);
+        intervaloRef.current = null;
       }
     };
-  }, [indiceActual, intervaloMs, reproduciendo, totalJugadas]);
+  }, [reproduciendo, indiceActual, intervaloMs, totalJugadas]);
 
   const irAlInicio = () => {
     setReproduciendo(false);
@@ -127,6 +145,7 @@ export default function TableroRepeticion({
   };
 
   const irAdelante = () => {
+    setReproduciendo(false);
     setIndiceActual((prev) => Math.min(totalJugadas, prev + 1));
   };
 

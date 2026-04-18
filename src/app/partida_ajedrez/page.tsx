@@ -1,22 +1,23 @@
 "use client";
 
-import NavBar from '@/components/navBar';
-import Footer from '@/components/footer';
-import { TableroAjedrez } from '@/components/tablero-ajedrez/tableroAjedrez';
-import { TableroAjedrezCPU } from '@/components/tablero-ajedrez/tableroAjedrezCPU';
+import NavBar from "@/components/navBar";
+import Footer from "@/components/footer";
+import { TableroAjedrez } from "@/components/tablero-ajedrez/tableroAjedrez";
+import { TableroAjedrezCPU } from "@/components/tablero-ajedrez/tableroAjedrezCPU";
 import TableroRepeticion from '@/components/tablero-ajedrez/tableroRepeticion';
-import { useSearchParams } from 'next/navigation';
-import { usarAutenticar } from '@/hooks/usarAutenticar';
-import { useConectarSocketMonster } from '@/hooks/conectarSocketMonster';
+import TablaMovimientos from "@/components/tablaMovimientos";
+
+import { usarAutenticar } from "@/hooks/usarAutenticar";
+
+import { useSearchParams } from "next/navigation";
+import { useMonsterSocket } from "@/hooks/usarSocketMonster";
 import { useEffect, useMemo, useState } from 'react';
-import TablaMovimientos from '@/components/tablaMovimientos';
 import { obtenerMovimientosPartida, obtenerNombrePorId, obtenerUsuariosEnPartida } from '@/services/api';
 
 export default function PaginaPartidaAjedrez() {
   const searchParams = useSearchParams();
   const tipo_partida = searchParams.get('tipo_partida');
   const idPartida = searchParams.get('id_partida');
-  const [numSolicitudes, setNumSolicitudes] = useState(0);
   const [historialMovimientos, setHistorialMovimientos] = useState<string[]>([]);
   const [cargandoRepeticion, setCargandoRepeticion] = useState(false);
   const [errorRepeticion, setErrorRepeticion] = useState<string | null>(null);
@@ -78,16 +79,17 @@ export default function PaginaPartidaAjedrez() {
 
   const { funcionaToken, nombreUsuario } = usarAutenticar();
 
-  function mostrarSolicitudes(solicitudes : Set<string>) {
-    setNumSolicitudes(solicitudes.size);
-  }
-
   function actualizarHistorialMovimientos(lista_movimientos: string[]) {
     setHistorialMovimientos(lista_movimientos);
   }
 
-  
-  const { enviarSolicitudAmistad, aceptarSolicitudAmistad, rechazarSolicitudAmistad, eliminarAmigo } = useConectarSocketMonster(null, mostrarSolicitudes);
+  const [numSolicitudes, setNumSolicitudes] = useState(0);
+
+  function mostrarSolicitudes(solicitudes: Array<string>) {
+    setNumSolicitudes(solicitudes.length);
+  }
+
+  useMonsterSocket({ manejarNuevaNotificacion: mostrarSolicitudes });
   
   if(funcionaToken === false || nombreUsuario === null) return null;
 
@@ -114,14 +116,8 @@ export default function PaginaPartidaAjedrez() {
             {tableroActual}
             <div className='w-5/10 bg-blue-500'>
             <TablaMovimientos lista_movimientos={movimientosRepeticionVisibles}/>
-            {cargandoRepeticion ? <p className='text-sm'>Cargando repeticion...</p> : null}
-            {errorRepeticion ? <p className='text-sm text-red-700'>{errorRepeticion}</p> : null}
-              <p className='font-semibold mb-2'>Tabla de movimientos</p>
-              <ol className='list-decimal list-inside text-sm'>
-                {movimientosRepeticionVisibles.map((movimiento, index) => (
-                  <li key={`${movimiento}-${index}`}>{movimiento}</li>
-                ))}
-              </ol>
+              {cargandoRepeticion ? <p className='text-sm'>Cargando repeticion...</p> : null}
+              {errorRepeticion ? <p className='text-sm text-red-700'>{errorRepeticion}</p> : null}
             </div>
         </div>
       </div>

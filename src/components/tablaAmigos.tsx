@@ -21,12 +21,16 @@ interface FriendApiItem {
 }
 
 interface TablaAmigosProps {
+  manejarEnviarSolicitud: (nombre_usuario_destino: string) => void;
+  manejarCancelarSolicitud: ((nombre_usuario_destino: string) => void) | null;
+  listaSolicitudesEnviadas: Array<string> | null;
   nombreUsuario?: string | null;
   mostrarEliminar?: boolean;
   mostarAgregar?: boolean;
+  actualizarTrigger?: number;
 }
 
-export default function TablaAmigos({ nombreUsuario, mostrarEliminar = true, mostarAgregar = true }: TablaAmigosProps) {
+export default function TablaAmigos({ manejarEnviarSolicitud, manejarCancelarSolicitud, listaSolicitudesEnviadas, nombreUsuario, mostrarEliminar = true, mostarAgregar = true, actualizarTrigger = 0 }: TablaAmigosProps) {
   const [data, setData] = useState<DataType[]>([]);
   
   const [idPerfilVisto, setIdPerfilVisto] = useState<string | number | null>(null);
@@ -34,6 +38,7 @@ export default function TablaAmigos({ nombreUsuario, mostrarEliminar = true, mos
   const [miNombreLocal, setMiNombreLocal] = useState<string | null>(null);
   const [miIdLocal, setMiIdLocal] = useState<string | number | null>(null);
   const [misAmigosIds, setMisAmigosIds] = useState<(string | number)[]>([]);
+  const solicitudesEnviadasSet = new Set(listaSolicitudesEnviadas ?? []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -43,11 +48,13 @@ export default function TablaAmigos({ nombreUsuario, mostrarEliminar = true, mos
       }
 
       try {
+        console.log('TablaAmigos: Cargando amigos para:', nombreUsuario, 'Trigger:', actualizarTrigger);
         const idPerfil = await obtenerIdUsuario(nombreUsuario);
         setIdPerfilVisto(idPerfil ?? null);
         
         if (idPerfil) {
           const listaAmigosPerfil = (await obtenerListaAmigos(idPerfil)) as FriendApiItem[];
+          console.log('TablaAmigos: Amigos obtenidos:', listaAmigosPerfil);
           const dataFormatted = (listaAmigosPerfil ?? [])
             .map((amigo: FriendApiItem, index: number) => {
               const idAmigo = amigo?.id ?? amigo?.id_amigo;
@@ -86,7 +93,47 @@ export default function TablaAmigos({ nombreUsuario, mostrarEliminar = true, mos
     };
 
     fetchData();
-  }, [nombreUsuario]);
+  }, [nombreUsuario, actualizarTrigger]);
+
+  useEffect(() => {
+    const manejarAmigoAceptado = (event: Event) => {
+      const customEvent = event as CustomEvent<{ nombreAmigo?: string }>;
+      const nombreAmigo = customEvent.detail?.nombreAmigo;
+
+      if (!nombreAmigo) {
+        return;
+      }
+
+      setData((prev) => {
+        if (prev.some((item) => item.amigo === nombreAmigo)) {
+          return prev;
+        }
+
+        return [
+          ...prev,
+          {
+            key: `optimistic-${nombreAmigo}-${Date.now()}`,
+            amigo: nombreAmigo,
+            idAmigo: nombreAmigo,
+          },
+        ];
+      });
+
+      setMisAmigosIds((prev) => {
+        if (prev.includes(nombreAmigo)) {
+          return prev;
+        }
+
+        return [...prev, nombreAmigo];
+      });
+    };
+
+    window.addEventListener('amigo-aceptado', manejarAmigoAceptado);
+
+    return () => {
+      window.removeEventListener('amigo-aceptado', manejarAmigoAceptado);
+    };
+  }, []);
 
   const manejarEliminarAmigo = async (idAmigoAEliminar: string | number) => {
     const token = localStorage.getItem('token');
@@ -105,25 +152,6 @@ export default function TablaAmigos({ nombreUsuario, mostrarEliminar = true, mos
       setMisAmigosIds((prev) => prev.filter((id) => id !== idAmigoAEliminar));
     } catch (error) {
       console.error('Error al eliminar amigo:', error);
-    }
-  };
-
-  const manejarAgregarAmigo = async (idAmigoAAgregar: string | number) => {
-    const token = localStorage.getItem('token');
-    
-    if (!token || !miIdLocal) {
-      console.error('No se pudo agregar el amigo: falta token o id de usuario logueado.');
-      return;
-    }
-
-    try {
-      const respuesta = await agregarAmigo(token, miIdLocal, idAmigoAAgregar);
-
-      if (!respuesta.ok) throw new Error("Error en el servidor al agregar");
-
-      setMisAmigosIds((prev) => [...prev, idAmigoAAgregar]);
-    } catch (error) {
-      console.error('Error al agregar amigo:', error);
     }
   };
 
@@ -161,7 +189,7 @@ export default function TablaAmigos({ nombreUsuario, mostrarEliminar = true, mos
 
   if (mostarAgregar) {
     columns.push({
-      title: 'Agregar',
+      title: 'Acción',
       key: 'agregar',
       render: (_, record) => {
         if (record.amigo === miNombreLocal) {
@@ -172,12 +200,24 @@ export default function TablaAmigos({ nombreUsuario, mostrarEliminar = true, mos
           return <span className="text-green-600 text-sm font-semibold">Amigos</span>;
         }
 
+        if (solicitudesEnviadasSet.has(record.amigo)) {
+          return (
+            <BotonConIcono
+              variant="pendiente"
+              texto=""
+              ruta_icono="/assets/icons/pendiente.svg"
+              funcion={() =>  manejarCancelarSolicitud && manejarCancelarSolicitud(record.amigo.toString())}
+              tamanioIcon="h-5 w-5"
+            />
+          );
+        }
+
         return (
           <BotonConIcono
             variant="agregar"
             texto=""
             ruta_icono="/assets/icons/agregar.svg"
-            funcion={() => manejarAgregarAmigo(record.idAmigo)}
+            funcion={() => manejarEnviarSolicitud(record.amigo.toString())}
             tamanioIcon="h-6 w-6"
           />
         );
