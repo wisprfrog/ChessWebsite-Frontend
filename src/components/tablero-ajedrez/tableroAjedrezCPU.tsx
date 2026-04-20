@@ -123,15 +123,15 @@ export const TableroAjedrezCPU = ({ mostrar_tabla_movimientos }: { mostrar_tabla
 
   return (
     <div className="flex w-full mx-0 my-auto gap-x-10">
-          <div className="flex flex-col w-full justify-between items-center mb-4">
+          <div className="flex flex-col w-full justify-between items-center mb-4 h-full">
             <div className="flex justify-end w-full">
-              <p className="text-sm w-content px-4">{"CPU"}</p>
+              <p className="text-sm w-content px-4 font-bold pb-1">{"CPU"}</p>
             </div>
     
             <Chessboard options={chessboardOptions} />
             
             <div className="flex w-full justify-start">
-              <p className="text-sm w-content px-4">{'nombre_jugador'}</p>
+              <p className="text-sm w-content px-4 pt-1 font-bold">{nombre_jugador}</p>
             </div>
           </div>
         </div>

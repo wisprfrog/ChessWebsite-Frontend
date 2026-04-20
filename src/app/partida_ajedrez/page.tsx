@@ -104,23 +104,24 @@ export default function PaginaPartidaAjedrez() {
         nombreBlancas={usuarioBlancas}
         nombreNegras={usuarioNegras}
         orientacion="white"
-        onIndiceCambio={setIndiceRepeticion}
+         onIndiceCambio={setIndiceRepeticion}
       />
     ) : null;
   
   return (
-    <main className='w-screen h-screen flex flex-col'>
+    <main className='w-screen h-screen flex flex-col overflow-hidden bg-gray-50'>
       <NavBar cuantasSolicitudesAmistad={numSolicitudes}/>
-      <div className='flex w-full justify-center items-center bg-red-500 flex-1'>
-        <div className='flex w-50/100 bg-pink-500 gap-x-10'>
+      <div className='flex flex-1 w-full justify-center items-center p-6 min-h-0'>
+        <div className='flex flex-row w-[90%] h-[90%] p-5 gap-x-7 overflow-hidden rounded-lg shadow-sm border border-gray-100 '>
             {tableroActual}
-            <div className='w-5/10 bg-blue-500'>
+            <div className='w-5/10'>
             <TablaMovimientos lista_movimientos={movimientosRepeticionVisibles}/>
               {cargandoRepeticion ? <p className='text-sm'>Cargando repeticion...</p> : null}
               {errorRepeticion ? <p className='text-sm text-red-700'>{errorRepeticion}</p> : null}
             </div>
         </div>
       </div>
+
       <Footer />
     </main>
   );
