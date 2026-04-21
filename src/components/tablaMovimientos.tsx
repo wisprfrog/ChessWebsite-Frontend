@@ -57,7 +57,7 @@ export default function TablaMovimientos({ lista_movimientos }: { lista_movimien
   return (
     <div className='w-full h-full flex flex-1 min-h-0 flex-col items-center justify-start'>
         {/*Quixa sea necesario cambiar el valor de scroll*/}
-      <Table className="flex-1 min-h-0 h-1/2" 
+      <Table className="table-contrast flex-1 min-h-0 h-1/2" 
              columns={columns}
              dataSource={data} 
              size="medium" 

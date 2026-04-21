@@ -109,15 +109,15 @@ export default function PaginaPartidaAjedrez() {
     ) : null;
   
   return (
-    <main className='w-screen h-screen flex flex-col overflow-hidden bg-gray-50'>
+    <main className='flex h-screen w-screen flex-col overflow-hidden bg-gradient-to-br from-slate-950 via-amber-900 to-blue-950'>
       <NavBar cuantasSolicitudesAmistad={numSolicitudes}/>
       <div className='flex flex-1 w-full justify-center items-center p-6 min-h-0'>
-        <div className='flex flex-row w-[90%] h-[90%] p-5 gap-x-7 overflow-hidden rounded-lg shadow-sm border border-gray-100 '>
+        <div className='flex h-[90%] w-[90%] flex-row gap-x-7 overflow-hidden rounded-lg border border-sky-900/60 bg-slate-900/70 p-5 shadow-2xl shadow-black/20'>
             {tableroActual}
             <div className='w-5/10'>
             <TablaMovimientos lista_movimientos={movimientosRepeticionVisibles}/>
-              {cargandoRepeticion ? <p className='text-sm'>Cargando repeticion...</p> : null}
-              {errorRepeticion ? <p className='text-sm text-red-700'>{errorRepeticion}</p> : null}
+              {cargandoRepeticion ? <p className='text-sm text-emerald-100'>Cargando repeticion...</p> : null}
+              {errorRepeticion ? <p className='text-sm text-rose-300'>{errorRepeticion}</p> : null}
             </div>
         </div>
       </div>

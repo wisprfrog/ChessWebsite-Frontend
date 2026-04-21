@@ -69,27 +69,25 @@ export default function PaginaAmigos() {
     }
 
     return(
-    <main className="flex flex-col w-full min-h-screen bg-gray-50">
+    <main className="flex min-h-screen w-full flex-col bg-gradient-to-br from-slate-950 via-amber-900 to-blue-950">
         <NavBar cuantasSolicitudesAmistad={numSolicitudes} />
         
         {/* Contenedor principal a dos columnas */}
-        <div className="flex-grow flex flex-col md:flex-row p-6 max-w-7xl mx-auto w-full gap-6">
+        <div className="mx-auto flex w-full max-w-7xl flex-grow flex-col gap-6 p-6 md:flex-row">
             
-            <div className="flex-1 bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-                <h2 className="text-2xl font-bold mb-4">Amigos de {nombreUsuario}</h2>
                 
-                <TablaAmigos
-                    manejarEnviarSolicitud={manejarEnviarSolicitudAmistad}
-                    manejarCancelarSolicitud={null}
+            <TablaAmigos
+                manejarEnviarSolicitud={manejarEnviarSolicitudAmistad}
+                manejarCancelarSolicitud={null}
                     manejarAceptarSolicitud={manejarAceptarSolicitudAmistad}
                     manejarRechazarSolicitud={manejarRechazarSolicitudAmistad}
                     listaSolicitudesRecibidas={solicitudesAmistadRecibidas}
-                    listaSolicitudesEnviadas={solicitudesAmistadEnviadas}
-                    actualizarTrigger={actualizarTabla}
-                    nombreUsuario={nombreUsuario}
-                />
+                listaSolicitudesEnviadas={solicitudesAmistadEnviadas}
+                actualizarTrigger={actualizarTabla}
+                nombreUsuario={nombreUsuario}
+            />
                 
-            </div>
+            
 
             <div className="md:w-96 flex flex-col gap-6">
                 <SideBarRecibidas

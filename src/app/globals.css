@@ -127,3 +127,68 @@
     @apply font-sans;
     }
 }
+
+
+.table-contrast.ant-table-wrapper .ant-table,
+.table-contrast.ant-table-wrapper .ant-table-container,
+.table-contrast.ant-table-wrapper .ant-table-content,
+.table-contrast.ant-table-wrapper table {
+  background: rgba(15, 23, 42, 0.94) !important;
+  color: #f8fafc !important;
+}
+
+.table-contrast.ant-table-wrapper .ant-table-thead > tr > th {
+  background: rgba(30, 41, 59, 0.98) !important;
+  color: #fef3c7 !important;
+  border-color: rgba(251, 191, 36, 0.32) !important;
+  font-weight: 700;
+}
+
+.table-contrast.ant-table-wrapper .ant-table-tbody > tr > td,
+.table-contrast.ant-table-wrapper .ant-table-cell,
+.table-contrast.ant-table-wrapper .ant-table-expanded-row-fixed {
+  background: rgba(15, 23, 42, 0.94) !important;
+  color: #f8fafc !important;
+  border-color: rgba(251, 191, 36, 0.2) !important;
+}
+
+.table-contrast.ant-table-wrapper .ant-table-tbody > tr:nth-child(even) > td {
+  background: rgba(30, 41, 59, 0.86) !important;
+}
+
+.table-contrast.ant-table-wrapper .ant-table-tbody > tr.ant-table-row:hover > td,
+.table-contrast.ant-table-wrapper .ant-table-tbody > tr > td.ant-table-cell-row-hover {
+  background: rgba(51, 65, 85, 0.92) !important;
+}
+
+.table-contrast.ant-table-wrapper .ant-empty-description,
+.table-contrast.ant-table-wrapper .ant-table-placeholder {
+  color: #cbd5e1 !important;
+  background: rgba(15, 23, 42, 0.94) !important;
+}
+
+.table-contrast.ant-table-wrapper .ant-pagination-item a,
+.table-contrast.ant-table-wrapper .ant-pagination-total-text {
+  color: #cbd5e1;
+}
+
+.table-contrast.ant-table-wrapper .ant-pagination-item {
+  background: rgba(30, 41, 59, 0.85);
+  border-color: rgba(251, 191, 36, 0.28);
+}
+
+.table-contrast.ant-table-wrapper .ant-pagination-item-active {
+  background: #fbbf24;
+  border-color: #fbbf24;
+}
+
+.table-contrast.ant-table-wrapper .ant-pagination-item-active a {
+  color: #022c22;
+}
+
+.table-contrast.ant-table-wrapper .ant-pagination-prev .ant-pagination-item-link,
+.table-contrast.ant-table-wrapper .ant-pagination-next .ant-pagination-item-link {
+  background: rgba(30, 41, 59, 0.85);
+  border-color: rgba(251, 191, 36, 0.28);
+  color: #fef3c7;
+}

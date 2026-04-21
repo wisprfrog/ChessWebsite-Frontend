@@ -26,7 +26,7 @@ const columns: TableProps<DataType>['columns'] = [
     render: (text, record) => (
       <Link 
         href={`/partida_ajedrez?tipo_partida=repeticion&id_partida=${encodeURIComponent(record.idPartida)}`}
-        className="font-medium text-blue-600 hover:text-blue-800 hover:underline"
+        className="font-medium text-emerald-300 hover:text-emerald-200 hover:underline"
       >
         {text}
       </Link>
@@ -81,9 +81,10 @@ export default function TablaHistorial({ nombreUsuario } : TablaHistorialProps) 
   }, [nombreUsuario]);
 
   return (
-    <div className="p-4 bg-white rounded-lg shadow-sm border border-gray-100 w-full h-full">
-      <h2 className="text-xl font-bold mb-4">Historial de Partidas</h2>
+    <div className="h-full w-full rounded-lg border border-amber-700/40 bg-slate-900/70 p-4 text-amber-100 shadow-2xl shadow-black/20">
+      <h2 className="mb-4 text-xl font-bold">Historial de Partidas</h2>
       <Table<DataType> 
+        className="table-contrast"
         columns={columns} 
         dataSource={data} 
         showHeader={true}

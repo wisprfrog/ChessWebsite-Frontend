@@ -47,7 +47,7 @@ export default function PaginaInicioSesion() {
   if(funcionaToken === true && nombreUsuario) return null;
 
  return (
-    <main className="flex min-h-screen items-center justify-center bg-gradient-to-br from-green-950 via-emerald-950 to-green-900 p-4">
+    <main className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-950 via-amber-900 to-blue-950 p-4">
       <div className="w-full max-w-md flex flex-col items-center space-y-8">
         
         <Login />

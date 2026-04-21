@@ -28,35 +28,35 @@ export default function PaginaInicio() {
   
 
   return (
-    <main className="flex min-h-screen w-full flex-col bg-gray-100">
+    <main className="flex min-h-screen w-full flex-col bg-gradient-to-br from-[#020816] via-[#0f172a] to-amber-800">
       <NavBar cuantasSolicitudesAmistad={numSolicitudes} />
 
-      <div className="w-full flex-1">
+      <div className="w-full h-content flex flex-1 flex-col items-start justify-center pl-20 gap-y-15">
 
-      <h1 className="flex flex-col text-center text-5xl font-bold mt-30 mb-16">¡Bienvenid@, {nombreUsuario}!</h1>
+      <h1 className="h-content flex flex-col text-center text-5xl font-bold text-emerald-100">¡Bienvenid@, {nombreUsuario}!</h1>
 
-        <div className="flex justify-center mt-25 gap-20">
+        <div className="h-content flex justify-center gap-20">
           <div className="flex flex-col justify-center gap-20">
             <BotonConIcono
-              className="text-xl px-10 py-10 bg-green-700 text-white hover:bg-green-600"
-              tamanioIcon="h-10 w-10"
+              className="bg-amber-600 px-8 py-8 text-lg text-slate-950 shadow-lg shadow-black/20 hover:bg-amber-500"
+              tamanioIcon="h-8 w-8"
               funcion={() => manejarEntrarPartida("jugador")}
               texto="Buscar Partida"
               size="default"
               ruta_icono="/assets/icons/chessKing.svg"
-              variant="outline"
+              variant="default"
             />
           </div>
 
           <div className="flex flex-col justify-center gap-20">
             <BotonConIcono
-              className="text-xl px-10 py-10 bg-green-700 text-white hover:bg-green-600"
-              tamanioIcon="h-10 w-10"
+              className="bg-amber-600 px-8 py-8 text-lg text-slate-950 shadow-lg shadow-black/20 hover:bg-amber-500"
+              tamanioIcon="h-8 w-8"
               funcion={() => manejarEntrarPartida("cpu")}
               texto="Partida contra CPU"
               size="default"
               ruta_icono="/assets/icons/robot.svg"
-              variant="outline"
+              variant="default"
             />
           </div>
         </div>

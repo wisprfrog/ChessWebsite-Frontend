@@ -128,18 +128,18 @@ export default function Perfil() {
     return null;
 
   return (
-    <div className="flex flex-col w-full min-h-screen justify-start items-stretch">
+    <div className="flex min-h-screen w-full flex-col items-stretch justify-start bg-gradient-to-br from-slate-950 via-amber-900 to-blue-950">
       <NavBar cuantasSolicitudesAmistad={numSolicitudes} />
-      <div className="relative flex flex-col md:flex-row w-full flex-1 justify-center items-start p-20 bg-gray-100">
+      <div className="relative flex w-full flex-1 flex-col items-start justify-center p-20 md:flex-row">
         {/*Contenido*/}
-        <div className="flex flex-col w-2/5 h-min-90/100 h-content justify-start items-center gap-5 bg-white p-6 rounded-lg shadow-sm border border-gray-100 ">
+        <div className="h-content h-min-90/100 flex w-2/5 flex-col items-center justify-start gap-5 rounded-lg border border-sky-900/60 bg-slate-900/70 p-6 shadow-2xl shadow-black/20">
           {/*Perfil*/}
-          <div className="flex justify-center items-center w-70 h-70 rounded-full bg-gray-500">
+          <div className="flex h-70 w-70 items-center justify-center rounded-full bg-slate-800 text-amber-100">
             Imagen de mi bro {nombreUsuarioParam}
           </div>
           {nombreUsuarioLocal && nombreUsuarioLocal === nombreUsuarioParam ? (
             <div className="flex flex-col justify-start items-center w-full h-2/5 gap-5">
-              <p className="text-center font-bold text-l">
+              <p className="text-l text-center font-bold text-amber-100">
                 Usuario: {nombreUsuarioParam}
               </p>
               <div
@@ -148,7 +148,7 @@ export default function Perfil() {
                 <div className="overflow-hidden">
                   <div className="flex flex-col justify-start items-center h-2/5 gap-5">
                     <button
-                      className="bg-blue-500 text-white px-4 py-2 rounded mt-4 cursor-pointer"
+                      className="mt-4 cursor-pointer rounded bg-amber-500 px-4 py-2 text-slate-950 hover:bg-amber-400"
                       onClick={() => setMostrarEditar(true)}
                     >
                       Editar Perfil
@@ -176,7 +176,7 @@ export default function Perfil() {
             <>
               <div className="flex flex-col justify-start items-center w-1/2 h-2/5 gap-5">
                 <div className="flex gap-x-5 items-center">
-                  <p className="text-center">{nombreUsuarioParam}</p>
+                  <p className="text-center text-amber-100">{nombreUsuarioParam}</p>
                   {
                     solicitudesAmistadEnviadas.includes(nombreUsuarioParam) ? (
                         <BotonConIcono
@@ -217,8 +217,8 @@ export default function Perfil() {
           )}
         </div>
 
-        <div className="flex flex-col w-3/5 h-full ">
-          <div className="flex flex-col justify-start items-center gap-5 bg-gray-100 p-6">
+        <div className="flex h-full w-3/5 flex-col">
+          <div className="flex flex-col items-center justify-start gap-5 p-3">
 
             <TablaAmigos
               manejarEnviarSolicitud={emitirEnviarSolicitudAmistad}
@@ -231,7 +231,7 @@ export default function Perfil() {
               mostrarEliminar={puedeEditar}
             />
           </div>
-          <div className="flex flex-col justify-start items-center gap-5 bg-gray-100 p-6">
+          <div className="flex flex-col items-center justify-start gap-5 p-3">
             <TablaHistorial nombreUsuario={nombreUsuarioParam} />
           </div>
         </div>

@@ -23,16 +23,16 @@ export default function NavBar({ cuantasSolicitudesAmistad }) {
   }
 
   return (
-    <nav className='w-full h-min-16 h-16 m-0 p-4 flex items-center justify-between border-emerald-800 bg-emerald-900 text-white'>
+    <nav className='m-0 flex h-16 w-full items-center justify-between border-b border-sky-700/70 bg-slate-900 text-white shadow-lg shadow-black/25 p-4'>
       <div className='w-2/3 h-full flex items-center justify-between ml-10 text-2xl font-bold'>
         <Link href="/">Monster Chess of Clans</Link>
       </div>
       <div className='w-1/3 h-full flex items-center justify-between mr-2'>    
-        <Link className="text-emerald-100 hover:text-emerald-300 font-bold" href="/">
+        <Link className="font-bold text-emerald-50 hover:text-sky-300" href="/">
           Inicio
         </Link>
 
-        <Link href={`/amigos`} className="relative font-bold text-emerald-100 hover:text-emerald-300">
+        <Link href={`/amigos`} className="relative font-bold text-emerald-50 hover:text-sky-300">
           Amigos
 
           {cuantasSolicitudesAmistad > 0 && (
@@ -46,11 +46,11 @@ export default function NavBar({ cuantasSolicitudesAmistad }) {
         </Link>
 
         <Link href={`/perfil?usuario=${nombreUsuario}`}>
-          <BotonConIcono className='flex justify-center items-center w-fit h-fit p-1 rounded-full hover:bg-yellow-100' tamanioIcon='h-6 w-auto' size='icon' ruta_icono="/assets/icons/userProfile.svg" variant="ghost" />
+          <BotonConIcono className='flex h-fit w-fit items-center justify-center rounded-full p-1 hover:bg-slate-700/80' tamanioIcon='h-6 w-auto' size='icon' ruta_icono="/assets/icons/userProfile.svg" variant="ghost" />
         </Link>
 
         <Link href="/inicio_sesion" onClick={manejoCierreSesion}>
-          <BotonConIcono className='flex justify-center items-center w-fit h-fit p-1 rounded-full hover:bg-red-200' tamanioIcon='h-6 w-auto' size='icon' ruta_icono="/assets/icons/logOut.svg" variant="ghost" />
+          <BotonConIcono className='flex h-fit w-fit items-center justify-center rounded-full p-1 hover:bg-rose-400/30' tamanioIcon='h-6 w-auto' size='icon' ruta_icono="/assets/icons/logOut.svg" variant="ghost" />
         </Link>
       </div>
     </nav>

@@ -198,7 +198,7 @@ export default function TablaAmigos({ manejarEnviarSolicitud, manejarCancelarSol
       render: (text) => (
         <Link
           href={`/perfil?usuario=${encodeURIComponent(String(text))}`}
-          className="font-medium text-blue-600 hover:text-blue-800 hover:underline"
+          className="font-medium text-emerald-300 hover:text-emerald-200 hover:underline"
         >
           {text}
         </Link>
@@ -214,11 +214,11 @@ export default function TablaAmigos({ manejarEnviarSolicitud, manejarCancelarSol
       key: 'agregar',
       render: (_, record) => {
         if (record.amigo === miNombreLocal) {
-          return <span className="text-gray-400 text-sm font-semibold">Tú</span>;
+          return <span className="text-sm font-semibold text-emerald-300/80">Tú</span>;
         }
         
         if (misAmigosIds.includes(normalizarId(record.idAmigo))) {
-          return <span className="text-green-600 text-sm font-semibold">Amigos</span>;
+          return <span className="text-sm font-semibold text-emerald-300">Amigos</span>;
         }
         
         if (solicitudesRecibidasSet.has(record.amigo)) {
@@ -293,9 +293,10 @@ export default function TablaAmigos({ manejarEnviarSolicitud, manejarCancelarSol
   }
 
   return (
-    <div className="p-4 bg-white rounded-lg shadow-sm border border-gray-100 w-full h-full">
-       <h2 className="text-xl font-bold mb-4">Amigos de {nombreUsuario}</h2>
+    <div className="h-full w-full rounded-lg border border-amber-700/40 bg-slate-900/70 p-4 text-amber-100 shadow-2xl shadow-black/20">
+       <h2 className="mb-4 text-xl font-bold">Amigos de {nombreUsuario}</h2>
       <Table<DataType>
+        className="table-contrast"
         columns={columns}
         dataSource={data}
         showHeader={true}

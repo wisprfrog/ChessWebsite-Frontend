@@ -55,9 +55,10 @@ export default function TablaEstadisticas({nombreUsuario} : {nombreUsuario: stri
   }, []);
 
   return (
-    <div className="p-4 bg-gray-100 rounded-lg shadow-sm border border-gray-100 w-full">
-      <h2 className='text-lg font-bold mb-4'>Estadísticas del jugador {nombreUsuario}</h2>
+    <div className="w-full rounded-lg border border-amber-700/40 bg-slate-900/70 p-4 text-amber-100 shadow-2xl shadow-black/20">
+      <h2 className='mb-4 text-lg font-bold'>Estadísticas del jugador {nombreUsuario}</h2>
       <Table<DataType> 
+        className="table-contrast"
         columns={columns} 
         dataSource={data} 
         showHeader={false}
