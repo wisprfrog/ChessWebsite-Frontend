@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useCallback, useEffect, useState } from 'react';
-import { Table } from 'antd';
+import { Empty, Table } from 'antd';
 import type { TableProps } from 'antd';
 import Link from 'next/link';
 import { eliminarAmigo, agregarAmigo, obtenerListaAmigos, obtenerIdUsuario } from '@/services/api';
@@ -196,10 +196,11 @@ export default function TablaAmigos({ manejarEnviarSolicitud, manejarCancelarSol
       title: 'Amigo',
       dataIndex: 'amigo',
       key: 'amigo',
+      ellipsis: true,
       render: (text) => (
         <Link
           href={`/perfil?usuario=${encodeURIComponent(String(text))}`}
-          className="font-medium text-emerald-300 hover:text-emerald-200 hover:underline"
+          className="block max-w-[12rem] truncate text-xs font-medium text-emerald-300 hover:text-emerald-200 hover:underline sm:max-w-none sm:text-sm"
         >
           {text}
         </Link>
@@ -215,20 +216,20 @@ export default function TablaAmigos({ manejarEnviarSolicitud, manejarCancelarSol
       key: 'agregar',
       render: (_, record) => {
         if (record.amigo === miNombreLocal) {
-          return <span className="text-sm font-semibold text-emerald-300/80">Tú</span>;
+          return <span className="text-xs md:text-sm font-semibold text-emerald-300/80">Tú</span>;
         }
         
         if (misAmigosIds.includes(normalizarId(record.idAmigo))) {
           return (
-            <div className="flex items-center gap-2">
-              <span className="text-sm font-semibold text-emerald-300 pr-10">Amigos</span>
+            <div className="flex items-center flex-col md:flex-row gap-y-6 md:gap-x-3 md:justify-evenly">
+              <span className="text-xs md:text-sm font-semibold text-emerald-300">Amigos</span>
               {manejarEnviarInvitacionPartida && (
                 <BotonConIcono
                   variant="secondary"
                   texto="Invitar a partida"
                   ruta_icono="/assets/icons/chessKing.svg"
                   funcion={() => manejarEnviarInvitacionPartida(record.amigo.toString())}
-                  className="flex-row-reverse"
+                  className="flex-row flex items-center min-h-8 h-auto p-1"
                   tamanioIcon="h-5 w-5"
                 />
               )}
@@ -238,7 +239,7 @@ export default function TablaAmigos({ manejarEnviarSolicitud, manejarCancelarSol
         
         if (solicitudesRecibidasSet.has(record.amigo)) {
           return(
-            <div className='flex w-content gap-x-3'>
+            <div className='flex w-auto gap-x-3'>
               <BotonConIcono
                 variant="agregar"
                 texto=""
@@ -308,15 +309,24 @@ export default function TablaAmigos({ manejarEnviarSolicitud, manejarCancelarSol
   }
 
   return (
-    <div className="h-full w-full rounded-lg border border-amber-700/40 bg-slate-900/70 p-4 text-amber-100 shadow-2xl shadow-black/20">
-       <h2 className="mb-4 text-xl font-bold">Amigos de {nombreUsuario}</h2>
-      <Table<DataType>
-        className="table-contrast"
-        columns={columns}
-        dataSource={data}
-        showHeader={true}
-        pagination={{ pageSize: 5 }}
-      />
+    <div className="h-full w-full overflow-hidden rounded-lg border border-amber-700/40 bg-slate-900/70 p-4 text-amber-100 shadow-2xl shadow-black/20 sm:p-5">
+       <h2 className="mb-4 flex justify-center text-center text-lg font-bold break-words sm:justify-start sm:text-xl">Amigos de {nombreUsuario}</h2>
+      {data.length === 0 ? (
+        <div className="py-8">
+          <Empty
+            description={<span className="text-emerald-200/80">No tienes amigos agregados</span>}
+          />
+        </div>
+      ) : (
+        <Table<DataType>
+          className="table-contrast"
+          columns={columns}
+          dataSource={data}
+          showHeader={true}
+          pagination={{ pageSize: 5, size: 'small' }}
+          scroll={{ x: 'max-content' }}
+        />
+      )}
     </div>
   );
 }

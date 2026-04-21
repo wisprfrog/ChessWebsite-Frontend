@@ -69,11 +69,11 @@ export default function PaginaAmigos() {
     }
 
     return(
-    <main className="flex min-h-screen w-full flex-col bg-gradient-to-br from-slate-950 via-amber-900 to-blue-950">
+    <main className="flex min-h-screen w-full flex-col overflow-x-hidden bg-gradient-to-br from-slate-950 via-amber-900 to-blue-950">
         <NavBar cuantasSolicitudesAmistad={numSolicitudes} />
         
         {/* Contenedor principal a dos columnas */}
-        <div className="mx-auto flex w-full max-w-7xl flex-grow flex-col gap-6 p-6 md:flex-row">
+        <div className="mx-auto flex w-full max-w-7xl flex-grow flex-col gap-5 px-4 py-5 sm:gap-6 sm:px-6 sm:py-6 lg:flex-row">
             
                 
             <TablaAmigos
@@ -90,7 +90,7 @@ export default function PaginaAmigos() {
                 
             
 
-            <div className="md:w-96 flex flex-col gap-6">
+            <div className="flex w-full shrink-0 flex-col gap-5 sm:gap-6 lg:w-[22rem]">
                 <SideBarRecibidas
                     solicitudesAmistad={solicitudesAmistadRecibidas}
                     aceptarSolicitudAmistad={manejarAceptarSolicitudAmistad}
