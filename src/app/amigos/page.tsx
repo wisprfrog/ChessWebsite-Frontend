@@ -11,7 +11,7 @@ import SideBarEnviadas from "../../components/sideBarSolicitudesEnviadas";
 export default function PaginaAmigos() {
     const [nombreUsuario, setNombreUsuario] = useState<string | null>(null);
     const [numSolicitudes, setNumSolicitudes] = useState(0);
-    const [solicitudesAmistad, setSolicitudesAmistad] = useState<Array<string>>([]);
+    const [solicitudesAmistadRecibidas, setSolicitudesAmistadRecibidas] = useState<Array<string>>([]);
     const [solicitudesAmistadEnviadas, setSolicitudesAmistadEnviadas] = useState<Array<string>>([]);
     const [actualizarTabla, setActualizarTabla] = useState(0);
 
@@ -24,7 +24,7 @@ export default function PaginaAmigos() {
     }
     
     function cargarSolicitudes(solicitudes : Array<string>) {
-        setSolicitudesAmistad(solicitudes);
+        setSolicitudesAmistadRecibidas(solicitudes);
     }
 
     function cargarSolicitudesEnviadas(solicitudes : Array<string>) {
@@ -47,7 +47,7 @@ export default function PaginaAmigos() {
 
     const manejarAceptarSolicitudAmistad = (nombre_usuario_origen : string) => {
         emitirAceptarSolicitudAmistad(nombre_usuario_origen);
-        setSolicitudesAmistad((prev) => prev.filter(solicitud => solicitud !== nombre_usuario_origen));
+        setSolicitudesAmistadRecibidas((prev) => prev.filter(solicitud => solicitud !== nombre_usuario_origen));
         setNumSolicitudes((prev) => Math.max(0, prev - 1));
         window.dispatchEvent(new CustomEvent('amigo-aceptado', {
             detail: { nombreAmigo: nombre_usuario_origen }
@@ -59,7 +59,7 @@ export default function PaginaAmigos() {
 
     const manejarRechazarSolicitudAmistad = (nombre_usuario_origen : string) => {
         emitirRechazarSolicitudAmistad(nombre_usuario_origen);
-        setSolicitudesAmistad((prev) => prev.filter(solicitud => solicitud !== nombre_usuario_origen));
+        setSolicitudesAmistadRecibidas((prev) => prev.filter(solicitud => solicitud !== nombre_usuario_origen));
         setNumSolicitudes((prev) => Math.max(0, prev - 1));
         setSolicitudesAmistadEnviadas((prev) => prev.filter(solicitud => solicitud !== nombre_usuario_origen));
     }
@@ -81,6 +81,9 @@ export default function PaginaAmigos() {
                 <TablaAmigos
                     manejarEnviarSolicitud={manejarEnviarSolicitudAmistad}
                     manejarCancelarSolicitud={null}
+                    manejarAceptarSolicitud={manejarAceptarSolicitudAmistad}
+                    manejarRechazarSolicitud={manejarRechazarSolicitudAmistad}
+                    listaSolicitudesRecibidas={solicitudesAmistadRecibidas}
                     listaSolicitudesEnviadas={solicitudesAmistadEnviadas}
                     actualizarTrigger={actualizarTabla}
                     nombreUsuario={nombreUsuario}
@@ -90,7 +93,7 @@ export default function PaginaAmigos() {
 
             <div className="md:w-96 flex flex-col gap-6">
                 <SideBarRecibidas
-                    solicitudesAmistad={solicitudesAmistad}
+                    solicitudesAmistad={solicitudesAmistadRecibidas}
                     aceptarSolicitudAmistad={manejarAceptarSolicitudAmistad}
                     rechazarSolicitudAmistad={manejarRechazarSolicitudAmistad}
                 />

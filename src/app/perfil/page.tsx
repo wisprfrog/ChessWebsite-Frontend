@@ -65,12 +65,8 @@ export default function Perfil() {
 
   const [numSolicitudes, setNumSolicitudes] = useState(0);
 
-  const [solicitudesAmistad, setSolicitudesAmistad] = useState<Array<string>>(
-    [],
-  );
-  const [solicitudesAmistadEnviadas, setSolicitudesAmistadEnviadas] = useState<
-    Array<string>
-  >([]);
+  const [solicitudesAmistadRecibidas, setSolicitudesAmistadRecibidas] = useState<Array<string>>([]);
+  const [solicitudesAmistadEnviadas, setSolicitudesAmistadEnviadas] = useState<Array<string>>([]);
   const [actualizarTabla, setActualizarTabla] = useState(0);
 
   async function manejarEliminarAmigo() {
@@ -88,7 +84,7 @@ export default function Perfil() {
   }
 
   function cargarSolicitudes(solicitudes: Array<string>) {
-    setSolicitudesAmistad(solicitudes);
+    setSolicitudesAmistadRecibidas(solicitudes);
   }
 
   function cargarSolicitudesEnviadas(solicitudes: Array<string>) {
@@ -109,21 +105,19 @@ export default function Perfil() {
   const [esAmigo, setEsAmigo] = useState(false);
 
   async function cargarListaAmigos() {
-    const id_usuario_ls = await obtenerIdUsuario(nombreUsuarioLocal ?? undefined);
+    const id_usuario_ls = await obtenerIdUsuario(nombreUsuarioLocal);
     const amigos = await obtenerListaAmigos(id_usuario_ls);
     const id_usuario_param = await obtenerIdUsuario(nombreUsuarioParam ?? undefined);
 
-    console.log("Lista de amigos obtenida para", nombreUsuarioLocal, ":", amigos);
-    console.log("ID del usuario del perfil visto:", id_usuario_param);
     if(amigos.map((amigo : {id: number, nombre_usuario : string}) => amigo.id).includes(id_usuario_param)) {
       setEsAmigo(true);
     }
   }
 
   useEffect(() => {
-    cargarListaAmigos();
-    console.log("Cargando lista de amigos para:", nombreUsuarioLocal, "y verificando si", nombreUsuarioParam, "es amigo.");
-    console.log("Lista de amigos obtenida:", esAmigo);
+    if(nombreUsuarioLocal && nombreUsuarioParam) {
+      cargarListaAmigos();
+    }
   }, [nombreUsuarioLocal, nombreUsuarioParam]);
 
   if (
@@ -229,7 +223,10 @@ export default function Perfil() {
             <TablaAmigos
               manejarEnviarSolicitud={emitirEnviarSolicitudAmistad}
               manejarCancelarSolicitud={emitirCancelarSolicitudAmistad}
+              manejarAceptarSolicitud={emitirAceptarSolicitudAmistad}
+              manejarRechazarSolicitud={emitirRechazarSolicitudAmistad}
               listaSolicitudesEnviadas={solicitudesAmistadEnviadas}
+              listaSolicitudesRecibidas={solicitudesAmistadRecibidas}
               nombreUsuario={nombreUsuarioParam}
               mostrarEliminar={puedeEditar}
             />

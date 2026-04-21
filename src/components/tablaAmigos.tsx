@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Table } from 'antd';
 import type { TableProps } from 'antd';
 import Link from 'next/link';
@@ -13,6 +13,8 @@ interface DataType {
   idAmigo: string | number;
 }
 
+const normalizarId = (id: string | number) => String(id);
+
 interface FriendApiItem {
   id?: string | number;
   id_amigo?: string | number;
@@ -23,77 +25,92 @@ interface FriendApiItem {
 interface TablaAmigosProps {
   manejarEnviarSolicitud: (nombre_usuario_destino: string) => void;
   manejarCancelarSolicitud: ((nombre_usuario_destino: string) => void) | null;
+  manejarAceptarSolicitud: ((nombre_usuario_origen: string) => void) | null;
+  manejarRechazarSolicitud: ((nombre_usuario_origen: string) => void) | null;
   listaSolicitudesEnviadas: Array<string> | null;
+  listaSolicitudesRecibidas: Array<string> | null;
   nombreUsuario?: string | null;
   mostrarEliminar?: boolean;
   mostarAgregar?: boolean;
   actualizarTrigger?: number;
 }
 
-export default function TablaAmigos({ manejarEnviarSolicitud, manejarCancelarSolicitud, listaSolicitudesEnviadas, nombreUsuario, mostrarEliminar = true, mostarAgregar = true, actualizarTrigger = 0 }: TablaAmigosProps) {
+export default function TablaAmigos({ manejarEnviarSolicitud, manejarCancelarSolicitud, manejarAceptarSolicitud, manejarRechazarSolicitud, listaSolicitudesEnviadas, listaSolicitudesRecibidas, nombreUsuario, mostrarEliminar = true, mostarAgregar = true, actualizarTrigger = 0 }: TablaAmigosProps) {
   const [data, setData] = useState<DataType[]>([]);
   
   const [idPerfilVisto, setIdPerfilVisto] = useState<string | number | null>(null);
 
   const [miNombreLocal, setMiNombreLocal] = useState<string | null>(null);
   const [miIdLocal, setMiIdLocal] = useState<string | number | null>(null);
-  const [misAmigosIds, setMisAmigosIds] = useState<(string | number)[]>([]);
-  const solicitudesEnviadasSet = new Set(listaSolicitudesEnviadas ?? []);
+  const [misAmigosIds, setMisAmigosIds] = useState<string[]>([]);
+  const [solicitudesEnviadasLocal, setSolicitudesEnviadasLocal] = useState<Array<string>>(listaSolicitudesEnviadas ?? []);
+  const [solicitudesRecibidasLocal, setSolicitudesRecibidasLocal] = useState<Array<string>>(listaSolicitudesRecibidas ?? []);
+  const solicitudesEnviadasSet = new Set(solicitudesEnviadasLocal);
+  const solicitudesRecibidasSet = new Set(solicitudesRecibidasLocal);
 
   useEffect(() => {
-    const fetchData = async () => {
-      if (!nombreUsuario) {
-        setData([]);
-        return;
+    setSolicitudesEnviadasLocal(listaSolicitudesEnviadas ?? []);
+  }, [listaSolicitudesEnviadas]);
+
+  useEffect(() => {
+    setSolicitudesRecibidasLocal(listaSolicitudesRecibidas ?? []);
+  }, [listaSolicitudesRecibidas]);
+
+  const cargarDatos = useCallback(async () => {
+    if (!nombreUsuario) {
+      setData([]);
+      return;
+    }
+
+    try {
+      const idPerfil = await obtenerIdUsuario(nombreUsuario);
+      setIdPerfilVisto(idPerfil ?? null);
+      
+      if (idPerfil) {
+        const listaAmigosPerfil = (await obtenerListaAmigos(idPerfil)) as FriendApiItem[];
+        const dataFormatted = (listaAmigosPerfil ?? [])
+          .map((amigo: FriendApiItem, index: number) => {
+            const idAmigo = amigo?.id ?? amigo?.id_amigo;
+            const nombreAmigo = amigo?.nombre_usuario ?? amigo?.nombre_amigo;
+
+            if (idAmigo === undefined || idAmigo === null) return null;
+
+            return {
+              key: `${idAmigo}-${index}`,
+              amigo: nombreAmigo ? String(nombreAmigo) : `Usuario ${idAmigo}`,
+              idAmigo,
+            };
+          })
+          .filter((item: DataType | null): item is DataType => item !== null);
+
+        setData(dataFormatted);
+      }
+      
+      const miNombre = localStorage.getItem('nombre_usuario');
+      if (miNombre) {
+        setMiNombreLocal(miNombre);
+        const miId = await obtenerIdUsuario(miNombre);
+        setMiIdLocal(miId ?? null);
+
+        if (miId) {
+          const misAmigosAPI = (await obtenerListaAmigos(miId)) as FriendApiItem[];
+          const idsDeMisAmigos = misAmigosAPI
+            .map((a) => a.id ?? a.id_amigo)
+            .filter((id): id is string | number => id !== undefined && id !== null)
+            .map((id) => normalizarId(id));
+          setMisAmigosIds(idsDeMisAmigos);
+        }
       }
 
-      try {
-        console.log('TablaAmigos: Cargando amigos para:', nombreUsuario, 'Trigger:', actualizarTrigger);
-        const idPerfil = await obtenerIdUsuario(nombreUsuario);
-        setIdPerfilVisto(idPerfil ?? null);
-        
-        if (idPerfil) {
-          const listaAmigosPerfil = (await obtenerListaAmigos(idPerfil)) as FriendApiItem[];
-          console.log('TablaAmigos: Amigos obtenidos:', listaAmigosPerfil);
-          const dataFormatted = (listaAmigosPerfil ?? [])
-            .map((amigo: FriendApiItem, index: number) => {
-              const idAmigo = amigo?.id ?? amigo?.id_amigo;
-              const nombreAmigo = amigo?.nombre_usuario ?? amigo?.nombre_amigo;
+    } catch (error) {
+      console.error('Error al obtener datos en TablaAmigos:', error);
+      setData([]);
+    }
+  }, [nombreUsuario]);
 
-              if (idAmigo === undefined || idAmigo === null) return null;
-
-              return {
-                key: `${idAmigo}-${index}`,
-                amigo: nombreAmigo ? String(nombreAmigo) : `Usuario ${idAmigo}`,
-                idAmigo,
-              };
-            })
-            .filter((item: DataType | null): item is DataType => item !== null);
-
-          setData(dataFormatted);
-        }
-        
-        const miNombre = localStorage.getItem('nombre_usuario');
-        if (miNombre) {
-          setMiNombreLocal(miNombre);
-          const miId = await obtenerIdUsuario(miNombre);
-          setMiIdLocal(miId ?? null);
-
-          if (miId) {
-            const misAmigosAPI = (await obtenerListaAmigos(miId)) as FriendApiItem[];
-            const idsDeMisAmigos = misAmigosAPI.map(a => a.id ?? a.id_amigo).filter(id => id !== undefined) as (string | number)[];
-            setMisAmigosIds(idsDeMisAmigos);
-          }
-        }
-
-      } catch (error) {
-        console.error('Error al obtener datos en TablaAmigos:', error);
-        setData([]);
-      }
-    };
-
-    fetchData();
-  }, [nombreUsuario, actualizarTrigger]);
+  useEffect(() => {
+    cargarDatos();
+  }, [cargarDatos, actualizarTrigger]);
 
   useEffect(() => {
     const manejarAmigoAceptado = (event: Event) => {
@@ -120,11 +137,11 @@ export default function TablaAmigos({ manejarEnviarSolicitud, manejarCancelarSol
       });
 
       setMisAmigosIds((prev) => {
-        if (prev.includes(nombreAmigo)) {
+        if (prev.includes(normalizarId(nombreAmigo))) {
           return prev;
         }
 
-        return [...prev, nombreAmigo];
+        return [...prev, normalizarId(nombreAmigo)];
       });
     };
 
@@ -149,10 +166,28 @@ export default function TablaAmigos({ manejarEnviarSolicitud, manejarCancelarSol
       if (!respuesta.ok) throw new Error("Error en el servidor al eliminar");
 
       setData((prev) => prev.filter((item) => item.idAmigo !== idAmigoAEliminar));
-      setMisAmigosIds((prev) => prev.filter((id) => id !== idAmigoAEliminar));
+      setMisAmigosIds((prev) => prev.filter((id) => id !== normalizarId(idAmigoAEliminar)));
     } catch (error) {
       console.error('Error al eliminar amigo:', error);
     }
+  };
+
+  const manejarAceptarYRefrescar = async (nombreAmigo: string) => {
+    if (!manejarAceptarSolicitud) {
+      return;
+    }
+
+    await Promise.resolve(manejarAceptarSolicitud(nombreAmigo));
+    window.location.reload();
+  };
+
+  const manejarRechazarYRefrescar = async (nombreAmigo: string) => {
+    if (!manejarRechazarSolicitud) {
+      return;
+    }
+
+    await Promise.resolve(manejarRechazarSolicitud(nombreAmigo));
+    window.location.reload();
   };
 
   const columns: TableProps<DataType>['columns'] = [
@@ -172,7 +207,7 @@ export default function TablaAmigos({ manejarEnviarSolicitud, manejarCancelarSol
   ];
 
 
-
+  
   if (mostarAgregar) {
     columns.push({
       title: '',
@@ -181,9 +216,35 @@ export default function TablaAmigos({ manejarEnviarSolicitud, manejarCancelarSol
         if (record.amigo === miNombreLocal) {
           return <span className="text-gray-400 text-sm font-semibold">Tú</span>;
         }
-
-        if (misAmigosIds.includes(record.idAmigo)) {
+        
+        if (misAmigosIds.includes(normalizarId(record.idAmigo))) {
           return <span className="text-green-600 text-sm font-semibold">Amigos</span>;
+        }
+        
+        if (solicitudesRecibidasSet.has(record.amigo)) {
+          return(
+            <div className='flex w-content gap-x-3'>
+              <BotonConIcono
+                variant="agregar"
+                texto=""
+                ruta_icono="/assets/icons/agregar.svg"
+                funcion={() => {
+                  void manejarAceptarYRefrescar(record.amigo.toString());
+                }}
+                tamanioIcon="h-6 w-6"
+              />
+
+              <BotonConIcono
+                variant="destructive"
+                texto=""
+                ruta_icono="/assets/icons/eliminar.svg"
+                funcion={() => {
+                  void manejarRechazarYRefrescar(record.amigo.toString());
+                }}
+                tamanioIcon="h-4 w-4"
+              />
+            </div>
+          )
         }
 
         if (solicitudesEnviadasSet.has(record.amigo)) {

@@ -29,7 +29,7 @@ export default function SideBarRecibidas({ solicitudesAmistad, aceptarSolicitudA
                         className="flex items-center justify-between py-3 border-b border-gray-100 last:border-0"
                         >
                             <div className="flex items-center gap-3">
-                                <Avatar className="bg-blue-500">{nombre_usuario_solicitud.charAt(0)}</Avatar>
+                                <Avatar className="bg-blue-500">{nombre_usuario_solicitud[0]}</Avatar>
                                 <a 
                                     href={`/perfil?usuario=${nombre_usuario_solicitud}`} 
                                     className="font-medium text-gray-800 hover:text-blue-500 transition-colors"

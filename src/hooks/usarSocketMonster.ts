@@ -28,7 +28,6 @@ export function useMonsterSocket(handlers: SocketHandlers = {}) {
     if (!socket || !nombre_usuario_ls) return;
 
     socket.on("nueva_solicitud_amistad", ({ nombre_usuario_destino, solicitudes }) => {
-      console.log("Recibida nueva solicitud de amistad de:", nombre_usuario_destino, "con solicitudes:", solicitudes);
       if(nombre_usuario_destino === nombre_usuario_ls) {
         if(handlers.manejarNuevaNotificacion){
           handlers.manejarNuevaNotificacion(solicitudes);
@@ -49,7 +48,6 @@ export function useMonsterSocket(handlers: SocketHandlers = {}) {
     });
 
     socket.on('cargar_solicitudes_amistad', ({ nombre_usuario_destino, solicitudes }) => {
-      console.log("Recibidas solicitudes de amistad para:", nombre_usuario_destino, "con solicitudes:", solicitudes);
       if (nombre_usuario_destino === nombre_usuario_ls) {
         if (handlers.manejarNuevaNotificacion) {
           handlers.manejarNuevaNotificacion(solicitudes);
@@ -61,7 +59,6 @@ export function useMonsterSocket(handlers: SocketHandlers = {}) {
     });
 
     socket.on('cargar_solicitudes_amistad_enviadas', ({ nombre_usuario_destino, solicitudes }) => {
-      console.log("Recibidas solicitudes de amistad enviadas para:", nombre_usuario_destino, "con solicitudes:", solicitudes);
       if (nombre_usuario_destino === nombre_usuario_ls) {
         if (handlers.manejarCargarSolicitudesEnviadas) {
           handlers.manejarCargarSolicitudesEnviadas(solicitudes);
@@ -95,22 +92,18 @@ export function useMonsterSocket(handlers: SocketHandlers = {}) {
   }, [socket, nombre_usuario_ls]);
   
   const emitirAceptarSolicitudAmistad = (nombre_usuario_destino : string) => {
-    console.log("Emitiendo aceptar solicitud de amistad para:", nombre_usuario_destino);
     socket?.emit("aceptar_solicitud_amistad", { nombre_usuario1: nombre_usuario_ls, nombre_usuario2: nombre_usuario_destino });
   };
 
   const emitirRechazarSolicitudAmistad = (nombre_usuario_destino : string) => {
-    console.log("Emitiendo rechazar solicitud de amistad para:", nombre_usuario_destino);
-    socket?.emit("rechazar_solicitud_amistad", { nombre_usuario_origen: nombre_usuario_ls, nombre_usuario_destino: nombre_usuario_destino });
+    socket?.emit("rechazar_solicitud_amistad", ({ nombre_usuario1: nombre_usuario_ls, nombre_usuario2: nombre_usuario_destino }));
   };
 
   const emitirEnviarSolicitudAmistad = (nombre_usuario_destino : string) => {
-    console.log("Emitiendo enviar solicitud de amistad para:", nombre_usuario_destino, "desde:", nombre_usuario_ls);
     socket?.emit("enviar_solicitud_amistad", ({ nombre_usuario_origen: nombre_usuario_ls, nombre_usuario_destino: nombre_usuario_destino }));
   };
 
   const emitirCancelarSolicitudAmistad = (nombre_usuario_destino : string) => {
-    console.log("Emitiendo cancelar solicitud de amistad para:", nombre_usuario_destino, "desde:", nombre_usuario_ls);
     socket?.emit("cancelar_solicitud_amistad", ({ nombre_usuario_origen: nombre_usuario_ls, nombre_usuario_destino: nombre_usuario_destino }));
   }
 
