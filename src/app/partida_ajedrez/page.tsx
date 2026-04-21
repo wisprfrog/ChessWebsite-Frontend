@@ -24,11 +24,16 @@ export default function PaginaPartidaAjedrez() {
   const [usuarioBlancas, setUsuarioBlancas] = useState<string>();
   const [usuarioNegras, setUsuarioNegras] = useState<string>();
   const [indiceRepeticion, setIndiceRepeticion] = useState(0);
+  const [tablaMovimientosVisible, setTablaMovimientosVisible] = useState(true);
 
   const mostrarTablaMovimientos = (lista_movimientos: string[]) => {
     setHistorialMovimientos(lista_movimientos);
     console.log("Movimientos realizados en la partida mi brother: ", lista_movimientos);
   };
+
+  const toggleTablaMovimientos = (visible: boolean) => {
+    setTablaMovimientosVisible(visible);
+  }
 
   useEffect(() => {
     if (tipo_partida !== 'repeticion') return;
@@ -97,7 +102,7 @@ export default function PaginaPartidaAjedrez() {
     tipo_partida === 'cpu' ? (
       <TableroAjedrezCPU mostrar_tabla_movimientos={actualizarHistorialMovimientos} />
     ) : tipo_partida === 'jugador' ? (
-      <TableroAjedrez nombre_jugador={nombreUsuario} mostrar_tabla_movimientos={actualizarHistorialMovimientos} />
+      <TableroAjedrez nombre_jugador={nombreUsuario} manejarVisibilidadTablaMovimientos={toggleTablaMovimientos} mostrar_tabla_movimientos={actualizarHistorialMovimientos} />
     ) : tipo_partida === 'repeticion' ? (
       <TableroRepeticion
         movimientos={movimientosRepeticion}
@@ -109,19 +114,18 @@ export default function PaginaPartidaAjedrez() {
     ) : null;
   
   return (
-    <main className='flex flex-1 w-screen flex-col overflow-hidden bg-gradient-to-br from-slate-950 via-amber-900 to-blue-950'>
+    <main className='flex flex-1 w-screen h-full flex-col overflow-hidden bg-gradient-to-br from-slate-950 via-amber-900 to-blue-950'>
       <NavBar cuantasSolicitudesAmistad={numSolicitudes}/>
-      <div className='flex flex-1 w-full justify-center items-center p-6 min-h-0'>
-        <div className='flex w-[65%] gap-x-20 overflow-hidden rounded-lg p-5'>
+      <div className='flex flex-1 w-full h-full justify-center items-center p-6 min-h-0'>
+        <div className='flex w-[65%] h-full gap-x-20 overflow-hidden rounded-lg p-5'>
             {tableroActual}
-            <div className='w-4/10'>
+            <div className={`w-4/10 h-full ${tablaMovimientosVisible ? 'block' : 'hidden'}`}>
             <TablaMovimientos lista_movimientos={movimientosRepeticionVisibles}/>
               {cargandoRepeticion ? <p className='text-sm text-emerald-100'>Cargando repeticion...</p> : null}
               {errorRepeticion ? <p className='text-sm text-rose-300'>{errorRepeticion}</p> : null}
             </div>
         </div>
       </div>
-
       <Footer />
     </main>
   );

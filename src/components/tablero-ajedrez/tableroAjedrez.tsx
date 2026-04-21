@@ -4,7 +4,7 @@ import { Chessboard } from "react-chessboard";
 import { Chess, Square } from "chess.js";
 import { io, Socket } from "socket.io-client";
 
-export const TableroAjedrez = ({nombre_jugador, mostrar_tabla_movimientos} : { nombre_jugador: string, mostrar_tabla_movimientos: (lista_movimientos: string[]) => void }) => {
+export const TableroAjedrez = ({nombre_jugador, manejarVisibilidadTablaMovimientos, mostrar_tabla_movimientos} : { nombre_jugador: string, manejarVisibilidadTablaMovimientos: (visible: boolean) => void, mostrar_tabla_movimientos: (lista_movimientos: string[]) => void }) => {
   //Rol del jugador
   const [rolJugador, setRolJugador] = useState<"b" | "w" | "s">("w");
   const rolJugadorRef = useRef<"b" | "w" | "s">("s");
@@ -277,7 +277,9 @@ export const TableroAjedrez = ({nombre_jugador, mostrar_tabla_movimientos} : { n
         sala: sala,
         nombre_jugador,
       });
+      manejarVisibilidadTablaMovimientos(true);
     }
+    else manejarVisibilidadTablaMovimientos(false);
   }, [sala]);
 
   const enviarMovimiento = (
@@ -289,7 +291,6 @@ export const TableroAjedrez = ({nombre_jugador, mostrar_tabla_movimientos} : { n
       estructura_movimiento,
       sala: sala,
     });
-    mostrar_tabla_movimientos(lista_movimientos);
   };
 
   // --------------- Configuración del componente Chessboard ---------------
@@ -306,8 +307,8 @@ export const TableroAjedrez = ({nombre_jugador, mostrar_tabla_movimientos} : { n
 
   if(!nombre_jugador || !sala){
     return (
-      <div className="flex flex-1 h-full justify-center items-center">
-        <p className="text-2xl text-emerald-300 animate-pulse font-semibold">Buscando partida...</p>
+      <div className="flex flex-1 justify-center items-center">
+        <p className="text-5xl text-emerald-300 animate-pulse font-semibold">Buscando partida...</p>
       </div>
     );
   }
@@ -315,7 +316,7 @@ export const TableroAjedrez = ({nombre_jugador, mostrar_tabla_movimientos} : { n
   return (
     // h-full asegura que tome la altura del cuadro padre. 
     // mr-8 empuja la tabla de movimientos hacia la derecha.
-    <div className="flex flex-col flex-1 w-full h-full min-w-0 min-h-0 mr-8">
+    <div className="flex flex-col flex-1 w-full min-w-0 min-h-0 mr-8">
       
       {/* Barra superior (Oponente) */}
       <div className="flex justify-between items-center w-full mb-4 shrink-0 px-2">
@@ -326,10 +327,20 @@ export const TableroAjedrez = ({nombre_jugador, mostrar_tabla_movimientos} : { n
       </div>
 
       {/* Contenedor del Tablero */}
-      <div className="flex flex-1 w-full justify-center items-center min-h-0 min-w-0">
-        <div className="h-full w-auto aspect-square drop-shadow-2xl">
+      <div className="relative flex flex-1 w-full justify-center items-center min-h-0 min-w-0">
+        <div className=" h-full w-auto aspect-square drop-shadow-2xl">
           <Chessboard options={chessboardOptions} />
         </div>
+          {
+            causa_fin_partida && ganador.length > 0 && (
+              <div className="absolute w-full h-full flex justify-center items-center bg-[black]/40">
+                <div className="flex flex-col w-content h-content justify-center items-center p-10 gap-y-5 rounded-lg bg-slate-800">
+                  <p className="w-content h-content text-4xl text-center text-[#fef3c7] font-[-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji] font-semibold">{ganador}</p>
+                  <p className="w-content h-content text-2xl text-center text-[#fef3c7] font-[-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji] font-bold">{causa_fin_partida}</p>
+                </div>
+              </div>
+            )
+          }
       </div>
       
       {/* Barra inferior (Jugador Local) */}
@@ -339,7 +350,6 @@ export const TableroAjedrez = ({nombre_jugador, mostrar_tabla_movimientos} : { n
           {tiempo_jugador}
         </div>
       </div>
-
     </div>
   );
 
