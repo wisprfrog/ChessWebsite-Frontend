@@ -1,11 +1,14 @@
 "use client";
 
-import { useState } from "react";
-import { Button, Modal, Table } from "antd";
+import { useEffect, useState } from "react";
+import { Button, ConfigProvider, Modal, Table } from "antd";
 import BotonConIcono from "./boton";
 import { useMonsterSocket } from "../hooks/usarSocketMonster";
 
-export default function PopupSolicitudes() {
+export default function PopupSolicitudes({
+  usarTriggerTexto = false,
+  onCantidadInvitacionesChange,
+}) {
   const [mostrarPopupSolicitudes, setMostrarPopupSolicitudes] = useState(false);
   const [invitacionesActivas, setInvitacionesActivas] = useState([]);
 
@@ -70,21 +73,46 @@ export default function PopupSolicitudes() {
   }));
   console.log("dataSource:", dataSource);
 
+  useEffect(() => {
+    if (typeof onCantidadInvitacionesChange === "function") {
+      onCantidadInvitacionesChange(invitacionesActivas.length);
+    }
+  }, [invitacionesActivas.length, onCantidadInvitacionesChange]);
+
   return (
     <>
       <div className="w-content h-content relative">
-        <BotonConIcono
-          className="flex justify-center items-center w-fit h-fit p-1 rounded-full hover:bg-yellow-100"
-          tamanioIcon="h-6 w-auto"
-          size="icon"
-          ruta_icono="/assets/icons/bell.svg"
-          variant="ghost"
-          funcion={() =>
-            setMostrarPopupSolicitudes((valorActual) => !valorActual)
-          }
-        />
+        {usarTriggerTexto ? (
+          <button
+            type="button"
+            className="flex w-full items-center justify-end gap-2 rounded-lg px-3 py-2 text-right font-bold text-emerald-50 hover:bg-slate-800 hover:text-sky-300"
+            onClick={() =>
+              setMostrarPopupSolicitudes((valorActual) => !valorActual)
+            }
+          >
+            <span>Invitaciones a partida</span>
+            {invitacionesActivas.length > 0 && (
+              <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white">
+                {invitacionesActivas.length > 99
+                  ? "99+"
+                  : invitacionesActivas.length}
+              </span>
+            )}
+          </button>
+        ) : (
+          <BotonConIcono
+            className="flex justify-center items-center w-fit h-fit p-1 rounded-full hover:bg-yellow-100"
+            tamanioIcon="h-6 w-auto"
+            size="icon"
+            ruta_icono="/assets/icons/bell.svg"
+            variant="ghost"
+            funcion={() =>
+              setMostrarPopupSolicitudes((valorActual) => !valorActual)
+            }
+          />
+        )}
 
-        {invitacionesActivas.length > 0 && (
+        {!usarTriggerTexto && invitacionesActivas.length > 0 && (
           <span className="absolute z-1 -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white">
             {}
             {invitacionesActivas.length > 99
@@ -94,22 +122,48 @@ export default function PopupSolicitudes() {
         )}
       </div>
 
-      <Modal
-        title="Invitaciones a partidas"
-        open={mostrarPopupSolicitudes}
-        onCancel={() => setMostrarPopupSolicitudes(false)}
-        footer={null}
-        style={{ position: "absolute", top: 60, right: 120 }}
+      <ConfigProvider
+        theme={{
+          token: {
+            colorBgElevated: "#0f172a",
+            colorText: "#fef3c7",
+            colorTextHeading: "#fef3c7",
+            colorBorderSecondary: "#1e3a5f",
+          },
+          components: {
+            Modal: {
+              contentBg: "#0f172a",
+              headerBg: "#0f172a",
+              titleColor: "#fef3c7",
+            },
+            Table: {
+              headerBg: "#172554",
+              headerColor: "#fef3c7",
+              rowHoverBg: "#1e293b",
+              colorBgContainer: "#0f172a",
+              colorText: "#f8fafc",
+              borderColor: "#1e3a5f",
+            },
+          },
+        }}
       >
-        <Table
-          columns={columnas}
-          dataSource={dataSource}
-          pagination={false}
-          locale={{ emptyText: "No hay invitaciones activas" }}
-          size="small"
-          scroll={{ y: 240 }}
-        />
-      </Modal>
+        <Modal
+          title="Invitaciones a partidas"
+          open={mostrarPopupSolicitudes}
+          onCancel={() => setMostrarPopupSolicitudes(false)}
+          footer={null}
+          width={500}
+        >
+          <Table
+            columns={columnas}
+            dataSource={dataSource}
+            pagination={false}
+            locale={{ emptyText: "No hay invitaciones activas" }}
+            size="small"
+            scroll={{ y: 240 }}
+          />
+        </Modal>
+      </ConfigProvider>
     </>
   );
 }

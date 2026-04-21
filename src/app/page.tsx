@@ -31,15 +31,15 @@ export default function PaginaInicio() {
     <main className="flex min-h-screen w-full flex-col bg-gradient-to-br from-[#020816] via-[#0f172a] to-amber-800">
       <NavBar cuantasSolicitudesAmistad={numSolicitudes} />
 
-      <div className="w-full h-content flex flex-1 flex-col items-start justify-center pl-20 gap-y-15">
+      <div className="flex w-full flex-1 flex-col items-center justify-center px-20 py-20 md:py-0 md:items-start md:pl-20 gap-8 md:gap-12">
 
-      <h1 className="h-content flex flex-col text-center text-5xl font-bold text-emerald-100">¡Bienvenid@, {nombreUsuario}!</h1>
+      <h1 className="text-center md:text-left text-3xl sm:text-4xl md:text-5xl font-bold text-emerald-100">¡Bienvenid@, {nombreUsuario}!</h1>
 
-        <div className="h-content flex justify-center gap-20">
-          <div className="flex flex-col justify-center gap-20">
+        <div className="flex flex-col md:flex-row w-full md:w-auto items-center md:justify-start gap-6 md:gap-20 mt-4 mb-8">
+          <div className="w-content sm:w-2/3 md:w-auto">
             <BotonConIcono
-              className="bg-amber-600 px-8 py-8 text-lg text-slate-950 shadow-lg shadow-black/20 hover:bg-amber-500"
-              tamanioIcon="h-8 w-8"
+              className="w-full bg-amber-600 text-base md:text-lg text-slate-950 shadow-lg shadow-black/20 hover:bg-amber-500 flex justify-center"
+              tamanioIcon="h-7 w-7 md:h-8 md:w-8"
               funcion={() => manejarEntrarPartida("jugador")}
               texto="Buscar Partida"
               size="default"
@@ -48,9 +48,9 @@ export default function PaginaInicio() {
             />
           </div>
 
-          <div className="flex flex-col justify-center gap-20">
+          <div className="w-content sm:w-2/3 md:w-auto">
             <BotonConIcono
-              className="bg-amber-600 px-8 py-8 text-lg text-slate-950 shadow-lg shadow-black/20 hover:bg-amber-500"
+              className="w-full bg-amber-600 text-base md:text-lg text-slate-950 shadow-lg shadow-black/20 hover:bg-amber-500 flex justify-center"
               tamanioIcon="h-8 w-8"
               funcion={() => manejarEntrarPartida("cpu")}
               texto="Partida contra CPU"

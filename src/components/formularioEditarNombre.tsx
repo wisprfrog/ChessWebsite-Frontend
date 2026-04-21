@@ -143,7 +143,11 @@ const FormularioEditarNombreUsuario: React.FC<Props> = ({ manejarVolver }) => {
       className="w-full h-full"
     >
       <p className="mb-4"><strong>Cambiar nombre de usuario</strong></p>
-      <Form.Item label="Usuario">
+      <Form.Item
+        label="Usuario"
+        name="nuevo_nombre_usuario"
+        htmlFor="nuevo_nombre_usuario"
+      >
         <Input
           id="nuevo_nombre_usuario"
           placeholder="Nuevo nombre de usuario"

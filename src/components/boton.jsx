@@ -6,7 +6,7 @@ export default function BotonConIcono({funcion,texto,size = "default",ruta_icono
 }){
   return (
     <Button
-      className={`flex justify-center items-center w-fit max-w-full cursor-pointer ${className}`}
+      className={`flex justify-center items-center w-content max-w-full cursor-pointer p-4 ${className}`}
       variant={variant}
       size={size}
       onClick={funcion}
@@ -16,7 +16,7 @@ export default function BotonConIcono({funcion,texto,size = "default",ruta_icono
         alt={alt_icono}
         className={`${tamanioIcon} shrink-0 pointer-events-none`}
       />
-      <span>{texto}</span>
+      <span className="text-sm">{texto}</span>
     </Button>
   )
 }
