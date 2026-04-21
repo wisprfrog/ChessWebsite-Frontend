@@ -145,9 +145,7 @@ export const TableroAjedrez = ({nombre_jugador, mostrar_tabla_movimientos} : { n
   // --------------- Lógica de WebSockets ---------------
   const [sala, setSala] = useState<string | null>(null);
   const socketRef = useRef<Socket | null>(null);
-  const [orientacionTablero, setOrientacionTablero] = useState<
-    "white" | "black"
-  >("white");
+  const [orientacionTablero, setOrientacionTablero] = useState<"white" | "black">("white");
 
   useEffect(() => {
     if(!nombre_jugador) return;
@@ -179,7 +177,17 @@ export const TableroAjedrez = ({nombre_jugador, mostrar_tabla_movimientos} : { n
             setSala(sala_a_reconectar);
           }
           else{
-            socketRef.current?.emit("buscar_partida", nombre_jugador);
+            if(localStorage.getItem("sala_partida_amigos")){
+              console.log("te espera una partida con tus amigos mi bro :)");
+              const sala_guardada = localStorage.getItem("sala_partida_amigos");
+              localStorage.removeItem("sala_partida_amigos");
+
+              setSala(sala_guardada);
+            }
+            else{
+              console.log("no te espera ninguna partida con tus amigos, buscando partida aleatoria...");
+              socketRef.current?.emit("buscar_partida", nombre_jugador);
+            }
           }
         }
       },

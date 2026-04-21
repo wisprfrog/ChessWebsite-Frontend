@@ -27,6 +27,7 @@ interface TablaAmigosProps {
   manejarCancelarSolicitud: ((nombre_usuario_destino: string) => void) | null;
   manejarAceptarSolicitud: ((nombre_usuario_origen: string) => void) | null;
   manejarRechazarSolicitud: ((nombre_usuario_origen: string) => void) | null;
+  manejarEnviarInvitacionPartida?: ((nombre_usuario_destino: string) => void) | null;
   listaSolicitudesEnviadas: Array<string> | null;
   listaSolicitudesRecibidas: Array<string> | null;
   nombreUsuario?: string | null;
@@ -35,7 +36,7 @@ interface TablaAmigosProps {
   actualizarTrigger?: number;
 }
 
-export default function TablaAmigos({ manejarEnviarSolicitud, manejarCancelarSolicitud, manejarAceptarSolicitud, manejarRechazarSolicitud, listaSolicitudesEnviadas, listaSolicitudesRecibidas, nombreUsuario, mostrarEliminar = true, mostarAgregar = true, actualizarTrigger = 0 }: TablaAmigosProps) {
+export default function TablaAmigos({ manejarEnviarSolicitud, manejarCancelarSolicitud, manejarAceptarSolicitud, manejarRechazarSolicitud, manejarEnviarInvitacionPartida, listaSolicitudesEnviadas, listaSolicitudesRecibidas, nombreUsuario, mostrarEliminar = true, mostarAgregar = true, actualizarTrigger = 0 }: TablaAmigosProps) {
   const [data, setData] = useState<DataType[]>([]);
   
   const [idPerfilVisto, setIdPerfilVisto] = useState<string | number | null>(null);
@@ -218,7 +219,21 @@ export default function TablaAmigos({ manejarEnviarSolicitud, manejarCancelarSol
         }
         
         if (misAmigosIds.includes(normalizarId(record.idAmigo))) {
-          return <span className="text-sm font-semibold text-emerald-300">Amigos</span>;
+          return (
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-semibold text-emerald-300 pr-10">Amigos</span>
+              {manejarEnviarInvitacionPartida && (
+                <BotonConIcono
+                  variant="secondary"
+                  texto="Invitar a partida"
+                  ruta_icono="/assets/icons/chessKing.svg"
+                  funcion={() => manejarEnviarInvitacionPartida(record.amigo.toString())}
+                  className="flex-row-reverse"
+                  tamanioIcon="h-5 w-5"
+                />
+              )}
+            </div>
+          );
         }
         
         if (solicitudesRecibidasSet.has(record.amigo)) {

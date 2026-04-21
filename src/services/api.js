@@ -87,6 +87,9 @@ const obtenerListaAmigos = async (id_usuario) => {
 }
 
 const obtenerIdUsuario = async (nombre_usuario) => {
+  if (!nombre_usuario) {
+    return null;
+  }
   const respuesta = await fetch(`${url_api}/api/usuario/id_usuario`, {
     method: 'POST',
     headers: {
@@ -98,7 +101,6 @@ const obtenerIdUsuario = async (nombre_usuario) => {
 
   const res = await respuesta.json();
   const idUsuario = res?.nombres?.[0]?.id_usuario;
-
   return idUsuario;
 }
 

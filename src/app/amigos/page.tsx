@@ -31,7 +31,7 @@ export default function PaginaAmigos() {
         setSolicitudesAmistadEnviadas(solicitudes);
     }
     
-    const { emitirAceptarSolicitudAmistad, emitirRechazarSolicitudAmistad, emitirEnviarSolicitudAmistad, emitirCancelarSolicitudAmistad } = useMonsterSocket(
+    const { emitirAceptarSolicitudAmistad, emitirRechazarSolicitudAmistad, emitirEnviarSolicitudAmistad, emitirCancelarSolicitudAmistad, emitirEnviarInvitacionPartida } = useMonsterSocket(
         {
             manejarNuevaNotificacion: mostrarSolicitudes,
             manejarCargarSolicitudesAmistad: cargarSolicitudes,
@@ -81,6 +81,7 @@ export default function PaginaAmigos() {
                 manejarCancelarSolicitud={null}
                     manejarAceptarSolicitud={manejarAceptarSolicitudAmistad}
                     manejarRechazarSolicitud={manejarRechazarSolicitudAmistad}
+                    manejarEnviarInvitacionPartida={emitirEnviarInvitacionPartida}
                     listaSolicitudesRecibidas={solicitudesAmistadRecibidas}
                 listaSolicitudesEnviadas={solicitudesAmistadEnviadas}
                 actualizarTrigger={actualizarTabla}

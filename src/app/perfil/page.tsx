@@ -24,16 +24,14 @@ export default function Perfil() {
   const nombreUsuarioParam = searchParams.get("usuario");
   const [mostrarEditar, setMostrarEditar] = useState(false);
   const [mostrarEliminar, setMostrarEliminar] = useState(false);
-  const [nombreUsuarioLocal, setNombreUsuarioLocal] = useState<string | null>(
-    null,
-  );
+  const [nombreUsuarioLocal, setNombreUsuarioLocal] = useState<string | null>(null);
 
   const { funcionaToken } = usarAutenticar();
 
   useEffect(() => {
     const nombre_usuario = localStorage.getItem("nombre_usuario");
     setNombreUsuarioLocal(nombre_usuario);
-  })
+  }, []);
 
   useEffect(() => {
     const actualizarNombreUsuario = () => {
@@ -96,6 +94,7 @@ export default function Perfil() {
     emitirRechazarSolicitudAmistad,
     emitirEnviarSolicitudAmistad,
     emitirCancelarSolicitudAmistad,
+    emitirEnviarInvitacionPartida,
   } = useMonsterSocket({
     manejarNuevaNotificacion: mostrarSolicitudes,
     manejarCargarSolicitudesAmistad: cargarSolicitudes,
@@ -225,6 +224,7 @@ export default function Perfil() {
               manejarCancelarSolicitud={emitirCancelarSolicitudAmistad}
               manejarAceptarSolicitud={emitirAceptarSolicitudAmistad}
               manejarRechazarSolicitud={emitirRechazarSolicitudAmistad}
+              manejarEnviarInvitacionPartida={emitirEnviarInvitacionPartida}
               listaSolicitudesEnviadas={solicitudesAmistadEnviadas}
               listaSolicitudesRecibidas={solicitudesAmistadRecibidas}
               nombreUsuario={nombreUsuarioParam}

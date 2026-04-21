@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import BotonConIcono from './boton';
+import PopupSolicitudes from './popupSolicitudes';
 
 export default function NavBar({ cuantasSolicitudesAmistad }) {
   const [nombreUsuario, setNombreUsuario] = useState(null);
@@ -48,6 +49,8 @@ export default function NavBar({ cuantasSolicitudesAmistad }) {
         <Link href={`/perfil?usuario=${nombreUsuario}`}>
           <BotonConIcono className='flex h-fit w-fit items-center justify-center rounded-full p-1 hover:bg-slate-700/80' tamanioIcon='h-6 w-auto' size='icon' ruta_icono="/assets/icons/userProfile.svg" variant="ghost" />
         </Link>
+
+        <PopupSolicitudes />
 
         <Link href="/inicio_sesion" onClick={manejoCierreSesion}>
           <BotonConIcono className='flex h-fit w-fit items-center justify-center rounded-full p-1 hover:bg-rose-400/30' tamanioIcon='h-6 w-auto' size='icon' ruta_icono="/assets/icons/logOut.svg" variant="ghost" />
