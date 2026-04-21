@@ -48,10 +48,11 @@ export default function PaginaInicioSesion() {
 
  return (
     <main className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-950 via-amber-900 to-blue-950 p-4">
-      <div className="w-full max-w-md flex flex-col items-center space-y-8">
-        
+      <div className="w-full max-w-md flex flex-col items-center">
+        <h1 className="text-nowrap text-center min-[600px]:text-4xl min-[430px]:text-3xl text-xl font-bold uppercase text-amber-100">   
+           Monster Chess of Clans
+        </h1>
         <Login />
-        
       </div>
     </main>
   );
