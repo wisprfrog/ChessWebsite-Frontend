@@ -5,7 +5,7 @@ export default function SideBarRecibidas({ solicitudesAmistad, aceptarSolicitudA
         <div className="w-full md:w-96 bg-white p-6 rounded-lg shadow-sm border border-gray-100 h-fit">
                 
             <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-bold">Solicitudes entrantes</h2>
+                <h2 className="text-xl font-bold">Solicitudes recibidas</h2>
                 {solicitudesAmistad.length > 0 && (
                     <span className="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
                         {solicitudesAmistad.length} nuevas

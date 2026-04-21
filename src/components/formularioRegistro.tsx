@@ -61,17 +61,22 @@ export default function FormularioRegistro() {
     };
 
     return (
-        <section className="w-full max-w-sm rounded-xl border border-zinc-200 bg-white p-6 shadow-sm">
+        <main className="flex min-h-screen flex-col items-center justify-center p-4">
+            <div className="w-full max-w-md flex flex-col items-center space-y-8">
+            <h1 className="mt-4 text-center text-4xl font-bold uppercase tracking-wide text-emerald-100">
+            Monster Chess of Clans
+            </h1>
+        <section className="mt-3 w-full max-w-sm rounded-xl border border-emerald-900/60 bg-emerald-950/85 p-6 shadow-2xl shadow-black/30 backdrop-blur-sm">
             <div className="mb-6">
-                <h2 className="text-xl font-semibold">Crea una cuenta nueva</h2>
-                <p className="mt-2 text-sm text-zinc-600">
+                <h2 className="text-xl font-semibold text-emerald-50">Crea una cuenta nueva</h2>
+                <p className="mt-2 text-sm text-emerald-200/80">
                     Ingresa tus datos para registrarte y comenzar a jugar.
                 </p>
             </div>
 
             <form onSubmit={enviarRegistro} className="flex flex-col gap-6">
                 <div className="grid gap-2">
-                    <label htmlFor="nombre_usuario" className="text-sm font-medium text-zinc-800">
+                    <label htmlFor="nombre_usuario" className="text-sm font-medium text-emerald-100">
                         Nombre de usuario
                     </label>
                     <input
@@ -80,13 +85,13 @@ export default function FormularioRegistro() {
                         placeholder="tu_usuario"
                         value={nombre_usuario}
                         onChange={(e) => setUsername(e.target.value)}
-                        className="h-10 rounded-md border border-zinc-300 px-3 text-sm outline-none transition focus:border-zinc-500"
+                        className="h-10 rounded-md border border-emerald-800 bg-emerald-900 px-3 text-sm text-emerald-50 outline-none transition placeholder:text-emerald-300/50 focus:border-emerald-500"
                         required
                     />
                 </div>
 
                 <div className="grid gap-2">
-                    <label htmlFor="correo" className="text-sm font-medium text-zinc-800">
+                    <label htmlFor="correo" className="text-sm font-medium text-emerald-100">
                         Correo electronico
                     </label>
                     <input
@@ -95,13 +100,13 @@ export default function FormularioRegistro() {
                         placeholder="m@example.com"
                         value={correo}
                         onChange={(e) => setCorreo(e.target.value)}
-                        className="h-10 rounded-md border border-zinc-300 px-3 text-sm outline-none transition focus:border-zinc-500"
+                        className="h-10 rounded-md border border-emerald-800 bg-emerald-900 px-3 text-sm text-emerald-50 outline-none transition placeholder:text-emerald-300/50 focus:border-emerald-500"
                         required
                     />
                 </div>
 
                 <div className="grid gap-2">
-                    <label htmlFor="contrasenia" className="text-sm font-medium text-zinc-800">
+                    <label htmlFor="contrasenia" className="text-sm font-medium text-emerald-100">
                         Contraseña
                     </label>
                     <input
@@ -109,13 +114,13 @@ export default function FormularioRegistro() {
                         type="password"
                         value={contrasenia}
                         onChange={(e) => setPassword(e.target.value)}
-                        className="h-10 rounded-md border border-zinc-300 px-3 text-sm outline-none transition focus:border-zinc-500"
+                        className="h-10 rounded-md border border-emerald-800 bg-emerald-900 px-3 text-sm text-emerald-50 outline-none transition placeholder:text-emerald-300/50 focus:border-emerald-500"
                         required
                     />
                 </div>
 
                 <div className="grid gap-2">
-                    <label htmlFor="confirmar_contrasenia" className="text-sm font-medium text-zinc-800">
+                    <label htmlFor="confirmar_contrasenia" className="text-sm font-medium text-emerald-100">
                         Confirmar contraseña
                     </label>
                     <input
@@ -123,7 +128,7 @@ export default function FormularioRegistro() {
                         type="password"
                         value={confirmar_contrasenia}
                         onChange={(e) => setConfirmarContrasenia(e.target.value)}
-                        className="h-10 rounded-md border border-zinc-300 px-3 text-sm outline-none transition focus:border-zinc-500"
+                        className="h-10 rounded-md border border-emerald-800 bg-emerald-900 px-3 text-sm text-emerald-50 outline-none transition placeholder:text-emerald-300/50 focus:border-emerald-500"
                         required
                     />
                 </div>
@@ -131,23 +136,25 @@ export default function FormularioRegistro() {
 
 
                 {mensaje ? (
-                    <p className={`text-sm ${mensaje.includes('éxito') ? 'text-green-600' : 'text-red-600'}`}>
+                    <p className={`text-sm ${mensaje.includes('éxito') ? 'text-emerald-300' : 'text-rose-300'}`}>
                         {mensaje}
                     </p>
                 ) : null}
 
                 <button
                     type="submit"
-                    className="h-10 w-full rounded-md bg-zinc-900 text-sm font-medium text-white transition hover:bg-zinc-700 disabled:cursor-not-allowed disabled:opacity-60"
+                    className="h-10 w-full rounded-md bg-emerald-600 text-sm font-medium text-white transition hover:bg-emerald-500 disabled:cursor-not-allowed disabled:opacity-60"
                     disabled={cargando}
                 >
                     {cargando ? 'Registrando...' : 'Registrar Usuario'}
                 </button>
 
-                <a href="../inicio_sesion" className="text-center text-sm underline-offset-4 hover:underline">
+                <a href="../inicio_sesion" className="text-center text-sm text-emerald-100 underline-offset-4 hover:underline">
                     Ya tengo cuenta
                 </a>
             </form>
         </section>
+        </div>
+        </main>
     );
 }

@@ -171,25 +171,11 @@ export default function TablaAmigos({ manejarEnviarSolicitud, manejarCancelarSol
     },
   ];
 
-  if (mostrarEliminar) {
-    columns.push({
-      title: 'Eliminar',
-      key: 'eliminar',
-      render: (_, record) => (
-        <BotonConIcono
-          variant="destructive"
-          texto=""
-          ruta_icono="/assets/icons/eliminar.svg"
-          funcion={() => manejarEliminarAmigo(record.idAmigo)}
-          tamanioIcon="h-4 w-4"
-        />
-      ),
-    });
-  }
+
 
   if (mostarAgregar) {
     columns.push({
-      title: 'Acción',
+      title: '',
       key: 'agregar',
       render: (_, record) => {
         if (record.amigo === miNombreLocal) {
@@ -225,12 +211,29 @@ export default function TablaAmigos({ manejarEnviarSolicitud, manejarCancelarSol
     });
   }
 
+  if (mostrarEliminar) {
+    columns.push({
+      title: 'Acción',
+      key: 'eliminar',
+      render: (_, record) => (
+        <BotonConIcono
+          variant="destructive"
+          texto=""
+          ruta_icono="/assets/icons/eliminar.svg"
+          funcion={() => manejarEliminarAmigo(record.idAmigo)}
+          tamanioIcon="h-4 w-4"
+        />
+      ),
+    });
+  }
+
   if (!nombreUsuario) {
     return <div>No se ha proporcionado un usuario.</div>;
   }
 
   return (
     <div className="p-4 bg-white rounded-lg shadow-sm border border-gray-100 w-full h-full">
+       <h2 className="text-xl font-bold mb-4">Amigos de {nombreUsuario}</h2>
       <Table<DataType>
         columns={columns}
         dataSource={data}

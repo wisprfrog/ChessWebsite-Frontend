@@ -225,9 +225,7 @@ export default function Perfil() {
 
         <div className="flex flex-col w-3/5 h-full ">
           <div className="flex flex-col justify-start items-center gap-5 bg-gray-100 p-6">
-            <p className="text-left font-bold text-xl">
-              Amigos de {nombreUsuarioParam}
-            </p>
+
             <TablaAmigos
               manejarEnviarSolicitud={emitirEnviarSolicitudAmistad}
               manejarCancelarSolicitud={emitirCancelarSolicitudAmistad}

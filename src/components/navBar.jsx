@@ -23,14 +23,16 @@ export default function NavBar({ cuantasSolicitudesAmistad }) {
   }
 
   return (
-    <nav className='w-full h-min-16 h-16 m-0 p-4 flex items-center justify-between bg-gray-900 text-white'>
-      <div className='w-2/3 h-full flex items-center justify-between ml-10'>
+    <nav className='w-full h-min-16 h-16 m-0 p-4 flex items-center justify-between border-emerald-800 bg-emerald-900 text-white'>
+      <div className='w-2/3 h-full flex items-center justify-between ml-10 text-2xl font-bold'>
         <Link href="/">Monster Chess of Clans</Link>
       </div>
       <div className='w-1/3 h-full flex items-center justify-between mr-2'>    
-        <Link href="/">Inicio</Link>
+        <Link className="text-emerald-100 hover:text-emerald-300 font-bold" href="/">
+          Inicio
+        </Link>
 
-        <Link href={`/amigos`} className="relative">
+        <Link href={`/amigos`} className="relative font-bold text-emerald-100 hover:text-emerald-300">
           Amigos
 
           {cuantasSolicitudesAmistad > 0 && (
