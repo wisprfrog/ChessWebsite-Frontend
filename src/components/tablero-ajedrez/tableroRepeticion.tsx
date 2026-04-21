@@ -162,33 +162,33 @@ export default function TableroRepeticion({
   };
 
   return (
-    <div className="flex w-full mx-0 my-auto gap-x-10">
+    <div className="flex w-[42%] mx-0 my-auto gap-x-10 rounded-lg p-4 ">
       <div className="flex flex-col w-full justify-between items-center mb-4 gap-3">
         <div className="flex justify-end w-full">
-          <p className="text-sm w-content px-4">{nombreNegras}</p>
+          <p className="text-xl w-content px-4 text-white text-fold">{nombreNegras}</p>
         </div>
 
         <Chessboard options={chessboardOptions} />
 
         <div className="flex w-full justify-start">
-          <p className="text-sm w-content px-4">{nombreBlancas}</p>
+          <p className="text-xl w-content px-4 text-white text-fold">{nombreBlancas}</p>
         </div>
 
-        <div className="w-full flex flex-col gap-2 px-4">
-          <div className="flex gap-2 flex-wrap">
-            <button type="button" className="px-3 py-1 bg-gray-200 rounded cursor-pointer" onClick={irAlInicio}>
+        <div className="w-full flex flex-col gap-4 px-4">
+          <div className="flex gap-3 flex-wrap">
+            <button type="button" className="px-2 py-1 bg-gray-200 rounded cursor-pointer" onClick={irAlInicio}>
               |&lt;
             </button>
-            <button type="button" className="px-3 py-1 bg-gray-200 rounded cursor-pointer" onClick={irAtras}>
+            <button type="button" className="px-2 py-1 bg-gray-200 rounded cursor-pointer" onClick={irAtras}>
               &lt;
             </button>
-            <button type="button" className="px-3 py-1 bg-blue-600 text-white rounded cursor-pointer" onClick={alternarReproduccion}>
+            <button type="button" className="p-2 bg-slate-800 text-white rounded cursor-pointer" onClick={alternarReproduccion}>
               {reproduciendo ? "Pausar" : "Reproducir"}
             </button>
-            <button type="button" className="px-3 py-1 bg-gray-200 rounded cursor-pointer" onClick={irAdelante}>
+            <button type="button" className="px-2 py-1 bg-gray-200 rounded cursor-pointer" onClick={irAdelante}>
               &gt;
             </button>
-            <button type="button" className="px-3 py-1 bg-gray-200 rounded cursor-pointer" onClick={irAlFinal}>
+            <button type="button" className="px-2 py-1 bg-gray-200 rounded cursor-pointer" onClick={irAlFinal}>
               &gt;|
             </button>
           </div>
@@ -202,9 +202,10 @@ export default function TableroRepeticion({
               setReproduciendo(false);
               setIndiceActual(Number(e.target.value));
             }}
+            className="w-full h-2 cursor-pointer accent-slate-800 bg-slate-800 rounded-lg appearance-auto"
           />
 
-          <p className="text-sm text-gray-700">
+          <p className="text-sm text-gray-700 text-white text-fold">
             Jugada {indiceActual} de {totalJugadas}
           </p>
 

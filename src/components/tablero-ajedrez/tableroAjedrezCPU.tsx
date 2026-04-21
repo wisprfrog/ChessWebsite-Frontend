@@ -106,7 +106,7 @@ export const TableroAjedrezCPU = ({ mostrar_tabla_movimientos }: { mostrar_tabla
     }
   }
   
-  const chessboardOptions = {
+const chessboardOptions = {
     position: chessPosition,
     onPieceDrop,
     onSquareClick,
@@ -122,18 +122,25 @@ export const TableroAjedrezCPU = ({ mostrar_tabla_movimientos }: { mostrar_tabla
   if (!nombre_jugador) return null;
 
   return (
-    <div className="flex w-full mx-0 my-auto gap-x-10">
-          <div className="flex flex-col w-full justify-between items-center mb-4 h-full">
-            <div className="flex justify-end w-full">
-              <p className="text-sm w-content px-4 font-bold pb-1">{"CPU"}</p>
-            </div>
-    
-            <Chessboard options={chessboardOptions} />
-            
-            <div className="flex w-full justify-start">
-              <p className="text-sm w-content px-4 pt-1 font-bold">{nombre_jugador}</p>
-            </div>
-          </div>
+    <div className="flex flex-col flex-1 w-full h-full min-w-0 min-h-0 justify-between items-center">
+      
+      {/* Etiqueta de la CPU (Arriba derecha) */}
+      <div className="flex justify-end w-full mb-2">
+        <p className="text-l px-4 font-bold pb-1 text-white">CPU</p>
+      </div>
+
+      {/* --- EL CONTENEDOR DEL TABLERO CON LA SOLUCIÓN DE TAMAÑO --- */}
+      <div className="flex flex-1 w-full justify-center items-center min-h-0 min-w-0 overflow-hidden py-2">
+        <div className="h-full w-auto aspect-square mx-auto drop-shadow-2xl">
+          <Chessboard options={chessboardOptions} />
         </div>
+      </div>
+      
+      {/* Etiqueta del Jugador Local (Abajo izquierda) */}
+      <div className="flex w-full justify-start mt-2">
+        <p className="text-l px-4 pt-1 font-bold text-white">{nombre_jugador}</p>
+      </div>
+      
+    </div>
   );
 };

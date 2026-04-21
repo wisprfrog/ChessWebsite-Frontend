@@ -305,28 +305,41 @@ export const TableroAjedrez = ({nombre_jugador, mostrar_tabla_movimientos} : { n
   };
 
   if(!nombre_jugador || !sala){
-    return <p>Buscando partida...</p>
+    return (
+      <div className="flex flex-1 h-full justify-center items-center">
+        <p className="text-2xl text-emerald-300 animate-pulse font-semibold">Buscando partida...</p>
+      </div>
+    );
   }
 
   return (
-    <div className="flex w-full mx-0 my-auto gap-x-10">
-      <div className="flex flex-col w-full justify-between items-center mb-4">
-        <div className="flex flex-row-reverse w-full">
-          <p className="text-sm w-8/10 px-4 text-right">{nombre_oponente}</p>
-          <div className="bg-gray-500 p-1 mb-5 text-3xl">
-            {tiempo_oponente}
-          </div>
-        </div>
-
-        <Chessboard options={chessboardOptions} />
-        
-        <div className="flex w-full">
-          <p className="text-sm w-8/10 px-4 text-left">{nombre_jugador}</p>
-          <div className="bg-gray-500 p-1 mb-5 text-3xl">
-            {tiempo_jugador}
-          </div>
+    // h-full asegura que tome la altura del cuadro padre. 
+    // mr-8 empuja la tabla de movimientos hacia la derecha.
+    <div className="flex flex-col flex-1 w-full h-full min-w-0 min-h-0 mr-8">
+      
+      {/* Barra superior (Oponente) */}
+      <div className="flex justify-between items-center w-full mb-4 shrink-0 px-2">
+        <p className="text-xl font-bold text-slate-100 truncate pr-4">{nombre_oponente}</p>
+        <div className="bg-slate-800 text-amber-400 font-mono text-2xl px-4 py-1 rounded shadow-inner border border-slate-700">
+          {tiempo_oponente}
         </div>
       </div>
+
+      {/* Contenedor del Tablero */}
+      <div className="flex flex-1 w-full justify-center items-center min-h-0 min-w-0">
+        <div className="h-full w-auto aspect-square drop-shadow-2xl">
+          <Chessboard options={chessboardOptions} />
+        </div>
+      </div>
+      
+      {/* Barra inferior (Jugador Local) */}
+      <div className="flex justify-between items-center w-full mt-4 shrink-0 px-2">
+        <p className="text-xl font-bold text-slate-100 truncate pr-4">{nombre_jugador}</p>
+        <div className="bg-slate-800 text-amber-400 font-mono text-2xl px-4 py-1 rounded shadow-inner border border-slate-700">
+          {tiempo_jugador}
+        </div>
+      </div>
+
     </div>
   );
 
