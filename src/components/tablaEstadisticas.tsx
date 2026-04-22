@@ -52,17 +52,19 @@ export default function TablaEstadisticas({nombreUsuario} : {nombreUsuario: stri
       }
     };
     fetchData();
-  }, []);
+  }, [nombreUsuario]);
 
   return (
-    <div className="w-full rounded-lg border border-amber-700/40 bg-slate-900/70 p-4 text-amber-100 shadow-2xl shadow-black/20">
-      <h2 className='mb-4 text-lg font-bold'>Estadísticas del jugador {nombreUsuario}</h2>
+    <div className="flex w-full min-w-0 flex-col rounded-lg border border-amber-700/40 bg-slate-900/70 p-3 text-amber-100 shadow-2xl shadow-black/20 sm:p-4">
+      <h2 className='mb-3 text-center text-base font-bold break-words sm:mb-4 sm:text-left sm:text-lg'>Estadísticas del jugador {nombreUsuario}</h2>
       <Table<DataType> 
-        className="table-contrast"
+        className="table-contrast h-full w-full"
         columns={columns} 
         dataSource={data} 
         showHeader={false}
         pagination={false}
+        size="small"
+        scroll={{ x: 'max-content' }}
       />
     </div>
   );

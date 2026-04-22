@@ -81,10 +81,10 @@ export default function TablaHistorial({ nombreUsuario } : TablaHistorialProps) 
   }, [nombreUsuario]);
 
   return (
-    <div className="h-full w-full rounded-lg border border-amber-700/40 bg-slate-900/70 p-4 text-amber-100 shadow-2xl shadow-black/20">
-      <h2 className="mb-4 text-xl font-bold">Historial de Partidas</h2>
+    <div className="flex h-full w-full min-w-0 flex-col rounded-lg border border-amber-700/40 bg-slate-900/70 p-3 text-amber-100 shadow-2xl shadow-black/20 sm:p-4">
+      <h2 className="mb-4 text-xl font-bold text-center">Historial de Partidas</h2>
       <Table<DataType> 
-        className="table-contrast"
+        className="table-contrast items-center text-xs h-full w-full overflow-auto"
         columns={columns} 
         dataSource={data} 
         showHeader={true}
