@@ -4,12 +4,15 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import BotonConIcono from './boton';
 import PopupSolicitudes from './popupSolicitudes';
+import { obtenerFotoPerfilUsuario } from '../services/api';
 
 export default function NavBar({ cuantasSolicitudesAmistad }) {
   const [nombreUsuario, setNombreUsuario] = useState(null);
   const [menuAbierto, setMenuAbierto] = useState(false);
   const [cantidadInvitacionesPartida, setCantidadInvitacionesPartida] = useState(0);
-
+  const [fotoPerfilUsuario, setFotoPerfilUsuario] = useState(null);
+  const [cargandoFoto, setCargandoFoto] = useState(true);
+  
   const solicitudesAmistadPendientes = Number(cuantasSolicitudesAmistad) || 0;
   const totalPendientesMenu = solicitudesAmistadPendientes + cantidadInvitacionesPartida;
 
@@ -17,6 +20,22 @@ export default function NavBar({ cuantasSolicitudesAmistad }) {
     const usuarioGuardado = localStorage.getItem('nombre_usuario');
     setNombreUsuario(usuarioGuardado);
   }, []);
+
+  useEffect(() => {
+      const cargarFotoPerfil = async () => {
+        if (!nombreUsuario) {
+          setFotoPerfilUsuario(null);
+          setCargandoFoto(false);
+          return;
+        }
+  
+        const fotoUrl = await obtenerFotoPerfilUsuario(nombreUsuario);
+        setFotoPerfilUsuario(fotoUrl);
+        setCargandoFoto(false);
+      };
+  
+      cargarFotoPerfil();
+    }, [nombreUsuario]);
 
   const manejoCierreSesion = () => {
     try {
@@ -33,6 +52,8 @@ export default function NavBar({ cuantasSolicitudesAmistad }) {
   const cerrarMenu = () => {
     setMenuAbierto(false);
   }
+
+  if(cargandoFoto) return null;
 
   return (
     <nav className='relative m-0 w-full border-b border-sky-700/70 bg-slate-900 text-white shadow-lg shadow-black/25'>
@@ -83,7 +104,19 @@ export default function NavBar({ cuantasSolicitudesAmistad }) {
 
 
           <Link href={`/perfil?usuario=${nombreUsuario}`}>
-            <BotonConIcono className='flex h-fit w-fit items-center justify-center rounded-full p-1 hover:bg-slate-700/80' tamanioIcon='h-6 w-auto' size='icon' ruta_icono='/assets/icons/userProfile.svg' variant='ghost' />
+            {fotoPerfilUsuario ? (
+              <img
+                src={fotoPerfilUsuario}
+                alt={`Foto de perfil de ${nombreUsuario}`}
+                className="h-10 w-10 rounded-full object-cover"
+              />
+            ) : (
+              <img
+                src="/assets/icons/userProfile.svg"
+                alt={`Foto de perfil de ${nombreUsuario}`}
+                className="h-10 w-10 rounded-full"
+              />
+            )}
           </Link>
 
 

@@ -1,6 +1,6 @@
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
-import { Button, Form, Input } from "antd";
+import { Form, Input } from "antd";
 import { cambiarNombreUsuario, generarToken } from "../services/api";
 
 const DEMORA_REDIRECCION_MS = 5000; //3600
@@ -140,11 +140,18 @@ const FormularioEditarNombreUsuario: React.FC<Props> = ({ manejarVolver }) => {
       form={form}
       onSubmitCapture={enviarFormularioEditarPerfil}
       initialValues={{ layout: "vertical" }}
-      className="w-full h-full"
+      className="w-full rounded-xl border border-sky-900/60 bg-slate-900/85 !p-8 shadow-2xl shadow-black/30 backdrop-blur-sm"
     >
-      <p className="mb-4"><strong>Cambiar nombre de usuario</strong></p>
+      <div className="mb-6">
+        <h3 className="text-xl font-semibold text-amber-50 text-center">
+          Cambiar nombre de usuario
+        </h3>
+        <p className="mt-2 text-sm text-emerald-200/80 text-center">
+          Actualiza tu nombre visible en el perfil.
+        </p>
+      </div>
       <Form.Item
-        label="Usuario"
+        label={<span className="text-sm font-medium text-amber-100">Usuario</span>}
         name="nuevo_nombre_usuario"
         htmlFor="nuevo_nombre_usuario"
       >
@@ -153,6 +160,7 @@ const FormularioEditarNombreUsuario: React.FC<Props> = ({ manejarVolver }) => {
           placeholder="Nuevo nombre de usuario"
           value={nuevoNombreUsuario}
           name="nuevo_nombre_usuario"
+          className="!h-10 !rounded-md !border !border-amber-500/60 !bg-slate-700 !px-3 !text-sm !text-amber-50 !shadow-none placeholder:!text-amber-100/50 focus:!border-amber-300"
           onChange={(e) => setNuevoNombreUsuario(e.target.value)}
         />
       </Form.Item>
@@ -161,7 +169,7 @@ const FormularioEditarNombreUsuario: React.FC<Props> = ({ manejarVolver }) => {
         className={`overflow-hidden transition-all duration-300 ${usuarioEditadoVisible ? "max-h-20 opacity-100 mt-2" : "max-h-0 opacity-0 mt-0"}`}
       >
         {usuarioEditadoVisible && (
-          <p className={usuarioEditadoVisible[0] ? "text-green-500" : "text-red-500"}>
+          <p className={usuarioEditadoVisible[0] ? "text-sm text-emerald-300" : "text-sm text-rose-300"}>
             {usuarioEditadoVisible[1]}
           </p>
         )}
@@ -171,17 +179,26 @@ const FormularioEditarNombreUsuario: React.FC<Props> = ({ manejarVolver }) => {
         className={`overflow-hidden transition-all duration-300 ${redirigiendoVisible ? "max-h-16 opacity-100 mt-2" : "max-h-0 opacity-0 mt-0"}`}
       >
         {redirigiendoVisible && (
-          <p className="text-blue-500 mb-10">Redirigiendo al perfil actualizado...</p>
+          <p className="mb-4 text-sm text-sky-300">Redirigiendo al perfil actualizado...</p>
         )}
       </div>
 
-      <div className="flex justify-start items-center gap-4">
-        <Button type="primary" htmlType="submit" disabled={redirigiendo}>
+      <div className="flex flex-wrap items-center gap-3">
+        <button
+          type="submit"
+          disabled={redirigiendo}
+          className="h-10 rounded-md bg-amber-500 px-4 text-sm font-medium text-slate-950 transition hover:bg-amber-400 disabled:cursor-not-allowed disabled:opacity-60"
+        >
           {cargando ? "Guardando..." : "Guardar nombre"}
-        </Button>
-        <Button type="default" onClick={manejarVolverCompleto} disabled={redirigiendo}>
+        </button>
+        <button
+          type="button"
+          onClick={manejarVolverCompleto}
+          disabled={redirigiendo}
+          className="h-10 rounded-md border border-slate-600 bg-slate-800 px-4 text-sm font-medium text-amber-100 transition hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-60"
+        >
           Volver
-        </Button>
+        </button>
       </div>
     </Form>
   );

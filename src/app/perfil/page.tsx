@@ -1,30 +1,46 @@
 "use client";
 
-import React, { use, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { usarAutenticar } from "../../hooks/usarAutenticar";
 import NavBar from "../../components/navBar";
 import Footer from "../../components/footer";
 
 import { useMonsterSocket } from "../../hooks/usarSocketMonster";
-import { obtenerListaAmigos, obtenerIdUsuario, eliminarAmigo } from "@/services/api";
+import { obtenerListaAmigos, obtenerIdUsuario, eliminarAmigo, obtenerFotoPerfilUsuario, cambiarFotoPerfilUsuario } from "@/services/api";
 
 // Componente de perfil de usuario
 import FormularioEditarNombreUsuario from "../../components/formularioEditarNombre";
 import FormularioEditarContrasena from "../../components/formularioEditarContrasena";
 import TablaEstadisticas from "@/components/tablaEstadisticas";
 import BotonConIcono from "@/components/boton";
+import FormularioSubirImagen, { subirACloudinary } from "@/components/formularioSubirImagen";
 
 // Historial
 import TablaHistorial from "../../components/tablaHistorial";
 import TablaAmigos from "@/components/tablaAmigos";
 
 export default function Perfil() {
+  type MensajeFotoPerfil = {
+    tipo: "success" | "error" | "info";
+    texto: string;
+  };
+
+  const DEMORA_MENSAJE_FOTO_MS = 5000;
+
   const searchParams = useSearchParams();
   const nombreUsuarioParam = searchParams.get("usuario");
   const [mostrarEditar, setMostrarEditar] = useState(false);
   const [mostrarEliminar, setMostrarEliminar] = useState(false);
   const [nombreUsuarioLocal, setNombreUsuarioLocal] = useState<string | null>(null);
+  const [fotoPerfilUsuario, setFotoPerfilUsuario] = useState<string | null>(null);
+  const [cargandoFoto, setCargandoFoto] = useState(false);
+  const [archivoFotoNuevo, setArchivoFotoNuevo] = useState<File | null>(null);
+  const [eliminarFotoPerfil, setEliminarFotoPerfil] = useState(false);
+  const [guardandoFoto, setGuardandoFoto] = useState(false);
+  const [reinicioFormularioFoto, setReinicioFormularioFoto] = useState(0);
+  const [mensajeFotoPerfil, setMensajeFotoPerfil] =
+    useState<MensajeFotoPerfil | null>(null);
 
   const { funcionaToken } = usarAutenticar();
 
@@ -57,9 +73,122 @@ export default function Perfil() {
   useEffect(() => {
     setMostrarEditar(false);
     setMostrarEliminar(false);
+    setArchivoFotoNuevo(null);
+    setEliminarFotoPerfil(false);
+    setMensajeFotoPerfil(null);
+  }, [nombreUsuarioParam]);
+
+  useEffect(() => {
+    if (!mensajeFotoPerfil) {
+      return;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      setMensajeFotoPerfil(null);
+    }, DEMORA_MENSAJE_FOTO_MS);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [mensajeFotoPerfil]);
+
+  useEffect(() => {
+    const cargarFotoPerfil = async () => {
+      if (!nombreUsuarioParam) {
+        setFotoPerfilUsuario(null);
+        return;
+      }
+
+      setCargandoFoto(true);
+      const fotoUrl = await obtenerFotoPerfilUsuario(nombreUsuarioParam);
+      setFotoPerfilUsuario(fotoUrl);
+      setCargandoFoto(false);
+    };
+
+    cargarFotoPerfil();
   }, [nombreUsuarioParam]);
 
   const puedeEditar = nombreUsuarioParam === nombreUsuarioLocal;
+  const hayCambiosFotoPendientes = eliminarFotoPerfil || Boolean(archivoFotoNuevo);
+  const tieneFotoGuardada = Boolean(fotoPerfilUsuario);
+  const botonLimpiarFotoDeshabilitado =
+    guardandoFoto || (!archivoFotoNuevo && (!tieneFotoGuardada || eliminarFotoPerfil));
+
+  const manejarGuardarFotoPerfil = async () => {
+    if (!nombreUsuarioLocal || guardandoFoto) {
+      return;
+    }
+
+    if (!eliminarFotoPerfil && !archivoFotoNuevo) {
+      return;
+    }
+
+    setGuardandoFoto(true);
+
+    try {
+      let nuevaUrlFoto: string | null = null;
+
+      if (!eliminarFotoPerfil && archivoFotoNuevo) {
+        nuevaUrlFoto = await subirACloudinary(archivoFotoNuevo);
+      }
+
+      const fotoActualizada = await cambiarFotoPerfilUsuario(nombreUsuarioLocal, nuevaUrlFoto);
+      setFotoPerfilUsuario(fotoActualizada ?? nuevaUrlFoto);
+      setArchivoFotoNuevo(null);
+      setEliminarFotoPerfil(false);
+      setMensajeFotoPerfil({
+        tipo: "success",
+        texto: nuevaUrlFoto === null
+          ? "Foto de perfil eliminada correctamente."
+          : "Foto de perfil actualizada correctamente.",
+      });
+    } catch (error) {
+      console.error("Error al guardar la foto de perfil:", error);
+      setMensajeFotoPerfil({
+        tipo: "error",
+        texto: "No se pudo actualizar la foto de perfil. Intenta nuevamente.",
+      });
+    } finally {
+      setGuardandoFoto(false);
+    }
+  };
+
+  const manejarSalirModoEdicion = () => {
+    setMostrarEditar(false);
+    setArchivoFotoNuevo(null);
+    setEliminarFotoPerfil(false);
+    setMensajeFotoPerfil(null);
+    setReinicioFormularioFoto((valorAnterior) => valorAnterior + 1);
+  };
+
+  const manejarDeshacerCambiosFoto = () => {
+    setArchivoFotoNuevo(null);
+    setEliminarFotoPerfil(false);
+    setMensajeFotoPerfil({
+      tipo: "info",
+      texto: "Se deshicieron los cambios de la foto de perfil.",
+    });
+    setReinicioFormularioFoto((valorAnterior) => valorAnterior + 1);
+  };
+
+  const manejarLimpiarFoto = () => {
+    if (archivoFotoNuevo) {
+      setArchivoFotoNuevo(null);
+      setEliminarFotoPerfil(false);
+      setMensajeFotoPerfil({
+        tipo: "info",
+        texto: "Se quitó la foto cargada."
+      });
+      setReinicioFormularioFoto((valorAnterior) => valorAnterior + 1);
+      return;
+    }
+
+    if (tieneFotoGuardada) {
+      setEliminarFotoPerfil(true);
+      setMensajeFotoPerfil({
+        tipo: "info",
+        texto: "La foto se eliminará cuando guardes los cambios.",
+      });
+    }
+  };
 
   const [numSolicitudes, setNumSolicitudes] = useState(0);
 
@@ -133,14 +262,111 @@ export default function Perfil() {
         {/*Contenido*/}
         <div className="h-content h-min-90/100 flex w-2/5 flex-col items-center justify-start gap-5 rounded-lg border border-sky-900/60 bg-slate-900/70 p-6 shadow-2xl shadow-black/20">
           {/*Perfil*/}
-          <div className="flex h-70 w-70 items-center justify-center rounded-full bg-slate-800 text-amber-100">
-            Imagen de mi bro {nombreUsuarioParam}
-          </div>
+          {puedeEditar && mostrarEditar ? (
+            <div className="flex w-full flex-col items-center gap-4 rounded-xl border border-sky-900/60 bg-slate-900/85 p-8 shadow-2xl shadow-black/30 backdrop-blur-sm">
+              <div className="mb-2">
+                <h3 className="text-center text-xl font-semibold text-amber-50">Foto de perfil</h3>
+                <p className="mt-2 text-center text-sm text-emerald-200/80">
+                  Sube o elimina tu imagen para actualizar tu perfil.
+                </p>
+              </div>
+
+              {eliminarFotoPerfil ? (
+                <div className="flex h-32 w-32 items-center justify-center rounded-full border border-rose-800 bg-slate-900 px-3 text-center text-xs font-semibold text-rose-200">
+                  La foto se eliminará al guardar
+                </div>
+              ) : (
+                <FormularioSubirImagen
+                  key={`selector-foto-${reinicioFormularioFoto}`}
+                  urlImagenActual={fotoPerfilUsuario}
+                  onArchivoSeleccionado={(archivo) => {
+                    setArchivoFotoNuevo(archivo);
+                    if (archivo) {
+                      setEliminarFotoPerfil(false);
+                      setMensajeFotoPerfil({
+                        tipo: "info",
+                        texto: "Nueva foto seleccionada. Presiona Guardar cambio de foto para confirmar.",
+                      });
+                    }
+                  }}
+                  deshabilitado={guardandoFoto}
+                />
+              )}
+
+              <div className="flex w-full flex-wrap items-center justify-center gap-3">
+                <button
+                  type="button"
+                  className={`h-10 rounded-md border px-4 text-sm font-medium transition ${botonLimpiarFotoDeshabilitado
+                    ? "cursor-not-allowed border-rose-900/70 bg-rose-950/70 text-rose-300/70 opacity-70"
+                    : "cursor-pointer border-rose-500/50 bg-rose-700 text-rose-100 hover:bg-rose-800"
+                    }`}
+                  onClick={manejarLimpiarFoto}
+                  disabled={botonLimpiarFotoDeshabilitado}
+                >
+                  Limpiar foto
+                </button>
+
+                <button
+                  type="button"
+                  className="h-10 cursor-pointer rounded-md bg-amber-500 px-4 text-sm font-medium text-slate-950 transition hover:bg-amber-400 disabled:cursor-not-allowed disabled:opacity-60"
+                  onClick={manejarGuardarFotoPerfil}
+                  disabled={guardandoFoto || !hayCambiosFotoPendientes}
+                >
+                  {guardandoFoto ? "Guardando foto..." : "Guardar cambio de foto"}
+                </button>
+
+                <button
+                  type="button"
+                  className="h-10 cursor-pointer rounded-md border border-sky-500/60 bg-sky-700 px-4 text-sm font-medium text-sky-100 transition hover:bg-sky-600 disabled:cursor-not-allowed disabled:border-sky-800/70 disabled:bg-sky-900/70 disabled:text-sky-200/70 disabled:opacity-70"
+                  onClick={manejarDeshacerCambiosFoto}
+                  disabled={guardandoFoto || !hayCambiosFotoPendientes}
+                >
+                  Deshacer cambios
+                </button>
+              </div>
+
+              <div
+                className={`w-full overflow-hidden text-center transition-all duration-300 ${mensajeFotoPerfil ? "mt-2 max-h-20 opacity-100" : "mt-0 max-h-0 opacity-0"}`}
+              >
+                {mensajeFotoPerfil && (
+                  <p
+                    className={`text-sm ${mensajeFotoPerfil.tipo === "success"
+                      ? "text-emerald-300"
+                      : mensajeFotoPerfil.tipo === "error"
+                        ? "text-rose-300"
+                        : "text-sky-300"}`}
+                  >
+                    {mensajeFotoPerfil.texto}
+                  </p>
+                )}
+              </div>
+            </div>
+          ) : (
+            <div className="flex h-70 w-70 items-center justify-center rounded-full bg-slate-800 text-amber-100 overflow-hidden">
+              {cargandoFoto ? (
+                <span className="text-center text-sm font-bold">Cargando foto...</span>
+              ) : fotoPerfilUsuario ? (
+                <img
+                  src={fotoPerfilUsuario}
+                  alt={`Foto de perfil de ${nombreUsuarioParam}`}
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                <img
+                  src="/assets/icons/userProfile.svg"
+                  alt={`Foto de perfil de ${nombreUsuarioParam}`}
+                  className="h-full w-full object-cover "
+                />
+              )}
+            </div>
+          )}
           {nombreUsuarioLocal && nombreUsuarioLocal === nombreUsuarioParam ? (
             <div className="flex flex-col justify-start items-center w-full h-2/5 gap-5">
-              <p className="text-l text-center font-bold text-amber-100">
-                Usuario: {nombreUsuarioParam}
-              </p>
+              {!mostrarEditar && (
+                <p className="text-l text-center font-bold text-amber-100">
+                  {nombreUsuarioParam}
+                </p>
+              )}
               <div
                 className={`grid w-1/2 transition-[grid-template-rows,opacity] duration-500 ease-in-out ${mostrarEditar ? "grid-rows-[0fr] opacity-0" : "grid-rows-[1fr] opacity-100"}`}
               >
@@ -161,10 +387,18 @@ export default function Perfil() {
               >
                 <div className="overflow-hidden">
                   <div className="flex flex-col gap-15">
-                    <FormularioEditarContrasena
+                    <button
+                      type="button"
+                      className="w-fit self-center cursor-pointer rounded bg-slate-700 px-4 py-2 text-sm font-semibold text-emerald-100 hover:bg-slate-600"
+                      onClick={manejarSalirModoEdicion}
+                      disabled={guardandoFoto}
+                    >
+                      Salir del modo edición
+                    </button>
+                    <FormularioEditarNombreUsuario
                       manejarVolver={() => setMostrarEditar(false)}
                     />
-                    <FormularioEditarNombreUsuario
+                    <FormularioEditarContrasena
                       manejarVolver={() => setMostrarEditar(false)}
                     />
                   </div>
@@ -183,7 +417,7 @@ export default function Perfil() {
                         texto="Cancelar solicitud de amistad"
                         ruta_icono="/assets/icons/pendiente.svg"
                         funcion={() => emitirCancelarSolicitudAmistad(nombreUsuarioParam)}
-                        className="flex-row-reverse text-orange-500"
+                        className="flex-row-reverse text-orange-100"
                         tamanioIcon="h-6 w-6"
                       />
                     )
@@ -193,7 +427,7 @@ export default function Perfil() {
                         texto="Eliminar amigo"
                         ruta_icono="/assets/icons/eliminar.svg"
                         funcion={() => manejarEliminarAmigo()}
-                        className="flex-row-reverse text-red-500"
+                        className="flex-row-reverse text-red-100"
                         tamanioIcon="h-6 w-6"
                       />
                     )
@@ -204,7 +438,7 @@ export default function Perfil() {
                         texto="Enviar solicitud de amistad"
                         ruta_icono="/assets/icons/agregar.svg"
                         funcion={() => emitirEnviarSolicitudAmistad(nombreUsuarioParam)}
-                        className="flex-row-reverse text-green-500"
+                        className="flex-row-reverse text-green-100"
                         tamanioIcon="h-6 w-6"
                       />
                     )

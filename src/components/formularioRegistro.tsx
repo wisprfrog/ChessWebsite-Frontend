@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import FormularioSubirImagen, { subirACloudinary } from "./formularioSubirImagen";
+import { registrarUsuario } from "../services/api";
 
 export default function FormularioRegistro() {
   const [nombre_usuario, setUsername] = useState("");
@@ -9,6 +11,7 @@ export default function FormularioRegistro() {
   const [correo, setCorreo] = useState("");
   const [mensaje, setMensaje] = useState("");
   const [cargando, setCargando] = useState(false);
+  const [archivoFoto, setArchivoFoto] = useState<File | null>(null);
 
   const enviarRegistro = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault(); // Evita que la página se recargue
@@ -21,20 +24,14 @@ export default function FormularioRegistro() {
     setMensaje(""); // Limpia mensajes de errores anteriores
 
     try {
+      let url_foto: string | null = null;
+
+      if (archivoFoto) {
+        url_foto = await subirACloudinary(archivoFoto);
+      }
+
       // Nota: Verifica si tu endpoint necesita una ruta final, ej: /api/registro
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
-      const respuesta = await fetch(`${apiUrl}/api/usuario`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Origin: "http://localhost:3000",
-        },
-        body: JSON.stringify({
-          nombre_usuario,
-          correo,
-          contrasenia,
-        }),
-      });
+      const respuesta = await registrarUsuario(nombre_usuario, correo, contrasenia, url_foto);
 
       // Comprobamos si la petición fue exitosa (status 200-299)
       if (!respuesta.ok) {
@@ -47,10 +44,11 @@ export default function FormularioRegistro() {
         setCorreo("");
         setPassword("");
         setConfirmarContrasenia("");
+        setArchivoFoto(null);
       }
     } catch (error) {
       console.error("Error en la petición:", error);
-      setMensaje("Error al conectar con el servidor.");
+      setMensaje("Error al subir la imagen o conectar con el servidor.");
     } finally {
       setCargando(false); // Apagamos el estado de carga sin importar qué pase
     }
@@ -69,6 +67,10 @@ export default function FormularioRegistro() {
         </div>
 
         <form onSubmit={enviarRegistro} className="flex flex-col gap-6">
+          <FormularioSubirImagen
+            onArchivoSeleccionado={setArchivoFoto}
+            deshabilitado={cargando}
+          />
           <div className="grid gap-2">
             <label
               htmlFor="nombre_usuario"

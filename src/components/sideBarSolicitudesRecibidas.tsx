@@ -39,10 +39,10 @@ export default function SideBarRecibidas({ solicitudesAmistad, aceptarSolicitudA
                             </div>
 
                             <div className="flex flex-wrap gap-5 md:justify-end justify-center">
-                                <Button type="primary" size="small" key="aceptar" onClick={() => aceptarSolicitudAmistad && aceptarSolicitudAmistad(nombre_usuario_solicitud)}>
+                                <Button type="primary" color="cyan" size="small" key="aceptar" onClick={() => aceptarSolicitudAmistad && aceptarSolicitudAmistad(nombre_usuario_solicitud)}>
                                     Aceptar
                                 </Button>
-                                <Button danger size="small" key="rechazar" onClick={() => rechazarSolicitudAmistad && rechazarSolicitudAmistad(nombre_usuario_solicitud)}>
+                                <Button type="primary" danger size="small" key="rechazar" onClick={() => rechazarSolicitudAmistad && rechazarSolicitudAmistad(nombre_usuario_solicitud)}>
                                     Rechazar
                                 </Button>
                             </div>

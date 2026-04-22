@@ -17,12 +17,12 @@ const buttonVariants = cva(
         ghost:
           "hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:hover:bg-muted/50",
         destructive:
-          "bg-destructive/10 text-destructive hover:bg-destructive/20 focus-visible:border-destructive/40 focus-visible:ring-destructive/20 dark:bg-destructive/20 dark:hover:bg-destructive/30 dark:focus-visible:ring-destructive/40",
+          "bg-red-600 text-red-100 hover:bg-red-300 focus-visible:ring-red-300",
         pendiente:
-          "bg-orange-200 text-orange-600 hover:bg-orange-300 focus-visible:border-orange-300 focus-visible:ring-orange-200 dark:bg-orange-200/20 dark:hover:bg-orange-200/30 dark:focus-visible:ring-orange-300/40",
+          "bg-orange-600 text-orange-100 hover:bg-orange-300 focus-visible:border-orange-300 focus-visible:ring-orange-200 dark:bg-orange-200/20 dark:hover:bg-orange-200/30 dark:focus-visible:ring-orange-300/40",
         link: "text-primary underline-offset-4 hover:underline",
         agregar:
-          "bg-green-100 text-white hover:bg-green-600 focus-visible:ring-green-300 disabled:bg-green-300 disabled:text-gray-500 disabled:hover:bg-green-300",
+          "bg-green-600 text-white hover:bg-green-300 focus-visible:ring-green-300",
       },
       size: {
         default:

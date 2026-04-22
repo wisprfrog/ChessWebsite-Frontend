@@ -30,6 +30,24 @@ const generarToken = async (nombre_usuario, correo, contrasenia) => {
   return respuesta;
 }
 
+const registrarUsuario = async (nombre_usuario, correo, contrasenia, url_foto) => {
+  const respuesta = await fetch(`${url_api}/api/usuario`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Origin: origin,
+        },
+        body: JSON.stringify({
+          nombre_usuario,
+          correo,
+          contrasenia,
+          url_foto,
+        }),
+      });
+
+  return respuesta;
+}
+
 const cambiarNombreUsuario = async (token, nombre_usuario, nuevo_nombre) => {
   const respuesta = await fetch(`${url_api}/api/usuario/id_usuario/nombre_usuario`, {
     method: 'PUT',
@@ -306,5 +324,68 @@ const obtenerUsuariosEnPartida = async (id_partida) => {
   return [res.partida[0].id_usuario_blancas, res.partida[0].id_usuario_negras] || [];
 }
 
+const obtenerFotoPerfilUsuario = async (nombre_usuario) => {
+  if (!nombre_usuario) {
+    return null;
+  }
 
-export { validarToken, generarToken, cambiarNombreUsuario, cambiarContrasena, obtenerListaAmigos, obtenerIdUsuario, obtenerEstadisticasUsuario, eliminarAmigo, obtenerMovimientosPartida, agregarAmigo, obtenerIdPartida, obtenerPartidaUsuario, obtenerNombrePorId, obtenerListaPartidas, obtenerHistorialCompleto, obtenerUsuariosEnPartida };
+  try {
+    const respuesta = await fetch(`${url_api}/api/usuario/nombre_usuario/foto_perfil`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Origin': origin
+      },
+      body: JSON.stringify({ nombre_usuario })
+    });
+
+    if (!respuesta.ok) {
+      return null;
+    }
+
+    console.log(respuesta)
+    const res = await respuesta.json();
+    const fotoUrl = res?.url_foto || null;
+
+    return fotoUrl;
+  } catch (error) {
+    console.error("Error al obtener la foto del perfil:", error);
+    return null;
+  }
+}
+
+const cambiarFotoPerfilUsuario = async (nombre_usuario, url_foto_nueva) => {
+  const id_usuario = await obtenerIdUsuario(nombre_usuario);
+  const url_foto_actual = await obtenerFotoPerfilUsuario(nombre_usuario);
+
+  if (!id_usuario) {
+    console.error("No se pudo obtener el ID de usuario para cambiar la foto de perfil");
+    return null;
+  }
+
+  try {
+    const respuesta = await fetch(`${url_api}/api/usuario/id_usuario/foto_perfil`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Origin': origin
+      },
+      body: JSON.stringify({ id_usuario, url_foto_nueva })
+    });
+
+    if (!respuesta.ok) {
+      
+      console.error("Error al cambiar la foto de perfil");
+      return null;
+    }
+
+    const res = await respuesta.json();
+    return res.url_foto;
+  } catch (error) {
+    console.error("Error al cambiar la foto de perfil:", error);
+    return null;
+  }
+
+}
+
+  export { validarToken, registrarUsuario, generarToken, cambiarNombreUsuario, cambiarContrasena, obtenerListaAmigos, obtenerIdUsuario, obtenerEstadisticasUsuario, eliminarAmigo, obtenerMovimientosPartida, agregarAmigo, obtenerIdPartida, obtenerPartidaUsuario, obtenerNombrePorId, obtenerListaPartidas, obtenerHistorialCompleto, obtenerUsuariosEnPartida, obtenerFotoPerfilUsuario, cambiarFotoPerfilUsuario };

@@ -1,8 +1,9 @@
 "use client";
-import React, { useState, useRef, useEffect, use } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Chessboard } from "react-chessboard";
 import { Chess, Square } from "chess.js";
 import { io, Socket } from "socket.io-client";
+import { obtenerFotoPerfilUsuario } from "@/services/api";
 
 export const TableroAjedrez = ({nombre_jugador, manejarVisibilidadTablaMovimientos, mostrar_tabla_movimientos} : { nombre_jugador: string, manejarVisibilidadTablaMovimientos: (visible: boolean) => void, mostrar_tabla_movimientos: (lista_movimientos: string[]) => void }) => {
   //Rol del jugador
@@ -141,6 +142,28 @@ export const TableroAjedrez = ({nombre_jugador, manejarVisibilidadTablaMovimient
 
   // --------------- Logica de los nombres ---------------
   const [nombre_oponente, setNombreOponente] = useState("Oponente");
+  const [fotoPerfilJugador, setFotoPerfilJugador] = useState<string | null>(null);
+  const [fotoPerfilOponente, setFotoPerfilOponente] = useState<string | null>(null);
+
+  const cargarFotoPerfilJugadorActual = async () => {
+    if (!nombre_jugador) {
+      setFotoPerfilJugador(null);
+      return;
+    }
+
+    const fotoUrl = await obtenerFotoPerfilUsuario(nombre_jugador);
+    setFotoPerfilJugador(fotoUrl);
+  };
+
+  const cargarFotoPerfilOponente = async () => {
+    if (!nombre_oponente || nombre_oponente === "Oponente") {
+      setFotoPerfilOponente(null);
+      return;
+    }
+
+    const fotoUrl = await obtenerFotoPerfilUsuario(nombre_oponente);
+    setFotoPerfilOponente(fotoUrl);
+  };
 
   // --------------- Lógica de WebSockets ---------------
   const [sala, setSala] = useState<string | null>(null);
@@ -282,6 +305,14 @@ export const TableroAjedrez = ({nombre_jugador, manejarVisibilidadTablaMovimient
     else manejarVisibilidadTablaMovimientos(false);
   }, [sala]);
 
+  useEffect(() => {
+    void cargarFotoPerfilJugadorActual();
+  }, [nombre_jugador]);
+
+  useEffect(() => {
+    void cargarFotoPerfilOponente();
+  }, [nombre_oponente]);
+
   const enviarMovimiento = (
     estructura_movimiento:
       | { from?: string; to?: string; promotion?: string }
@@ -320,7 +351,14 @@ export const TableroAjedrez = ({nombre_jugador, manejarVisibilidadTablaMovimient
       
       {/* Barra superior (Oponente) */}
       <div className="flex justify-between items-center w-full mb-4 shrink-0 px-2">
-        <p className="text-xl font-bold text-slate-100 truncate pr-4">{nombre_oponente}</p>
+        <div className="flex items-center gap-3 pr-4">
+          <img
+            src={fotoPerfilOponente || "/assets/icons/userProfile.svg"}
+            alt={`Foto de perfil de ${nombre_oponente}`}
+            className="h-10 w-10 rounded-full object-cover border border-slate-600"
+          />
+          <p className="text-xl font-bold text-slate-100 truncate">{nombre_oponente}</p>
+        </div>
         <div className="bg-slate-800 text-amber-400 font-mono text-2xl px-4 py-1 rounded shadow-inner border border-slate-700">
           {tiempo_oponente}
         </div>
@@ -345,7 +383,14 @@ export const TableroAjedrez = ({nombre_jugador, manejarVisibilidadTablaMovimient
       
       {/* Barra inferior (Jugador Local) */}
       <div className="flex justify-between items-center w-full mt-4 shrink-0 px-2">
-        <p className="text-xl font-bold text-slate-100 truncate pr-4">{nombre_jugador}</p>
+        <div className="flex items-center gap-3 pr-4">
+          <img
+            src={fotoPerfilJugador || "/assets/icons/userProfile.svg"}
+            alt={`Foto de perfil de ${nombre_jugador}`}
+            className="h-10 w-10 rounded-full object-cover border border-slate-600"
+          />
+          <p className="text-xl font-bold text-slate-100 truncate">{nombre_jugador}</p>
+        </div>
         <div className="bg-slate-800 text-amber-400 font-mono text-2xl px-4 py-1 rounded shadow-inner border border-slate-700">
           {tiempo_jugador}
         </div>

@@ -53,7 +53,7 @@ export default function SideBarEnviadas({ solicitudesEnviadas, cancelarSolicitud
                             </div>
 
                             <div className="flex gap-2">
-                                <Button danger size="small" key="cancelar" onClick={() => cancelarSolicitud && cancelarSolicitud(nombreUsuario)}>
+                                <Button type="primary" danger size="small" key="cancelar" onClick={() => cancelarSolicitud && cancelarSolicitud(nombreUsuario)}>
                                     Cancelar
                                 </Button>
                             </div>
