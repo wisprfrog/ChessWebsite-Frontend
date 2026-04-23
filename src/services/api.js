@@ -390,4 +390,40 @@ const cambiarFotoPerfilUsuario = async (nombre_usuario, url_foto_nueva, public_i
 
 }
 
-  export { validarToken, registrarUsuario, generarToken, cambiarNombreUsuario, cambiarContrasena, obtenerListaAmigos, obtenerIdUsuario, obtenerEstadisticasUsuario, eliminarAmigo, obtenerMovimientosPartida, agregarAmigo, obtenerIdPartida, obtenerPartidaUsuario, obtenerNombrePorId, obtenerListaPartidas, obtenerHistorialCompleto, obtenerUsuariosEnPartida, obtenerFotoPerfilUsuario, cambiarFotoPerfilUsuario};
+const buscarUsuariosPorNombre = async (textoBusqueda) => {
+  const texto = typeof textoBusqueda === 'string' ? textoBusqueda.trim() : '';
+
+  if (texto.length < 1) {
+    return [];
+  }
+
+  try {
+    const respuesta = await fetch(`${url_api}/api/usuario/busqueda?nombre_usuario=${encodeURIComponent(texto)}`, {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+        'Origin': origin
+      }
+    });
+
+    if (!respuesta.ok) {
+      return [];
+    }
+
+    const res = await respuesta.json();
+    if (!Array.isArray(res?.usuarios)) {
+      return [];
+    }
+
+    const nombres = res.usuarios
+      .map((usuario) => (typeof usuario?.nombre_usuario === 'string' ? usuario.nombre_usuario.trim() : ''))
+      .filter(Boolean);
+
+    return [...new Set(nombres)].slice(0, 8);
+  } catch (error) {
+    console.error('Error al buscar usuarios por nombre:', error);
+    return [];
+  }
+}
+
+  export { validarToken, registrarUsuario, generarToken, cambiarNombreUsuario, cambiarContrasena, obtenerListaAmigos, obtenerIdUsuario, obtenerEstadisticasUsuario, eliminarAmigo, obtenerMovimientosPartida, agregarAmigo, obtenerIdPartida, obtenerPartidaUsuario, obtenerNombrePorId, obtenerListaPartidas, obtenerHistorialCompleto, obtenerUsuariosEnPartida, obtenerFotoPerfilUsuario, cambiarFotoPerfilUsuario, buscarUsuariosPorNombre};
