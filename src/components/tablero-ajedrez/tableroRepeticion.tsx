@@ -3,6 +3,7 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Chessboard } from "react-chessboard";
 import { Chess } from "chess.js";
+import { useRouter } from "next/navigation";
 
 export default function TableroRepeticion({
   movimientos = [] as Array<string>,
@@ -16,6 +17,7 @@ export default function TableroRepeticion({
   const [indiceActual, setIndiceActual] = useState(0);
   const [reproduciendo, setReproduciendo] = useState(false);
   const [mensajeError, setMensajeError] = useState("");
+  const router = useRouter();
 
   const movimientosNormalizados = useMemo(() => {
     if (!Array.isArray(movimientos)) return [];
@@ -77,6 +79,7 @@ export default function TableroRepeticion({
   const totalJugadas = posiciones.fenes.length - 1;
   const fenActual = posiciones.fenes[Math.min(indiceActual, totalJugadas)] || new Chess().fen();
   const intervaloRef = useRef<number | null>(null);
+  const [usuarioActual, setUsuarioActual] = useState("");
 
   const chessboardOptions = {
     position: fenActual,
@@ -93,6 +96,22 @@ export default function TableroRepeticion({
   useEffect(() => {
     onIndiceCambio(indiceActual);
   }, [indiceActual, onIndiceCambio]);
+
+  useEffect(() => {
+    setUsuarioActual(localStorage.getItem("nombre_usuario") || "");
+  }, []);
+
+  const nombreBlancasMostrado =
+    usuarioActual && usuarioActual === nombreBlancas ? "Tú" : nombreBlancas;
+  const nombreNegrasMostrado =
+    usuarioActual && usuarioActual === nombreNegras ? "Tú" : nombreNegras;
+  const claseBaseNombreJugador = "text-xl w-content px-4 text-white text-fold";
+  const claseNombreBlancas = `${claseBaseNombreJugador} ${
+    nombreBlancasMostrado === "Tú" ? "" : "underline onMouseover:text-gray-300 cursor-pointer"
+  }`;
+  const claseNombreNegras = `${claseBaseNombreJugador} ${
+    nombreNegrasMostrado === "Tú" ? "" : "underline onMouseover:text-gray-300 cursor-pointer"
+  }`;
 
   useEffect(() => {
     if (!reproduciendo) {
@@ -161,17 +180,26 @@ export default function TableroRepeticion({
     setReproduciendo((prev) => !prev);
   };
 
+  const redirigirAPerfilUsuario = (nombreUsuario: string) => {
+    if (!nombreUsuario || nombreUsuario === "Tú") return;
+    router.push(`/perfil?usuario=${nombreUsuario}`);
+  }
+
   return (
     <div className="flex w-[42%] mx-0 my-auto gap-x-10 rounded-lg p-4 ">
       <div className="flex flex-col w-full justify-between items-center mb-4 gap-3">
         <div className="flex justify-end w-full">
-          <p className="text-xl w-content px-4 text-white text-fold">{nombreNegras}</p>
+          <p className={claseNombreNegras} onClick={() => redirigirAPerfilUsuario(nombreNegrasMostrado)}>
+            {nombreNegrasMostrado}
+          </p>
         </div>
 
         <Chessboard options={chessboardOptions} />
 
         <div className="flex w-full justify-start">
-          <p className="text-xl w-content px-4 text-white text-fold">{nombreBlancas}</p>
+          <p className={claseNombreBlancas} onClick={() => redirigirAPerfilUsuario(nombreBlancasMostrado)}>
+            {nombreBlancasMostrado}
+          </p>
         </div>
 
         <div className="w-full flex flex-col gap-4 px-4">
