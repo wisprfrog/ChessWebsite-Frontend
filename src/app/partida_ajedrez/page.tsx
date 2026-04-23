@@ -114,15 +114,15 @@ export default function PaginaPartidaAjedrez() {
     ) : null;
   
   return (
-    <main className='flex flex-1 w-full min-h-screen flex-col overflow-hidden bg-gradient-to-br from-slate-950 via-amber-900 to-blue-950'>
+    <main className='flex flex-1 w-screen h-full flex-col overflow-hidden bg-gradient-to-br from-slate-950 via-amber-900 to-blue-950'>
       <NavBar cuantasSolicitudesAmistad={numSolicitudes}/>
-      <div className='flex flex-1 w-full h-full justify-center items-center p-2 sm:p-4 md:p-6 min-h-0'>
-        <div className='flex flex-col min-[730px]:flex-row w-full max-w-6xl h-full gap-2 sm:gap-4 md:gap-x-20 overflow-hidden rounded-lg p-2 sm:p-3 md:p-5 items-center lg:items-stretch justify-center lg:justify-start'>
+      <div className='flex flex-1 w-full h-full justify-center items-center p-6 min-h-0'>
+        <div className='flex w-[65%] h-full gap-x-20 overflow-hidden rounded-lg p-5'>
             {tableroActual}
-            <div className={`w-full flex justify-center lg:justify-start ${tablaMovimientosVisible ? 'block' : 'hidden'} max-h-64 lg:max-h-none overflow-y-auto lg:overflow-y-auto`}>
+            <div className={`w-4/10 h-full ${tablaMovimientosVisible ? 'block' : 'hidden'}`}>
             <TablaMovimientos lista_movimientos={movimientosRepeticionVisibles}/>
-              {cargandoRepeticion ? <p className='text-xs sm:text-sm text-emerald-100'>Cargando repeticion...</p> : null}
-              {errorRepeticion ? <p className='text-xs sm:text-sm text-rose-300'>{errorRepeticion}</p> : null}
+              {cargandoRepeticion ? <p className='text-sm text-emerald-100'>Cargando repeticion...</p> : null}
+              {errorRepeticion ? <p className='text-sm text-rose-300'>{errorRepeticion}</p> : null}
             </div>
         </div>
       </div>
