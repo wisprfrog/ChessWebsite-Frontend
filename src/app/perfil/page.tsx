@@ -263,11 +263,11 @@ export default function Perfil() {
     return null;
 
   return (
-    <div className="flex min-h-screen w-full flex-col items-stretch justify-start bg-gradient-to-br from-slate-950 via-amber-900 to-blue-950">
+    <main className="flex min-h-screen w-full flex-col overflow-x-hidden bg-gradient-to-br from-slate-950 via-amber-900 to-blue-950">
       <NavBar cuantasSolicitudesAmistad={numSolicitudes} />
-      <div className="relative flex w-full flex-1 flex-col items-start justify-center p-20 md:flex-row">
+      <div className="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-5 px-4 py-5 sm:gap-6 sm:px-6 sm:py-6 lg:flex-row">
         {/*Contenido*/}
-        <div className="h-content h-min-90/100 flex w-2/5 flex-col items-center justify-start gap-5 rounded-lg border border-sky-900/60 bg-slate-900/70 p-6 shadow-2xl shadow-black/20">
+        <div className="flex w-full shrink-0 flex-col items-center justify-start gap-5 rounded-lg border border-sky-900/60 bg-slate-900/70 p-4 shadow-2xl shadow-black/20 sm:p-5 lg:w-[26rem]">
           {/*Perfil*/}
           {puedeEditar && mostrarEditar ? (
             <div className="flex w-full flex-col items-center gap-4 rounded-xl border border-sky-900/60 bg-slate-900/85 p-8 shadow-2xl shadow-black/30 backdrop-blur-sm">
@@ -349,7 +349,7 @@ export default function Perfil() {
               </div>
             </div>
           ) : (
-            <div className="flex h-70 w-70 items-center justify-center rounded-full bg-slate-800 text-amber-100 overflow-hidden">
+            <div className="flex h-45 w-45 items-center justify-center rounded-full bg-slate-800 text-amber-100 overflow-hidden md:h-70 md:w-70">
               {cargandoFoto ? (
                 <span className="text-center text-sm font-bold">Cargando foto...</span>
               ) : fotoPerfilUsuario ? (
@@ -375,12 +375,12 @@ export default function Perfil() {
                 </p>
               )}
               <div
-                className={`grid w-1/2 transition-[grid-template-rows,opacity] duration-500 ease-in-out ${mostrarEditar ? "grid-rows-[0fr] opacity-0" : "grid-rows-[1fr] opacity-100"}`}
+                className={`grid w-full transition-[grid-template-rows,opacity] duration-500 ease-in-out ${mostrarEditar ? "grid-rows-[0fr] opacity-0" : "grid-rows-[1fr] opacity-100"}`}
               >
                 <div className="overflow-hidden">
-                  <div className="flex flex-col justify-start items-center h-2/5 gap-5">
+                  <div className="flex flex-col items-center justify-start gap-5">
                     <button
-                      className="mt-4 cursor-pointer rounded bg-amber-500 px-4 py-2 text-slate-950 hover:bg-amber-400"
+                      className="mt-2 w-full cursor-pointer rounded bg-amber-500 px-4 py-2 text-slate-950 hover:bg-amber-400 sm:w-auto"
                       onClick={() => setMostrarEditar(true)}
                     >
                       Editar Perfil
@@ -414,8 +414,8 @@ export default function Perfil() {
             </div>
           ) : (
             <>
-              <div className="flex flex-col justify-start items-center w-1/2 h-2/5 gap-5">
-                <div className="flex gap-x-5 items-center">
+              <div className="flex w-full max-w-md flex-col items-center justify-start gap-5">
+                <div className="flex w-full flex-col items-center gap-4 sm:flex-row sm:justify-center sm:gap-x-5">
                   <p className="text-center text-amber-100">{nombreUsuarioParam}</p>
                   {
                     solicitudesAmistadEnviadas.includes(nombreUsuarioParam) ? (
@@ -457,8 +457,8 @@ export default function Perfil() {
           )}
         </div>
 
-        <div className="flex h-full w-3/5 flex-col">
-          <div className="flex flex-col items-center justify-start gap-5 p-3">
+        <div className="flex w-full min-w-0 flex-1 flex-col gap-5 sm:gap-6">
+          <div className="flex min-w-0 flex-col items-center justify-start">
 
             <TablaAmigos
               manejarEnviarSolicitud={emitirEnviarSolicitudAmistad}
@@ -470,14 +470,15 @@ export default function Perfil() {
               listaSolicitudesRecibidas={solicitudesAmistadRecibidas}
               nombreUsuario={nombreUsuarioParam}
               mostrarEliminar={puedeEditar}
+              actualizarTrigger={actualizarTabla}
             />
           </div>
-          <div className="flex flex-col items-center justify-start gap-5 p-3">
+          <div className="flex min-w-0 flex-col items-center justify-start gap-5">
             <TablaHistorial nombreUsuario={nombreUsuarioParam} />
           </div>
         </div>
       </div>
       <Footer />
-    </div>
+    </main>
   );
 }
