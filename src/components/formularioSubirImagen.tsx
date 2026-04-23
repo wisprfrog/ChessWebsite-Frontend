@@ -4,12 +4,13 @@ type FormularioSubirImagenProps = {
   onArchivoSeleccionado?: (archivo: File | null) => void;
   deshabilitado?: boolean;
   urlImagenActual?: string | null;
+  tokenReinicio?: number;
 };
 
 const CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
 const UPLOAD_PRESET = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
 
-export const subirACloudinary = async (archivo: File): Promise<string> => {
+export const subirACloudinary = async (archivo: File): Promise<{ secure_url: string; public_id: string }> => {
   if (!CLOUD_NAME || !UPLOAD_PRESET) {
     throw new Error("Falta CLOUDINARY_CLOUD_NAME o CLOUDINARY_UPLOAD_PRESET en el entorno.");
   }
@@ -26,17 +27,18 @@ export const subirACloudinary = async (archivo: File): Promise<string> => {
 
   const datos = await respuesta.json();
 
-  if (!respuesta.ok || !datos?.secure_url) {
+  if (!respuesta.ok || !datos?.secure_url || !datos?.public_id) {
     throw new Error(datos?.error?.message || "No se pudo subir la imagen.");
   }
 
-  return datos.secure_url as string;
+  return { secure_url: datos.secure_url, public_id: datos.public_id };
 };
 
 export default function SelectorFotoPerfil({
   onArchivoSeleccionado,
   deshabilitado = false,
   urlImagenActual = null,
+  tokenReinicio,
 }: FormularioSubirImagenProps) {
   const [archivoSeleccionado, setArchivoSeleccionado] = useState<File | null>(null);
   const [vistaPrevia, setVistaPrevia] = useState<string | null>(null);
@@ -51,6 +53,14 @@ export default function SelectorFotoPerfil({
       URL.revokeObjectURL(vistaPrevia);
     };
   }, [vistaPrevia]);
+
+  useEffect(() => {
+    setArchivoSeleccionado(null);
+    setVistaPrevia(null);
+    if (inputArchivoRef.current) {
+      inputArchivoRef.current.value = "";
+    }
+  }, [tokenReinicio]);
 
   const manejarCambioArchivo = (evento: ChangeEvent<HTMLInputElement>) => {
     if (!evento.target.files) {

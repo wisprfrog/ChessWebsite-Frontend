@@ -30,7 +30,7 @@ const generarToken = async (nombre_usuario, correo, contrasenia) => {
   return respuesta;
 }
 
-const registrarUsuario = async (nombre_usuario, correo, contrasenia, url_foto) => {
+const registrarUsuario = async (nombre_usuario, correo, contrasenia, url_foto, public_id) => {
   const respuesta = await fetch(`${url_api}/api/usuario`, {
         method: "POST",
         headers: {
@@ -42,6 +42,7 @@ const registrarUsuario = async (nombre_usuario, correo, contrasenia, url_foto) =
           correo,
           contrasenia,
           url_foto,
+          public_id
         }),
       });
 
@@ -347,6 +348,7 @@ const obtenerFotoPerfilUsuario = async (nombre_usuario) => {
     const res = await respuesta.json();
     const fotoUrl = res?.url_foto || null;
 
+    console.log(`Foto de perfil para ${nombre_usuario}:`, fotoUrl);
     return fotoUrl;
   } catch (error) {
     console.error("Error al obtener la foto del perfil:", error);
@@ -354,9 +356,8 @@ const obtenerFotoPerfilUsuario = async (nombre_usuario) => {
   }
 }
 
-const cambiarFotoPerfilUsuario = async (nombre_usuario, url_foto_nueva) => {
+const cambiarFotoPerfilUsuario = async (nombre_usuario, url_foto_nueva, public_id_foto_nueva) => {
   const id_usuario = await obtenerIdUsuario(nombre_usuario);
-  const url_foto_actual = await obtenerFotoPerfilUsuario(nombre_usuario);
 
   if (!id_usuario) {
     console.error("No se pudo obtener el ID de usuario para cambiar la foto de perfil");
@@ -370,7 +371,7 @@ const cambiarFotoPerfilUsuario = async (nombre_usuario, url_foto_nueva) => {
         'Content-Type': 'application/json',
         'Origin': origin
       },
-      body: JSON.stringify({ id_usuario, url_foto_nueva })
+      body: JSON.stringify({ id_usuario, url_foto_nueva, public_id_foto_nueva })
     });
 
     if (!respuesta.ok) {
@@ -380,6 +381,7 @@ const cambiarFotoPerfilUsuario = async (nombre_usuario, url_foto_nueva) => {
     }
 
     const res = await respuesta.json();
+  
     return res.url_foto;
   } catch (error) {
     console.error("Error al cambiar la foto de perfil:", error);
@@ -388,4 +390,4 @@ const cambiarFotoPerfilUsuario = async (nombre_usuario, url_foto_nueva) => {
 
 }
 
-  export { validarToken, registrarUsuario, generarToken, cambiarNombreUsuario, cambiarContrasena, obtenerListaAmigos, obtenerIdUsuario, obtenerEstadisticasUsuario, eliminarAmigo, obtenerMovimientosPartida, agregarAmigo, obtenerIdPartida, obtenerPartidaUsuario, obtenerNombrePorId, obtenerListaPartidas, obtenerHistorialCompleto, obtenerUsuariosEnPartida, obtenerFotoPerfilUsuario, cambiarFotoPerfilUsuario };
+  export { validarToken, registrarUsuario, generarToken, cambiarNombreUsuario, cambiarContrasena, obtenerListaAmigos, obtenerIdUsuario, obtenerEstadisticasUsuario, eliminarAmigo, obtenerMovimientosPartida, agregarAmigo, obtenerIdPartida, obtenerPartidaUsuario, obtenerNombrePorId, obtenerListaPartidas, obtenerHistorialCompleto, obtenerUsuariosEnPartida, obtenerFotoPerfilUsuario, cambiarFotoPerfilUsuario};

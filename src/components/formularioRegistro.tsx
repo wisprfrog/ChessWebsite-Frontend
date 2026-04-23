@@ -12,6 +12,13 @@ export default function FormularioRegistro() {
   const [mensaje, setMensaje] = useState("");
   const [cargando, setCargando] = useState(false);
   const [archivoFoto, setArchivoFoto] = useState<File | null>(null);
+  const [tokenReinicioFoto, setTokenReinicioFoto] = useState(0);
+  const botonLimpiarFotoDeshabilitado = cargando || !archivoFoto;
+
+  const manejarLimpiarFoto = () => {
+    setArchivoFoto(null);
+    setTokenReinicioFoto((valorAnterior) => valorAnterior + 1);
+  };
 
   const enviarRegistro = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault(); // Evita que la página se recargue
@@ -25,13 +32,16 @@ export default function FormularioRegistro() {
 
     try {
       let url_foto: string | null = null;
+      let public_id: string | null = null;
 
       if (archivoFoto) {
-        url_foto = await subirACloudinary(archivoFoto);
+        const data = await subirACloudinary(archivoFoto);
+        url_foto = data.secure_url;
+        public_id = data.public_id;
       }
 
       // Nota: Verifica si tu endpoint necesita una ruta final, ej: /api/registro
-      const respuesta = await registrarUsuario(nombre_usuario, correo, contrasenia, url_foto);
+      const respuesta = await registrarUsuario(nombre_usuario, correo, contrasenia, url_foto, public_id);
 
       // Comprobamos si la petición fue exitosa (status 200-299)
       if (!respuesta.ok) {
@@ -45,6 +55,7 @@ export default function FormularioRegistro() {
         setPassword("");
         setConfirmarContrasenia("");
         setArchivoFoto(null);
+        setTokenReinicioFoto((valorAnterior) => valorAnterior + 1);
       }
     } catch (error) {
       console.error("Error en la petición:", error);
@@ -70,7 +81,19 @@ export default function FormularioRegistro() {
           <FormularioSubirImagen
             onArchivoSeleccionado={setArchivoFoto}
             deshabilitado={cargando}
+            tokenReinicio={tokenReinicioFoto}
           />
+          <button
+            type="button"
+            className={`h-10 w-full rounded-md border px-4 text-sm font-medium transition ${botonLimpiarFotoDeshabilitado
+              ? "cursor-not-allowed border-rose-900/70 bg-rose-950/70 text-rose-300/70 opacity-70"
+              : "cursor-pointer border-rose-500/50 bg-rose-700 text-rose-100 hover:bg-rose-800"
+              }`}
+            onClick={manejarLimpiarFoto}
+            disabled={botonLimpiarFotoDeshabilitado}
+          >
+            Limpiar foto
+          </button>
           <div className="grid gap-2">
             <label
               htmlFor="nombre_usuario"

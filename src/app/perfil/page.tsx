@@ -7,7 +7,10 @@ import NavBar from "../../components/navBar";
 import Footer from "../../components/footer";
 
 import { useMonsterSocket } from "../../hooks/usarSocketMonster";
-import { obtenerListaAmigos, obtenerIdUsuario, eliminarAmigo, obtenerFotoPerfilUsuario, cambiarFotoPerfilUsuario } from "@/services/api";
+import {  obtenerListaAmigos, obtenerIdUsuario,
+          eliminarAmigo, obtenerFotoPerfilUsuario,
+          cambiarFotoPerfilUsuario
+        } from "@/services/api";
 
 // Componente de perfil de usuario
 import FormularioEditarNombreUsuario from "../../components/formularioEditarNombre";
@@ -98,8 +101,8 @@ export default function Perfil() {
       }
 
       setCargandoFoto(true);
-      const fotoUrl = await obtenerFotoPerfilUsuario(nombreUsuarioParam);
-      setFotoPerfilUsuario(fotoUrl);
+      const url_foto = await obtenerFotoPerfilUsuario(nombreUsuarioParam);
+      setFotoPerfilUsuario(url_foto);
       setCargandoFoto(false);
     };
 
@@ -124,19 +127,23 @@ export default function Perfil() {
     setGuardandoFoto(true);
 
     try {
-      let nuevaUrlFoto: string | null = null;
+      let url_foto_nueva: string | null = null;
+      let public_id_foto_nueva: string | null = null;
+
 
       if (!eliminarFotoPerfil && archivoFotoNuevo) {
-        nuevaUrlFoto = await subirACloudinary(archivoFotoNuevo);
+        const { secure_url, public_id } = await subirACloudinary(archivoFotoNuevo);
+        url_foto_nueva = secure_url;
+        public_id_foto_nueva = public_id;
       }
 
-      const fotoActualizada = await cambiarFotoPerfilUsuario(nombreUsuarioLocal, nuevaUrlFoto);
-      setFotoPerfilUsuario(fotoActualizada ?? nuevaUrlFoto);
+      const url_foto_actualizada = await cambiarFotoPerfilUsuario(nombreUsuarioLocal, url_foto_nueva, public_id_foto_nueva);
+      setFotoPerfilUsuario(url_foto_actualizada ?? url_foto_nueva);
       setArchivoFotoNuevo(null);
       setEliminarFotoPerfil(false);
       setMensajeFotoPerfil({
         tipo: "success",
-        texto: nuevaUrlFoto === null
+        texto: url_foto_nueva === null
           ? "Foto de perfil eliminada correctamente."
           : "Foto de perfil actualizada correctamente.",
       });
