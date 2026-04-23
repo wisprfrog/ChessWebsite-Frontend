@@ -338,8 +338,8 @@ export const TableroAjedrez = ({nombre_jugador, manejarVisibilidadTablaMovimient
 
   if(!nombre_jugador || !sala){
     return (
-      <div className="flex flex-1 justify-center items-center">
-        <p className="text-5xl text-emerald-300 animate-pulse font-semibold">Buscando partida...</p>
+      <div className="flex flex-1 justify-center items-center w-full">
+        <p className="text-2xl sm:text-3xl md:text-5xl text-emerald-300 animate-pulse font-semibold text-center px-4">Buscando partida...</p>
       </div>
     );
   }
@@ -347,34 +347,34 @@ export const TableroAjedrez = ({nombre_jugador, manejarVisibilidadTablaMovimient
   return (
     // h-full asegura que tome la altura del cuadro padre. 
     // mr-8 empuja la tabla de movimientos hacia la derecha.
-    <div className="flex flex-col flex-1 w-full min-w-0 min-h-0 mr-8">
+    <div className="flex flex-col flex-1 w-content min-w-0 min-h-0 lg:mr-8">
       
       {/* Barra superior (Oponente) */}
-      <div className="flex justify-between items-center w-full mb-4 shrink-0 px-2">
-        <div className="flex items-center gap-3 pr-4">
+      <div className="flex flex-row-reverse justify-start items-center w-full mb-1 sm:mb-2 md:mb-4 shrink-0 px-1 sm:px-2 gap-2 sm:gap-2 md:gap-3 pb-3">
+        <div className="flex flex-row-reverse justify-start items-center gap-1 sm:gap-2 md:gap-3 pr-1 sm:pr-2 md:pr-4 min-w-0">
           <img
             src={fotoPerfilOponente || "/assets/icons/userProfile.svg"}
             alt={`Foto de perfil de ${nombre_oponente}`}
-            className="h-10 w-10 rounded-full object-cover border border-slate-600"
+            className="h-6 sm:h-8 md:h-10 w-6 sm:w-8 md:w-10 rounded-full object-cover border border-slate-600 shrink-0"
           />
-          <p className="text-xl font-bold text-slate-100 truncate">{nombre_oponente}</p>
+          <p className="align-middle text-xs sm:text-sm md:text-lg lg:text-xl font-bold text-slate-100 truncate">{nombre_oponente}</p>
         </div>
-        <div className="bg-slate-800 text-amber-400 font-mono text-2xl px-4 py-1 rounded shadow-inner border border-slate-700">
+        <div className="bg-slate-800 text-amber-400 font-mono text-xs sm:text-xs md:text-xs lg:text-lg px-2 sm:px-3 py-0.5 rounded shadow-inner border border-slate-700 shrink-0 scale-75">
           {tiempo_oponente}
         </div>
       </div>
 
       {/* Contenedor del Tablero */}
       <div className="relative flex flex-1 w-full justify-center items-center min-h-0 min-w-0">
-        <div className=" h-full w-auto aspect-square drop-shadow-2xl">
+        <div className="h-full min-[730px]:w-40/100 min-[627px]:w-50/100 min-[492px]:w-70/100 w-90/100 aspect-square drop-shadow-2xl">
           <Chessboard options={chessboardOptions} />
         </div>
           {
             causa_fin_partida && ganador.length > 0 && (
-              <div className="absolute w-full h-full flex justify-center items-center bg-[black]/40">
-                <div className="flex flex-col w-content h-content justify-center items-center p-10 gap-y-5 rounded-lg bg-slate-800">
-                  <p className="w-content h-content text-4xl text-center text-[#fef3c7] font-[-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji] font-semibold">{ganador}</p>
-                  <p className="w-content h-content text-2xl text-center text-[#fef3c7] font-[-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji] font-bold">{causa_fin_partida}</p>
+              <div className="absolute w-full h-full flex justify-center items-center bg-[black]/40 max-w-64 sm:max-w-64 md:max-w-80 lg:max-w-[500px] max-h-80 sm:max-h-80 md:max-h-80 lg:max-h-full">
+                <div className="flex flex-col w-content h-content justify-center items-center p-6 sm:p-10 gap-y-5  bg-slate-800">
+                  <p className="w-content h-content text-2xl sm:text-4xl text-center text-[#fef3c7] font-[-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji] font-semibold">{ganador}</p>
+                  <p className="w-content h-content text-lg sm:text-2xl text-center text-[#fef3c7] font-[-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji] font-bold">{causa_fin_partida}</p>
                 </div>
               </div>
             )
@@ -382,16 +382,16 @@ export const TableroAjedrez = ({nombre_jugador, manejarVisibilidadTablaMovimient
       </div>
       
       {/* Barra inferior (Jugador Local) */}
-      <div className="flex justify-between items-center w-full mt-4 shrink-0 px-2">
-        <div className="flex items-center gap-3 pr-4">
+      <div className="flex justify-start items-center w-full mt-1 sm:mt-2 md:mt-4 shrink-0 px-1 sm:px-2 gap-1 sm:gap-2 md:gap-3 pt-3 max-md:pb-5">
+        <div className="flex items-center gap-1 sm:gap-2 md:gap-3 pr-1 sm:pr-2 md:pr-4 min-w-0">
           <img
             src={fotoPerfilJugador || "/assets/icons/userProfile.svg"}
             alt={`Foto de perfil de ${nombre_jugador}`}
-            className="h-10 w-10 rounded-full object-cover border border-slate-600"
+            className="h-6 sm:h-8 md:h-10 w-6 sm:w-8 md:w-10 rounded-full object-cover border border-slate-600 shrink-0"
           />
-          <p className="text-xl font-bold text-slate-100 truncate">{nombre_jugador}</p>
+          <p className="text-xs sm:text-sm md:text-lg lg:text-xl font-bold text-slate-100 truncate">{nombre_jugador}</p>
         </div>
-        <div className="bg-slate-800 text-amber-400 font-mono text-2xl px-4 py-1 rounded shadow-inner border border-slate-700">
+        <div className="bg-slate-800 text-amber-400 font-mono text-xs sm:text-sm md:text-base lg:text-lg px-2 sm:px-3 py-0.5 rounded shadow-inner border border-slate-700 shrink-0 scale-75">
           {tiempo_jugador}
         </div>
       </div>

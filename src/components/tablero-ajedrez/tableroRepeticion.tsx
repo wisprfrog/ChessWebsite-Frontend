@@ -186,58 +186,112 @@ export default function TableroRepeticion({
   }
 
   return (
-    <div className="flex w-[42%] mx-0 my-auto gap-x-10 rounded-lg p-4 ">
-      <div className="flex flex-col w-full justify-between items-center mb-4 gap-3">
-        <div className="flex justify-end w-full">
-          <p className={claseNombreNegras} onClick={() => redirigirAPerfilUsuario(nombreNegrasMostrado)}>
-            {nombreNegrasMostrado}
-          </p>
-        </div>
+    <div className="flex flex-col flex-1 lg:flex-row w-full overflow-hidden">
+      <style>{`
+        input[type="range"] {
+          appearance: none;
+          -webkit-appearance: none;
+          width: 100%;
+          height: 6px;
+          border-radius: 3px;
+          background: #1e293b;
+          outline: none;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+          appearance: none;
+          -webkit-appearance: none;
+          width: 18px;
+          height: 18px;
+          border-radius: 50%;
+          background: #d27d0c;
+          cursor: pointer;
+        }
+        input[type="range"]::-moz-range-thumb {
+          width: 18px;
+          height: 18px;
+          border-radius: 50%;
+          background: #ba610e;
+          cursor: pointer;
+          border: none;
+        }
+      `}</style>
+      
+      <div className="flex flex-col flex-1 w-full justify-center items-center min-w-0 min-h-0">
+        
+        <div className="w-full flex flex-col items-center">
+            
+            {/* --- NOMBRE NEGRAS CON REDIRECCIÓN --- */}
+            <div className="flex justify-end w-full mb-1 lg:mb-2">
+              <p 
+                onClick={() => redirigirAPerfilUsuario(nombreNegras)}
+                className={`text-sm md:text-base lg:text-lg font-bold text-white truncate transition-colors duration-200 ${
+                  nombreNegrasMostrado !== "Tú" 
+                    ? "hover:text-amber-400 hover:underline cursor-pointer" 
+                    : ""
+                }`}
+              >
+                {nombreNegrasMostrado}
+              </p>
+            </div>
 
-        <Chessboard options={chessboardOptions} />
+            {/* TABLERO */}
+            <div className="w-full drop-shadow-2xl">
+              <Chessboard options={chessboardOptions} />
+            </div>
+            
+            {/* --- NOMBRE BLANCAS CON REDIRECCIÓN --- */}
+            <div className="flex w-full justify-start mt-1 lg:mt-2">
+              <p 
+                onClick={() => redirigirAPerfilUsuario(nombreBlancas)}
+                className={`text-sm md:text-base lg:text-lg font-bold text-white truncate transition-colors duration-200 ${
+                  nombreBlancasMostrado !== "Tú" 
+                    ? "hover:text-amber-400 hover:underline cursor-pointer" 
+                    : ""
+                }`}
+              >
+                {nombreBlancasMostrado}
+              </p>
+            </div>
 
-        <div className="flex w-full justify-start">
-          <p className={claseNombreBlancas} onClick={() => redirigirAPerfilUsuario(nombreBlancasMostrado)}>
-            {nombreBlancasMostrado}
-          </p>
-        </div>
+            {/* Controles de reproducción */}
+            <div className="w-full flex flex-col gap-2 mt-3">
+              <div className="flex gap-1 sm:gap-2 flex-wrap justify-center lg:justify-between">
+                <button type="button" className="px-3 py-1 text-xs sm:text-sm bg-slate-700 text-white rounded cursor-pointer hover:bg-slate-600 transition" onClick={irAlInicio}>
+                  |&lt;
+                </button>
+                <button type="button" className="px-3 py-1 text-xs sm:text-sm bg-slate-700 text-white rounded cursor-pointer hover:bg-slate-600 transition" onClick={irAtras}>
+                  &lt;
+                </button>
+                <button type="button" className="flex-1 min-w-[80px] py-1 text-xs sm:text-sm bg-amber-600 text-white font-bold rounded cursor-pointer hover:bg-amber-500 transition shadow-lg" onClick={alternarReproduccion}>
+                  {reproduciendo ? "Pausar" : "Reproducir"}
+                </button>
+                <button type="button" className="px-3 py-1 text-xs sm:text-sm bg-slate-700 text-white rounded cursor-pointer hover:bg-slate-600 transition" onClick={irAdelante}>
+                  &gt;
+                </button>
+                <button type="button" className="px-3 py-1 text-xs sm:text-sm bg-slate-700 text-white rounded cursor-pointer hover:bg-slate-600 transition" onClick={irAlFinal}>
+                  &gt;|
+                </button>
+              </div>
 
-        <div className="w-full flex flex-col gap-4 px-4">
-          <div className="flex gap-3 flex-wrap">
-            <button type="button" className="px-2 py-1 bg-gray-200 rounded cursor-pointer" onClick={irAlInicio}>
-              |&lt;
-            </button>
-            <button type="button" className="px-2 py-1 bg-gray-200 rounded cursor-pointer" onClick={irAtras}>
-              &lt;
-            </button>
-            <button type="button" className="p-2 bg-slate-800 text-white rounded cursor-pointer" onClick={alternarReproduccion}>
-              {reproduciendo ? "Pausar" : "Reproducir"}
-            </button>
-            <button type="button" className="px-2 py-1 bg-gray-200 rounded cursor-pointer" onClick={irAdelante}>
-              &gt;
-            </button>
-            <button type="button" className="px-2 py-1 bg-gray-200 rounded cursor-pointer" onClick={irAlFinal}>
-              &gt;|
-            </button>
-          </div>
+              <input
+                type="range"
+                min={0}
+                max={Math.max(0, totalJugadas)}
+                value={indiceActual}
+                onChange={(e) => {
+                  setReproduciendo(false);
+                  setIndiceActual(Number(e.target.value));
+                }}
+                className="w-full mt-2"
+              />
 
-          <input
-            type="range"
-            min={0}
-            max={Math.max(0, totalJugadas)}
-            value={indiceActual}
-            onChange={(e) => {
-              setReproduciendo(false);
-              setIndiceActual(Number(e.target.value));
-            }}
-            className="w-full h-2 cursor-pointer accent-slate-800 bg-slate-800 rounded-lg appearance-auto"
-          />
+              <p className="text-xs sm:text-sm text-slate-300 font-mono text-center">
+                Jugada {indiceActual} de {totalJugadas}
+              </p>
 
-          <p className="text-sm text-gray-700 text-white text-fold">
-            Jugada {indiceActual} de {totalJugadas}
-          </p>
+              {mensajeError ? <p className="text-xs sm:text-sm text-red-400 bg-red-900/20 p-2 rounded text-center">{mensajeError}</p> : null}
+            </div>
 
-          {mensajeError ? <p className="text-sm text-red-600">{mensajeError}</p> : null}
         </div>
       </div>
     </div>
