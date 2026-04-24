@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { usarAutenticar } from "../../hooks/usarAutenticar";
 import NavBar from "../../components/navBar";
@@ -23,7 +23,7 @@ import FormularioSubirImagen, { subirACloudinary } from "@/components/formulario
 import TablaHistorial from "../../components/tablaHistorial";
 import TablaAmigos from "@/components/tablaAmigos";
 
-export default function Perfil() {
+function PerfilContenido() {
   type MensajeFotoPerfil = {
     tipo: "success" | "error" | "info";
     texto: string;
@@ -480,5 +480,13 @@ export default function Perfil() {
       </div>
       <Footer />
     </main>
+  );
+}
+
+export default function Perfil() {
+  return (
+    <Suspense fallback={null}>
+      <PerfilContenido />
+    </Suspense>
   );
 }

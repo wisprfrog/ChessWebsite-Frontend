@@ -11,10 +11,10 @@ import { usarAutenticar } from "@/hooks/usarAutenticar";
 
 import { useSearchParams } from "next/navigation";
 import { useMonsterSocket } from "@/hooks/usarSocketMonster";
-import { useEffect, useMemo, useState } from 'react';
+import { Suspense, useEffect, useMemo, useState } from 'react';
 import { obtenerMovimientosPartida, obtenerNombrePorId, obtenerUsuariosEnPartida } from '@/services/api';
 
-export default function PaginaPartidaAjedrez() {
+function PaginaPartidaAjedrezContenido() {
   const searchParams = useSearchParams();
   const tipo_partida = searchParams.get('tipo_partida');
   const idPartida = searchParams.get('id_partida');
@@ -138,5 +138,13 @@ export default function PaginaPartidaAjedrez() {
       </div>
       <Footer />
     </main>
+  );
+}
+
+export default function PaginaPartidaAjedrez() {
+  return (
+    <Suspense fallback={null}>
+      <PaginaPartidaAjedrezContenido />
+    </Suspense>
   );
 }
