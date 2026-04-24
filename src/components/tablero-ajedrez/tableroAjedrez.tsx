@@ -176,15 +176,19 @@ export const TableroAjedrez = ({nombre_jugador, manejarVisibilidadTablaMovimient
       ? `${process.env.NEXT_PUBLIC_API_URL}/juego`
       : "http://localhost:4000/juego";
 
-    socketRef.current = io(
-      url,
-      {
-        auth: {
-          nombre_usuario_actual: nombre_jugador,
-        },
-        autoConnect: true,
-      },
-    );
+    socketRef.current = io(url, {
+      autoConnect: false,
+    });
+  }, []);
+
+  useEffect(() => {
+    if(!socketRef.current) return;
+
+    socketRef.current.auth = {
+      nombre_usuario_actual: nombre_jugador,
+    };
+
+    socketRef.current.connect();
 
     socketRef.current?.on("connect", () => {
       console.log("Conectando al chess mi bro");
@@ -290,7 +294,7 @@ export const TableroAjedrez = ({nombre_jugador, manejarVisibilidadTablaMovimient
     return () => {
       socketRef.current?.disconnect();
     };
-  }, []);
+  }, [socketRef.current]);
 
   useEffect(() => {
     if(sala !== null){
