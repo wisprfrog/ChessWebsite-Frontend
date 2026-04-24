@@ -23,7 +23,6 @@ export default function PopupSolicitudes({
     });
 
   const manejarAceptarInvitacion = (nombreJugador) => {
-    console.log("Aceptar invitación de:", nombreJugador);
     emitirAceptarInvitacionPartida(nombreJugador);
     setInvitacionesActivas((prev) =>
       prev.filter((invitacion) => invitacion !== nombreJugador),
@@ -71,7 +70,6 @@ export default function PopupSolicitudes({
     key: index,
     jugador: invitacion,
   }));
-  console.log("dataSource:", dataSource);
 
   useEffect(() => {
     if (typeof onCantidadInvitacionesChange === "function") {

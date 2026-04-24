@@ -39,7 +39,6 @@ export default function PruebaIdPartida({ nombreUsuario }: { nombreUsuario: stri
              // 1. Extraemos los IDs que nos mandó la base de datos
              const idBlancas = partida.id_usuario_blancas;
              const idNegras = partida.id_usuario_negras;
-             console.log("DETALLES DE LA PARTIDA RESPONDIDOS POR EXPRESS:", partida);
 
              // 2. Pedimos los nombres reales usando nuestra nueva función
              // Usamos Promise.all para hacer ambas peticiones al mismo tiempo y que sea súper rápido

@@ -13,7 +13,6 @@ const validarToken = async (token) => {
 
   if (respuesta.status === 200) return true;
 
-  console.log("Token no válido o ha expirado");
   return false;
 }
 
@@ -344,11 +343,9 @@ const obtenerFotoPerfilUsuario = async (nombre_usuario) => {
       return null;
     }
 
-    console.log(respuesta)
     const res = await respuesta.json();
     const fotoUrl = res?.url_foto || null;
 
-    console.log(`Foto de perfil para ${nombre_usuario}:`, fotoUrl);
     return fotoUrl;
   } catch (error) {
     console.error("Error al obtener la foto del perfil:", error);

@@ -194,21 +194,18 @@ export const TableroAjedrez = ({nombre_jugador, manejarVisibilidadTablaMovimient
       "intentar_reconexion",
       ({ sala_a_reconectar, nombre_usuario_conectado }) => {
         if(nombre_usuario_conectado == nombre_jugador){
-          console.log(`Intentando reconectar a la sala ${sala_a_reconectar}...`);
           if(sala_a_reconectar !== null){
             console.log(`Reconexion exitosa a la sala ${sala_a_reconectar}`);
             setSala(sala_a_reconectar);
           }
           else{
             if(localStorage.getItem("sala_partida_amigos")){
-              console.log("te espera una partida con tus amigos mi bro :)");
               const sala_guardada = localStorage.getItem("sala_partida_amigos");
               localStorage.removeItem("sala_partida_amigos");
 
               setSala(sala_guardada);
             }
             else{
-              console.log("no te espera ninguna partida con tus amigos, buscando partida aleatoria...");
               socketRef.current?.emit("buscar_partida", nombre_jugador);
             }
           }
@@ -236,7 +233,6 @@ export const TableroAjedrez = ({nombre_jugador, manejarVisibilidadTablaMovimient
           chessGame.load(fenPartida);
           setChessPosition(chessGame.fen());
           setListaMovimientos(historial_juego);
-          console.log("lista", historial_juego);
         }
 
         mostrar_tabla_movimientos(historial_juego ?? []);
@@ -282,7 +278,6 @@ export const TableroAjedrez = ({nombre_jugador, manejarVisibilidadTablaMovimient
       "terminar_partida",
       ({ causa_fin_partida, ganador }: { causa_fin_partida: string; ganador: string }) => {
         setCausaFinPartida(causa_fin_partida);
-        console.log(`Causa de fin de partida: ${causa_fin_partida}, ganador: ${ganador}`);
         setGanador(ganador === "Empate" ? ganador : `Ganador: ${ganador}`);
       },
     );
