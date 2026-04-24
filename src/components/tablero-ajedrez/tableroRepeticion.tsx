@@ -193,7 +193,8 @@ export default function TableroRepeticion({
   };
 
   return (
-    <div className="flex w-[42%] mx-0 my-auto gap-x-10 rounded-lg p-4 ">
+    // Contenedor principal idéntico a tableroAjedrez.tsx y CPU
+    <div className="flex flex-col flex-1 w-full min-w-0 min-h-0 justify-center items-center lg:mr-8">
       <style>{`
         input[type="range"] {
           appearance: none;
@@ -222,27 +223,44 @@ export default function TableroRepeticion({
           border: none;
         }
       `}</style>
-      <div className="flex flex-col w-full justify-between items-center mb-4 gap-3">
-        <div className="flex justify-end w-full">
+      
+      {/* Contenedor estricto para el ancho máximo (El "Punto Dulce") */}
+      <div className="w-full max-w-[260px] sm:max-w-[320px] md:max-w-[380px] lg:max-w-[400px] xl:max-w-[440px] flex flex-col items-center">
+        
+        {/* Nombre Negras */}
+        <div className="flex justify-end w-full mb-1 lg:mb-2">
           <p
-            className={claseNombreNegras}
-            onClick={() => redirigirAPerfilUsuario(nombreNegrasMostrado)}
+            onClick={() => redirigirAPerfilUsuario(nombreNegras)}
+            className={`text-sm md:text-base lg:text-lg font-bold text-white truncate transition-colors duration-200 ${
+              nombreNegrasMostrado !== "Tú"
+                ? "hover:text-amber-400 hover:underline cursor-pointer"
+                : ""
+            }`}
           >
             {nombreNegrasMostrado}
           </p>
         </div>
 
-        <Chessboard options={chessboardOptions} />
+        {/* TABLERO INFALIBLE */}
+        <div className="w-full drop-shadow-2xl">
+          <Chessboard options={chessboardOptions} />
+        </div>
 
-        <div className="flex w-full justify-start">
+        {/* Nombre Blancas */}
+        <div className="flex w-full justify-start mt-1 lg:mt-2">
           <p
-            className={claseNombreBlancas}
-            onClick={() => redirigirAPerfilUsuario(nombreBlancasMostrado)}
+            onClick={() => redirigirAPerfilUsuario(nombreBlancas)}
+            className={`text-sm md:text-base lg:text-lg font-bold text-white truncate transition-colors duration-200 ${
+              nombreBlancasMostrado !== "Tú"
+                ? "hover:text-amber-400 hover:underline cursor-pointer"
+                : ""
+            }`}
           >
             {nombreBlancasMostrado}
           </p>
         </div>
 
+        {/* Controles de reproducción */}
         <div className="w-full flex flex-col gap-2 mt-3">
           <div className="flex gap-1 sm:gap-2 flex-wrap justify-center lg:justify-between">
             <button
@@ -291,15 +309,17 @@ export default function TableroRepeticion({
               setReproduciendo(false);
               setIndiceActual(Number(e.target.value));
             }}
-            className="w-full h-2 cursor-pointer accent-slate-800 bg-slate-800 rounded-lg appearance-auto"
+            className="w-full mt-2"
           />
 
-          <p className="text-sm text-gray-700 text-white text-fold">
+          <p className="text-xs sm:text-sm text-slate-300 font-mono text-center">
             Jugada {indiceActual} de {totalJugadas}
           </p>
 
           {mensajeError ? (
-            <p className="text-sm text-red-600">{mensajeError}</p>
+            <p className="text-xs sm:text-sm text-red-400 bg-red-900/20 p-2 rounded text-center">
+              {mensajeError}
+            </p>
           ) : null}
         </div>
       </div>

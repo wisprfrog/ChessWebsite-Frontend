@@ -138,27 +138,41 @@ const chessboardOptions = {
   if (!nombre_jugador) return null;
 
   return (
-    <div className="flex flex-col flex-1 w-full h-full min-w-0 min-h-0 justify-between items-center">
+    // Contenedor principal con las mismas dimensiones que el tablero multijugador
+    <div className="flex flex-col w-content max-w-[456px] h-full min-w-0 min-h-0 lg:mr-8 gap-y-2 gap-x-2">
       
-      {/* Etiqueta de la CPU (Arriba derecha) */}
-      <div className="flex justify-end w-full mb-2">
-        <p className="text-l px-4 font-bold pb-1 text-white">CPU</p>
-      </div>
-
-      {/* --- EL CONTENEDOR DEL TABLERO CON LA SOLUCIÓN DE TAMAÑO --- */}
-      <div className="flex flex-1 w-full justify-center items-center min-h-0 min-w-0 overflow-hidden py-2">
-        <div className="h-full w-auto aspect-square mx-auto drop-shadow-2xl">
-          <Chessboard options={chessboardOptions} />
+      {/* Barra superior (CPU) */}
+      <div className="flex flex-row-reverse justify-start items-center w-full shrink-0 px-1 gap-x-4">
+        <div className="flex flex-row-reverse items-center gap-2 min-w-0">
+          <p className="text-md sm:text-lg md:text-xl lg:text-2xl font-bold text-slate-100 truncate">
+            CPU
+          </p>
         </div>
       </div>
-      
-      {/* Etiqueta del Jugador Local (Abajo izquierda) */}
-      <div className="flex w-full justify-start mt-2">
-        <p className="text-xs sm:text-sm md:text-base font-bold text-white truncate">
-          {nombre_jugador}
-        </p>
+
+      {/* Contenedor del Tablero y Modal de Fin de Partida */}
+      <div className="relative flex flex-1 w-full justify-center items-center min-h-0 min-w-0">
+        <div className="h-full w-auto aspect-square drop-shadow-2xl">
+          <Chessboard options={chessboardOptions} />
+        </div>
+        {causa_fin_partida && ganador.length > 0 && (
+          <div className="absolute w-full h-full flex justify-center items-center bg-[black]/40">
+            <div className="flex flex-col w-content h-content justify-center items-center p-6 sm:p-10 gap-y-5 bg-slate-800">
+              <p className="w-content h-content text-2xl sm:text-4xl text-center text-slate-100 font-[-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji] font-semibold">{ganador}</p>
+              <p className="w-content h-content text-lg sm:text-2xl text-center text-slate-100 font-[-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji] font-bold">{causa_fin_partida}</p>
+            </div>
+          </div>
+        )}
       </div>
       
+      {/* Barra inferior (Jugador Local) */}
+      <div className="flex justify-start items-center w-full shrink-0 px-1 gap-x-4">
+        <div className="flex items-center gap-2 min-w-0">
+          <p className="text-md sm:text-lg md:text-xl lg:text-2xl font-bold text-slate-100 truncate">
+            {nombre_jugador}
+          </p>
+        </div>
+      </div>
     </div>
   );
 };
