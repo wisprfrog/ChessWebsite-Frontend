@@ -1,0 +1,193 @@
+"use client";
+
+import { useState } from "react";
+import FormularioSubirImagen, { subirACloudinary } from "./formularioSubirImagen";
+import { registrarUsuario } from "../services/api";
+
+export default function FormularioRegistro() {
+  const [nombre_usuario, setUsername] = useState("");
+  const [contrasenia, setPassword] = useState("");
+  const [confirmar_contrasenia, setConfirmarContrasenia] = useState("");
+  const [correo, setCorreo] = useState("");
+  const [mensaje, setMensaje] = useState("");
+  const [cargando, setCargando] = useState(false);
+  const [archivoFoto, setArchivoFoto] = useState<File | null>(null);
+  const [tokenReinicioFoto, setTokenReinicioFoto] = useState(0);
+  const botonLimpiarFotoDeshabilitado = cargando || !archivoFoto;
+
+  const manejarLimpiarFoto = () => {
+    setArchivoFoto(null);
+    setTokenReinicioFoto((valorAnterior) => valorAnterior + 1);
+  };
+
+  const enviarRegistro = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault(); // Evita que la página se recargue
+    if (confirmar_contrasenia !== contrasenia) {
+      setMensaje("Las contraseñas no coinciden");
+      return;
+    }
+
+    setCargando(true);
+    setMensaje(""); // Limpia mensajes de errores anteriores
+
+    try {
+      let url_foto: string | null = null;
+      let public_id: string | null = null;
+
+      if (archivoFoto) {
+        const data = await subirACloudinary(archivoFoto);
+        url_foto = data.secure_url;
+        public_id = data.public_id;
+      }
+
+      // Nota: Verifica si tu endpoint necesita una ruta final, ej: /api/registro
+      const respuesta = await registrarUsuario(nombre_usuario, correo, contrasenia, url_foto, public_id);
+
+      // Comprobamos si la petición fue exitosa (status 200-299)
+      if (!respuesta.ok) {
+        // Si el backend manda un error (ej. el correo ya existe)
+        setMensaje("Hubo un error al registrar");
+      } else {
+        setMensaje("¡Usuario registrado con éxito!");
+        // Opcional: Limpiar el formulario
+        setUsername("");
+        setCorreo("");
+        setPassword("");
+        setConfirmarContrasenia("");
+        setArchivoFoto(null);
+        setTokenReinicioFoto((valorAnterior) => valorAnterior + 1);
+      }
+    } catch (error) {
+      console.error("Error en la petición:", error);
+      setMensaje("Error al subir la imagen o conectar con el servidor.");
+    } finally {
+      setCargando(false); // Apagamos el estado de carga sin importar qué pase
+    }
+  };
+
+  return (
+    <main className="flex flex-1 flex-col items-center justify-center">
+      <section className="mt-4 flex min-[430px]:w-sm w-full flex-col items-center rounded-xl border border-sky-900/60 bg-slate-900/85 p-6 shadow-2xl shadow-black/30 backdrop-blur-sm">
+        <div className="mb-6">
+          <h2 className="min-[350px]:text-xl text-base font-semibold text-amber-50 text-center">
+            Crea una cuenta nueva
+          </h2>
+          <p className="mt-2 text-sm text-emerald-200/80 text-center">
+            Ingresa tus datos para registrarte<br/>y comenzar a jugar.
+          </p>
+        </div>
+
+        <form onSubmit={enviarRegistro} className="flex flex-col gap-6">
+          <FormularioSubirImagen
+            onArchivoSeleccionado={setArchivoFoto}
+            deshabilitado={cargando}
+            tokenReinicio={tokenReinicioFoto}
+          />
+          <button
+            type="button"
+            className={`h-10 w-full rounded-md border px-4 text-sm font-medium transition ${botonLimpiarFotoDeshabilitado
+              ? "cursor-not-allowed border-rose-900/70 bg-rose-950/70 text-rose-300/70 opacity-70"
+              : "cursor-pointer border-rose-500/50 bg-rose-700 text-rose-100 hover:bg-rose-800"
+              }`}
+            onClick={manejarLimpiarFoto}
+            disabled={botonLimpiarFotoDeshabilitado}
+          >
+            Limpiar foto
+          </button>
+          <div className="grid gap-2">
+            <label
+              htmlFor="nombre_usuario"
+              className="text-sm font-medium text-amber-100"
+            >
+              Nombre de usuario
+            </label>
+            <input
+              id="nombre_usuario"
+              type="text"
+              placeholder="tu_usuario"
+              value={nombre_usuario}
+              onChange={(e) => setUsername(e.target.value)}
+              className="h-10 rounded-md border border-slate-600 bg-slate-800 px-3 text-sm text-amber-50 outline-none transition placeholder:text-slate-300/60 focus:border-amber-400"
+              required
+            />
+          </div>
+
+          <div className="grid gap-2">
+            <label
+              htmlFor="correo"
+              className="text-sm font-medium text-amber-100"
+            >
+              Correo electronico
+            </label>
+            <input
+              id="correo"
+              type="email"
+              placeholder="m@example.com"
+              value={correo}
+              onChange={(e) => setCorreo(e.target.value)}
+              className="h-10 rounded-md border border-slate-600 bg-slate-800 px-3 text-sm text-amber-50 outline-none transition placeholder:text-slate-300/60 focus:border-amber-400"
+              required
+            />
+          </div>
+
+          <div className="grid gap-2">
+            <label
+              htmlFor="contrasenia"
+              className="text-sm font-medium text-amber-100"
+            >
+              Contraseña
+            </label>
+            <input
+              id="contrasenia"
+              type="password"
+              value={contrasenia}
+              onChange={(e) => setPassword(e.target.value)}
+              className="h-10 rounded-md border border-slate-600 bg-slate-800 px-3 text-sm text-amber-50 outline-none transition placeholder:text-slate-300/60 focus:border-amber-400"
+              required
+            />
+          </div>
+
+          <div className="grid gap-2">
+            <label
+              htmlFor="confirmar_contrasenia"
+              className="text-sm font-medium text-amber-100"
+            >
+              Confirmar contraseña
+            </label>
+            <input
+              id="confirmar_contrasenia"
+              type="password"
+              value={confirmar_contrasenia}
+              onChange={(e) => setConfirmarContrasenia(e.target.value)}
+              className="h-10 rounded-md border border-slate-600 bg-slate-800 px-3 text-sm text-amber-50 outline-none transition placeholder:text-slate-300/60 focus:border-amber-400"
+              required
+            />
+          </div>
+
+          {mensaje ? (
+            <p
+              className={`text-sm ${mensaje.includes("éxito") ? "text-emerald-300" : "text-rose-300"}`}
+            >
+              {mensaje}
+            </p>
+          ) : null}
+
+          <button
+            type="submit"
+            className="h-10 w-full rounded-md bg-amber-500 text-sm font-medium text-slate-950 transition hover:bg-amber-400 disabled:cursor-not-allowed disabled:opacity-60"
+            disabled={cargando}
+          >
+            {cargando ? "Registrando..." : "Registrar Usuario"}
+          </button>
+
+          <a
+            href="../inicio_sesion"
+            className="underline text-center text-sm text-amber-100 underline-offset-4 hover:text-yellow-300"
+          >
+            Ya tengo cuenta
+          </a>
+        </form>
+      </section>
+    </main>
+  );
+}
