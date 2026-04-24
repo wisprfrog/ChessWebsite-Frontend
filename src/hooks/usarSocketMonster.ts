@@ -76,32 +76,27 @@ export function useMonsterSocket(handlers: SocketHandlers = {}) {
 
     ///INvitaciones de partida
     socket.on('cargar_invitaciones_partida', ({ nombre_usuario_destino, invitaciones }) => {
-      console.log("Recibidas invitaciones de partida para:", nombre_usuario_destino, "con invitaciones:", invitaciones);
       if (nombre_usuario_destino === nombre_usuario_ls && handlers.manejarCargarInvitacionesPartida) {
         handlers.manejarCargarInvitacionesPartida(invitaciones);
       }
     });
 
     socket.on('cargar_invitaciones_enviadas', ({ nombre_usuario_destino, invitaciones }) => {
-      console.log("Recibidas invitaciones de partida enviadas para:", nombre_usuario_destino, "con invitaciones:", invitaciones);
       if (handlers.manejarCargarInvitacionesPartidaEnviadas) {
         handlers.manejarCargarInvitacionesPartidaEnviadas(invitaciones);
       }
     });
 
     socket.on('nueva_invitacion_partida', ({ nombre_usuario_destino, invitaciones }) => {
-      console.log("Recibida nueva invitación de partida para:", nombre_usuario_destino, "con invitaciones:", invitaciones);
       if (nombre_usuario_destino === nombre_usuario_ls && handlers.manejarNuevaInvitacionPartida) {
         handlers.manejarNuevaInvitacionPartida(invitaciones);
       }
     });
 
     socket.on('invitacion_partida_aceptada', ({ nombre_usuario_origen, nombre_usuario_destino, partida }) => {
-      console.log("Recibida aceptación de invitación de partida de:", nombre_usuario_origen, "para:", nombre_usuario_destino, "con partida:", partida);
     });
 
     socket.on('invitacion_partida_rechazada', ({ nombre_usuario_origen, nombre_usuario_destino }) => {
-      console.log("Recibida rechazo de invitación de partida de:", nombre_usuario_origen, "para:", nombre_usuario_destino);
     });
     
     socket.on('invitacion_partida_aceptada', ({nombre_usuario_origen, nombre_usuario_destino, sala_asignada}) => {
@@ -183,17 +178,14 @@ export function useMonsterSocket(handlers: SocketHandlers = {}) {
 
   //invitaciones a partida
   const emitirEnviarInvitacionPartida = (nombre_usuario_destino : string) => {
-    console.log("Emitiendo enviar invitación de partida para:", nombre_usuario_destino, "desde:", nombre_usuario_ls);
     socket?.emit("invitar_a_partida", ({ nombre_usuario_origen: nombre_usuario_ls, nombre_usuario_destino: nombre_usuario_destino }));
   }
 
   const emitirAceptarInvitacionPartida = (nombre_usuario_origen : string) => {
-    console.log("Emitiendo aceptar invitación de partida de:", nombre_usuario_origen, "para:", nombre_usuario_ls);
     socket?.emit("aceptar_invitacion_partida", ({ nombre_usuario_origen: nombre_usuario_origen, nombre_usuario_destino: nombre_usuario_ls }));
   }
 
   const emitirRechazarInvitacionPartida = (nombre_usuario_origen : string) => {
-    console.log("Emitiendo rechazar invitación de partida de:", nombre_usuario_origen, "para:", nombre_usuario_ls);
     socket?.emit("rechazar_invitacion_partida", ({ nombre_usuario_origen: nombre_usuario_origen, nombre_usuario_destino: nombre_usuario_ls }));
   }
 
