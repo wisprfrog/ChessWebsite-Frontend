@@ -172,9 +172,12 @@ export const TableroAjedrez = ({nombre_jugador, manejarVisibilidadTablaMovimient
 
   useEffect(() => {
     if(!nombre_jugador) return;
+    const url = process.env.NEXT_PUBLIC_API_URL
+      ? `${process.env.NEXT_PUBLIC_API_URL}/juego`
+      : "http://localhost:4000/juego";
 
     socketRef.current = io(
-      `${process.env.NEXT_PUBLIC_API_URL}/juego` || "http://localhost:4000/juego",
+      url,
       {
         auth: {
           nombre_usuario_actual: nombre_jugador,
