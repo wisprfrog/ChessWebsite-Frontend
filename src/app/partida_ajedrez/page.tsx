@@ -114,27 +114,26 @@ export default function PaginaPartidaAjedrez() {
     ) : null;
   
   return (
-    <main className='flex flex-1 w-full min-h-screen flex-col overflow-hidden bg-gradient-to-br from-slate-950 via-amber-900 to-blue-950'>
+    <main className='flex flex-col w-full min-h-screen bg-gradient-to-br from-slate-950 via-amber-900 to-blue-950'>
       <NavBar cuantasSolicitudesAmistad={numSolicitudes}/>
-      <div className='flex flex-1 w-full h-full justify-center items-center p-6 min-h-0'>
+      
+      <div className='flex flex-1 w-full justify-center items-start md:items-center p-4 md:p-4 min-h-0'>
         
-        {/* Cambiamos max-[768px]:items-center por items-stretch en PC para que igualen alturas */}
-        <div className='w-full h-full flex flex-1 flex-col md:flex-row justify-center items-stretch max-[768px]:items-center gap-x-10 gap-y-5 overflow-hidden rounded-lg'>
+        <div className='w-full max-w-5xl flex flex-col md:flex-row justify-center items-center md:items-stretch gap-6 sm:gap-8 md:gap-10 min-h-0 my-5'>
             
-            {/* Contenedor del Tablero */}
-            <div className="w-full flex justify-center max-w-[508px]">
+            <div className="w-full flex justify-center md:justify-end md:w-1/2 min-w-0">
               {tableroActual}
             </div>
 
-            {/* Contenedor de la Tabla: Quitamos el md:self-start y ajustamos para que crezca */}
-            <div className={`w-full flex flex-col max-w-[508px] max-md:max-h-64 lg:justify-start md:w-4/10 overflow-hidden ${tablaMovimientosVisible ? 'flex' : 'hidden'}`}>
+            <div className={`relative w-full md:w-1/2 max-w-[480px] min-w-0 ${tablaMovimientosVisible ? 'block' : 'hidden'}`}>
                 
-                <TablaMovimientos lista_movimientos={movimientosRepeticionVisibles}/>
-                
-                {cargandoRepeticion ? <p className='text-sm text-emerald-100 mt-2'>Cargando repeticion...</p> : null}
-                {errorRepeticion ? <p className='text-sm text-rose-300 mt-2'>{errorRepeticion}</p> : null}
+                <div className="flex flex-col w-full h-[400px] md:h-auto md:absolute md:inset-0 min-h-0 overflow-hidden">
+                    <TablaMovimientos lista_movimientos={movimientosRepeticionVisibles}/>
+                    
+                    {cargandoRepeticion ? <p className='text-sm text-emerald-100 mt-2 shrink-0'>Cargando repeticion...</p> : null}
+                    {errorRepeticion ? <p className='text-sm text-rose-300 mt-2 shrink-0'>{errorRepeticion}</p> : null}
+                </div>
             </div>
-
         </div>
       </div>
       <Footer />

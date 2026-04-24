@@ -150,7 +150,6 @@ const chessboardOptions = {
         </div>
       </div>
 
-      {/* Contenedor del Tablero y Modal de Fin de Partida */}
       <div className="relative flex flex-1 w-full justify-center items-center min-h-0 min-w-0">
         <div className="h-full w-auto aspect-square drop-shadow-2xl">
           <Chessboard options={chessboardOptions} />
