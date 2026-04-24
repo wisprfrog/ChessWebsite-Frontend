@@ -182,6 +182,7 @@ export const TableroAjedrez = ({nombre_jugador, manejarVisibilidadTablaMovimient
         auth: {
           nombre_usuario_actual: nombre_jugador,
         },
+        autoConnect: true,
       },
     );
 
