@@ -14,6 +14,22 @@ export const TableroAjedrezCPU = ({ mostrar_tabla_movimientos }: { mostrar_tabla
 
   const [nombre_jugador, setNombreJugador] = useState<string | null>(null);
 
+  const [causa_fin_partida, setCausaFinPartida] = useState<string | null>(null);
+  const [ganador, setGanador] = useState<string>("");
+
+   useEffect(() => {
+    if (chessGame.isCheckmate()) {
+      setCausaFinPartida("Jaque Mate");
+      setGanador(chessGame.turn() === 'w' ? 'CPU' : `${nombre_jugador}`);
+    } else if (chessGame.isStalemate()) {
+      setCausaFinPartida("Tablas por Ahogado");
+      setGanador("Empate");
+    } else if (chessGame.isDraw()) {
+      setCausaFinPartida("Tablas");
+      setGanador("Empate");
+    }
+  }, [chessPosition, nombre_jugador]);
+
   function makeRandomMove() {
     const possibleMoves = chessGame.moves();
     if (chessGame.isGameOver() || possibleMoves.length === 0) return;
@@ -138,7 +154,9 @@ const chessboardOptions = {
       
       {/* Etiqueta del Jugador Local (Abajo izquierda) */}
       <div className="flex w-full justify-start mt-2">
-        <p className="text-l px-4 pt-1 font-bold text-white">{nombre_jugador}</p>
+        <p className="text-xs sm:text-sm md:text-base font-bold text-white truncate">
+          {nombre_jugador}
+        </p>
       </div>
       
     </div>

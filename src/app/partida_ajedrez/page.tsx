@@ -114,16 +114,27 @@ export default function PaginaPartidaAjedrez() {
     ) : null;
   
   return (
-    <main className='flex flex-1 w-screen h-full flex-col overflow-hidden bg-gradient-to-br from-slate-950 via-amber-900 to-blue-950'>
+    <main className='flex flex-1 w-full min-h-screen flex-col overflow-hidden bg-gradient-to-br from-slate-950 via-amber-900 to-blue-950'>
       <NavBar cuantasSolicitudesAmistad={numSolicitudes}/>
       <div className='flex flex-1 w-full h-full justify-center items-center p-6 min-h-0'>
-        <div className='flex w-[65%] h-full gap-x-20 overflow-hidden rounded-lg p-5'>
-            {tableroActual}
-            <div className={`w-4/10 h-full ${tablaMovimientosVisible ? 'block' : 'hidden'}`}>
-            <TablaMovimientos lista_movimientos={movimientosRepeticionVisibles}/>
-              {cargandoRepeticion ? <p className='text-sm text-emerald-100'>Cargando repeticion...</p> : null}
-              {errorRepeticion ? <p className='text-sm text-rose-300'>{errorRepeticion}</p> : null}
+        
+        {/* Cambiamos max-[768px]:items-center por items-stretch en PC para que igualen alturas */}
+        <div className='w-full h-full flex flex-1 flex-col md:flex-row justify-center items-stretch max-[768px]:items-center gap-x-10 gap-y-5 overflow-hidden rounded-lg'>
+            
+            {/* Contenedor del Tablero */}
+            <div className="w-full flex justify-center max-w-[508px]">
+              {tableroActual}
             </div>
+
+            {/* Contenedor de la Tabla: Quitamos el md:self-start y ajustamos para que crezca */}
+            <div className={`w-full flex flex-col max-w-[508px] max-md:max-h-64 lg:justify-start md:w-4/10 overflow-hidden ${tablaMovimientosVisible ? 'flex' : 'hidden'}`}>
+                
+                <TablaMovimientos lista_movimientos={movimientosRepeticionVisibles}/>
+                
+                {cargandoRepeticion ? <p className='text-sm text-emerald-100 mt-2'>Cargando repeticion...</p> : null}
+                {errorRepeticion ? <p className='text-sm text-rose-300 mt-2'>{errorRepeticion}</p> : null}
+            </div>
+
         </div>
       </div>
       <Footer />
