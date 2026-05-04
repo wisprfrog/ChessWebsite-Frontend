@@ -47,9 +47,6 @@ const obtenerMovimientos = (lista_movimientos: string[]) => {
 };
 
 export default function TablaMovimientos({ lista_movimientos }: { lista_movimientos: string[] }) {
-    useEffect(() => {
-  console.log("Lista de movimientos actualizada:", lista_movimientos);
-    }, [lista_movimientos]);
     const data = obtenerMovimientos(lista_movimientos); 
 
  return (
