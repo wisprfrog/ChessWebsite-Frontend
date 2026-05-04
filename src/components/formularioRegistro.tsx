@@ -3,8 +3,10 @@
 import { useState } from "react";
 import FormularioSubirImagen, { subirACloudinary } from "./formularioSubirImagen";
 import { registrarUsuario } from "../services/api";
+import { useRouter } from "next/navigation";
 
 export default function FormularioRegistro() {
+  const router = useRouter();
   const [nombre_usuario, setUsername] = useState("");
   const [contrasenia, setPassword] = useState("");
   const [confirmar_contrasenia, setConfirmarContrasenia] = useState("");
@@ -49,6 +51,8 @@ export default function FormularioRegistro() {
         setMensaje("Hubo un error al registrar");
       } else {
         setMensaje("¡Usuario registrado con éxito!");
+        await delay(1500); 
+        
         // Opcional: Limpiar el formulario
         setUsername("");
         setCorreo("");
@@ -56,6 +60,8 @@ export default function FormularioRegistro() {
         setConfirmarContrasenia("");
         setArchivoFoto(null);
         setTokenReinicioFoto((valorAnterior) => valorAnterior + 1);
+
+        router.push("/inicio_sesion"); 
       }
     } catch (error) {
       console.error("Error en la petición:", error);
@@ -191,3 +197,8 @@ export default function FormularioRegistro() {
     </main>
   );
 }
+
+async function delay(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
