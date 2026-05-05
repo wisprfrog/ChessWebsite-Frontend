@@ -31,7 +31,7 @@ export default function PaginaInicioSesion() {
           setNombreUsuario(nombre_usuario);
         }
       } catch (error) {
-        console.log("Error al verificar el token:", error);
+        console.error("Error al verificar el token:", error);
       }
     }
   };

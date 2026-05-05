@@ -117,7 +117,17 @@ const obtenerIdUsuario = async (nombre_usuario) => {
     body: JSON.stringify({'nombre_usuario': nombre_usuario})
   });
 
+  if (!respuesta.ok) {
+    console.error("Error al obtener el ID de usuario");
+    return null;
+  }
+
   const res = await respuesta.json();
+
+  if (!res?.nombres || res.nombres.length === 0) {
+    return null;
+  }
+  
   const idUsuario = res?.nombres?.[0]?.id_usuario;
   return idUsuario;
 }
@@ -316,11 +326,15 @@ const obtenerUsuariosEnPartida = async (id_partida) => {
   });
 
   if (!respuesta.ok) {
-    console.error("Error al obtener los usuarios en la partida");
-    return [];
+    throw new Error(`Error al obtener los usuarios en la partida: ${respuesta.status}`);
   }
 
   const res = await respuesta.json();
+  
+  if (!res.partida || !Array.isArray(res.partida) || res.partida.length === 0) {
+    throw new Error('Partida no encontrada');
+  }
+  
   return [res.partida[0].id_usuario_blancas, res.partida[0].id_usuario_negras] || [];
 }
 

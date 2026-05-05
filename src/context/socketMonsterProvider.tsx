@@ -18,7 +18,6 @@ export const SocketProvider = ({ children } : { children: React.ReactNode }) => 
     socketMonster.connect();
 
     socketMonster.on("disconnect", () => {
-      console.log("Desconectado del servidor de Monster Chess");
     });
   
     return () => {

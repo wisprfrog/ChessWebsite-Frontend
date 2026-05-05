@@ -48,7 +48,6 @@ export function useMonsterSocket(handlers: SocketHandlers = {}) {
 
     socket.on('solicitud_amistad_aceptada', ({ nombre_usuario1, nombre_usuario2 }) => {
         //notificacion
-        
     });
 
     socket.on('solicitud_amistad_rechazada', ({ nombre_usuario1, nombre_usuario2 }) => {
@@ -82,7 +81,7 @@ export function useMonsterSocket(handlers: SocketHandlers = {}) {
     });
 
     socket.on('cargar_invitaciones_enviadas', ({ nombre_usuario_destino, invitaciones }) => {
-      if (handlers.manejarCargarInvitacionesPartidaEnviadas) {
+      if (nombre_usuario_destino === nombre_usuario_ls && handlers.manejarCargarInvitacionesPartidaEnviadas) {
         handlers.manejarCargarInvitacionesPartidaEnviadas(invitaciones);
       }
     });
@@ -93,18 +92,30 @@ export function useMonsterSocket(handlers: SocketHandlers = {}) {
       }
     });
 
-    socket.on('invitacion_partida_aceptada', ({ nombre_usuario_origen, nombre_usuario_destino, partida }) => {
-    });
-
     socket.on('invitacion_partida_rechazada', ({ nombre_usuario_origen, nombre_usuario_destino }) => {
     });
     
-    socket.on('invitacion_partida_aceptada', ({nombre_usuario_origen, nombre_usuario_destino, sala_asignada}) => {
+    const invitacionAceptadaHandler = ({nombre_usuario_origen, nombre_usuario_destino}: { nombre_usuario_origen: string; nombre_usuario_destino: string }) => {
       if(nombre_usuario_origen === nombre_usuario_ls || nombre_usuario_destino === nombre_usuario_ls) {
-        localStorage.setItem("sala_partida_amigos", sala_asignada);
-        router.push('/partida_ajedrez?tipo_partida=jugador');
+        if (typeof window !== 'undefined') {
+          const path = window.location.pathname;
+          const search = window.location.search;
+          const isOnTarget = path === '/partida_ajedrez' && new URLSearchParams(search).get('tipo_partida') === 'jugador';
+          if (isOnTarget) {
+            // Si ya está en la página de la partida, recarga la pestaña
+            window.location.reload();
+          } else {
+            // Si está en otra página, navega a la partida
+            router.push('/partida_ajedrez?tipo_partida=jugador');
+          }
+        } else {
+          // Fallback para ambientes sin window
+          router.push('/partida_ajedrez?tipo_partida=jugador');
+        }
       }
-    });
+    };
+
+    socket.on('invitacion_partida_aceptada', invitacionAceptadaHandler);
 
     return () => {
       socket.off("nueva_solicitud_amistad", ({ nombre_usuario_destino, solicitudes }) => {
@@ -138,13 +149,13 @@ export function useMonsterSocket(handlers: SocketHandlers = {}) {
       });
 
       socket.off('cargar_invitaciones_partida', ({ nombre_usuario_destino, invitaciones }) => {
-        if (handlers.manejarCargarInvitacionesPartida) {
+        if (nombre_usuario_destino === nombre_usuario_ls && handlers.manejarCargarInvitacionesPartida) {
           handlers.manejarCargarInvitacionesPartida(invitaciones);
         }
       });
 
       socket.off('cargar_invitaciones_enviadas', ({ nombre_usuario_destino, invitaciones }) => {
-        if (handlers.manejarCargarInvitacionesPartidaEnviadas) {
+        if (nombre_usuario_destino === nombre_usuario_ls && handlers.manejarCargarInvitacionesPartidaEnviadas) {
           handlers.manejarCargarInvitacionesPartidaEnviadas(invitaciones);
         }
       });
@@ -154,6 +165,7 @@ export function useMonsterSocket(handlers: SocketHandlers = {}) {
           handlers.manejarNuevaInvitacionPartida(invitaciones);
         }
       });
+      socket.off('invitacion_partida_aceptada', invitacionAceptadaHandler);
       
 
     }

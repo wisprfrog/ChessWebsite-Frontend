@@ -42,8 +42,9 @@ function PerfilContenido() {
   const [eliminarFotoPerfil, setEliminarFotoPerfil] = useState(false);
   const [guardandoFoto, setGuardandoFoto] = useState(false);
   const [reinicioFormularioFoto, setReinicioFormularioFoto] = useState(0);
-  const [mensajeFotoPerfil, setMensajeFotoPerfil] =
-    useState<MensajeFotoPerfil | null>(null);
+  const [mensajeFotoPerfil, setMensajeFotoPerfil] = useState<MensajeFotoPerfil | null>(null);
+  const [cargandoValidacion, setCargandoValidacion] = useState(true);
+  const [usuarioExiste, setUsuarioExiste] = useState(true);
 
   const { funcionaToken } = usarAutenticar();
 
@@ -82,6 +83,32 @@ function PerfilContenido() {
   }, [nombreUsuarioParam]);
 
   useEffect(() => {
+    const validarUsuario = async () => {
+      if (!nombreUsuarioParam) {
+        setCargandoValidacion(false);
+        return;
+      }
+
+      setCargandoValidacion(true);
+      try {
+        const id = await obtenerIdUsuario(nombreUsuarioParam);
+        
+        if (!id) {
+          setUsuarioExiste(false);
+        } else {
+          setUsuarioExiste(true);
+        }
+      } catch (error) {
+        setUsuarioExiste(false);
+      } finally {
+        setCargandoValidacion(false);
+      }
+    };
+
+    validarUsuario();
+  }, [nombreUsuarioParam]);
+
+  useEffect(() => {
     if (!mensajeFotoPerfil) {
       return;
     }
@@ -95,7 +122,7 @@ function PerfilContenido() {
 
   useEffect(() => {
     const cargarFotoPerfil = async () => {
-      if (!nombreUsuarioParam) {
+      if (!nombreUsuarioParam || !usuarioExiste || cargandoValidacion) {
         setFotoPerfilUsuario(null);
         return;
       }
@@ -107,7 +134,7 @@ function PerfilContenido() {
     };
 
     cargarFotoPerfil();
-  }, [nombreUsuarioParam]);
+  }, [nombreUsuarioParam, usuarioExiste, cargandoValidacion]);
 
   const puedeEditar = nombreUsuarioParam === nombreUsuarioLocal;
   const hayCambiosFotoPendientes = eliminarFotoPerfil || Boolean(archivoFotoNuevo);
@@ -261,6 +288,30 @@ function PerfilContenido() {
     nombreUsuarioParam === null
   )
     return null;
+
+    if (cargandoValidacion) {
+      return (
+        <main className="flex min-h-screen w-full flex-col overflow-x-hidden bg-gradient-to-br from-slate-950 via-amber-900 to-blue-950">
+          <NavBar cuantasSolicitudesAmistad={numSolicitudes} />
+          <div className="mx-auto flex w-full max-w-7xl flex-1 items-center justify-center px-4 py-5 sm:px-6 sm:py-6 lg:px-8">
+            <p className="text-center text-lg font-semibold text-amber-100">Buscando usuario...</p>
+          </div>
+          <Footer />
+        </main>
+      );
+    }
+
+    if (!usuarioExiste) {
+      return (
+        <main className="flex min-h-screen w-full flex-col overflow-x-hidden bg-gradient-to-br from-slate-950 via-amber-900 to-blue-950">
+          <NavBar cuantasSolicitudesAmistad={numSolicitudes} />
+          <div className="mx-auto flex w-full max-w-7xl flex-1 items-center justify-center px-4 py-5 sm:px-6 sm:py-6 lg:px-8">
+            <p className="text-center text-lg font-semibold text-amber-100">Usuario no encontrado</p>
+          </div>
+          <Footer />
+        </main>
+      );
+    }
 
   return (
     <main className="flex min-h-screen w-full flex-col overflow-x-hidden bg-gradient-to-br from-slate-950 via-amber-900 to-blue-950">

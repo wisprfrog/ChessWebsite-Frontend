@@ -9,7 +9,7 @@ import TablaMovimientos from "@/components/tablaMovimientos";
 
 import { usarAutenticar } from "@/hooks/usarAutenticar";
 
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, notFound } from "next/navigation";
 import { useMonsterSocket } from "@/hooks/usarSocketMonster";
 import { Suspense, useEffect, useMemo, useState } from 'react';
 import { obtenerMovimientosPartida, obtenerNombrePorId, obtenerUsuariosEnPartida } from '@/services/api';
@@ -18,6 +18,20 @@ function PaginaPartidaAjedrezContenido() {
   const searchParams = useSearchParams();
   const tipo_partida = searchParams.get('tipo_partida');
   const idPartida = searchParams.get('id_partida');
+  
+  const tiposValidos = ['cpu', 'jugador', 'repeticion'];
+  if (tipo_partida && !tiposValidos.includes(tipo_partida)) {
+    notFound();
+  }
+  
+  if (tipo_partida === 'repeticion' && !idPartida) {
+    notFound();
+  }
+
+  if (tipo_partida === 'repeticion' && idPartida && isNaN(Number(idPartida))) {
+    notFound();
+  }
+
   const [historialMovimientos, setHistorialMovimientos] = useState<string[]>([]);
   const [cargandoRepeticion, setCargandoRepeticion] = useState(false);
   const [errorRepeticion, setErrorRepeticion] = useState<string | null>(null);
@@ -25,10 +39,28 @@ function PaginaPartidaAjedrezContenido() {
   const [usuarioNegras, setUsuarioNegras] = useState<string>();
   const [indiceRepeticion, setIndiceRepeticion] = useState(0);
   const [tablaMovimientosVisible, setTablaMovimientosVisible] = useState(true);
+  const [partidaValida, setPartidaValida] = useState<boolean | null>(null); // null = aún no validada
+
+  useEffect(() => {
+    if (tipo_partida !== 'repeticion' || !idPartida) {
+      setPartidaValida(true);
+      return;
+    }
+
+    const validarPartida = async () => {
+      try {
+        await obtenerUsuariosEnPartida(idPartida);
+        setPartidaValida(true);
+      } catch (error) {
+        setPartidaValida(false);
+      }
+    };
+
+    validarPartida();
+  }, [tipo_partida, idPartida]);
 
   const mostrarTablaMovimientos = (lista_movimientos: string[]) => {
     setHistorialMovimientos(lista_movimientos);
-    console.log("Movimientos realizados en la partida mi brother: ", lista_movimientos);
   };
 
   const toggleTablaMovimientos = (visible: boolean) => {
@@ -42,6 +74,7 @@ function PaginaPartidaAjedrezContenido() {
       setHistorialMovimientos([]);
       return;
     }
+    if (partidaValida !== true) return;
 
     const cargarMovimientos = async () => {
       setCargandoRepeticion(true);
@@ -59,18 +92,18 @@ function PaginaPartidaAjedrezContenido() {
 
       try{
         const nombres = await obtenerUsuariosEnPartida(idPartida);
-        setUsuarioBlancas(await obtenerNombrePorId(nombres[0]));
-        setUsuarioNegras(await obtenerNombrePorId(nombres[1]));
-
-        //console.log("Nombres de usuarios en la partida: ", { nombreBlancas, nombreNegras });
-        //console.log("ID de usuarios en la partida: ", nombres);
+        
+        if (Array.isArray(nombres) && nombres.length >= 2) {
+          setUsuarioBlancas(await obtenerNombrePorId(nombres[0]));
+          setUsuarioNegras(await obtenerNombrePorId(nombres[1]));
+        }
       }catch(error){
         console.error("No se pudieron obtener los nombres de los usuarios en la partida: ", error);
       }
     };
 
     cargarMovimientos();
-  }, [idPartida, tipo_partida]);
+  }, [idPartida, tipo_partida, partidaValida]);
 
   const movimientosRepeticion = useMemo(() => {
     return historialMovimientos;
@@ -103,6 +136,12 @@ function PaginaPartidaAjedrezContenido() {
       <TableroAjedrezCPU mostrar_tabla_movimientos={actualizarHistorialMovimientos} />
     ) : tipo_partida === 'jugador' ? (
       <TableroAjedrez nombre_jugador={nombreUsuario} manejarVisibilidadTablaMovimientos={toggleTablaMovimientos} mostrar_tabla_movimientos={actualizarHistorialMovimientos} />
+    ) : tipo_partida === 'repeticion' && partidaValida === false ? (
+      <div className="flex flex-col items-center justify-center w-full h-full min-h-[500px]">
+        <div className="text-center">
+          <h2 className="text-4xl font-bold text-zinc-200 mb-4">Partida no encontrada</h2>
+        </div>
+      </div>
     ) : tipo_partida === 'repeticion' ? (
       <TableroRepeticion
         movimientos={movimientosRepeticion}
@@ -125,15 +164,17 @@ function PaginaPartidaAjedrezContenido() {
               {tableroActual}
             </div>
 
-            <div className={`relative w-full md:w-1/2 max-w-[480px] min-w-0 ${tablaMovimientosVisible ? 'block' : 'hidden'}`}>
-                
-                <div className="flex flex-col w-full h-[400px] md:h-auto md:absolute md:inset-0 min-h-0 overflow-hidden">
-                    <TablaMovimientos lista_movimientos={movimientosRepeticionVisibles}/>
-                    
-                    {cargandoRepeticion ? <p className='text-sm text-emerald-100 mt-2 shrink-0'>Cargando repeticion...</p> : null}
-                    {errorRepeticion ? <p className='text-sm text-rose-300 mt-2 shrink-0'>{errorRepeticion}</p> : null}
-                </div>
-            </div>
+            {!(tipo_partida === 'repeticion' && partidaValida === false) && (
+              <div className={`relative w-full md:w-1/2 max-w-[480px] min-w-0 ${tablaMovimientosVisible ? 'block' : 'hidden'}`}>
+                  
+                  <div className="flex flex-col w-full h-[400px] md:h-auto md:absolute md:inset-0 min-h-0 overflow-hidden">
+                      <TablaMovimientos lista_movimientos={movimientosRepeticionVisibles}/>
+                      
+                      {cargandoRepeticion ? <p className='text-sm text-emerald-100 mt-2 shrink-0'>Cargando repeticion...</p> : null}
+                      {errorRepeticion ? <p className='text-sm text-rose-300 mt-2 shrink-0'>{errorRepeticion}</p> : null}
+                  </div>
+              </div>
+            )}
         </div>
       </div>
       <Footer />
