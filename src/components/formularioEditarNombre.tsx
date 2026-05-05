@@ -79,12 +79,10 @@ const FormularioEditarNombreUsuario: React.FC<Props> = ({ manejarVolver }) => {
     )) as Response;
 
     if (res.status === 200) {
-      const tokenNuevo = await generarToken(nuevoNombreUsuario, null, null);
+      const resJson = await res.json();
+      setToken(resJson.token);
 
-      const tokenNuevoJson = await tokenNuevo.json();
-      setToken(tokenNuevoJson.token);
-
-      localStorage.setItem("token", tokenNuevoJson.token);
+      localStorage.setItem("token", resJson.token);
       localStorage.setItem("nombre_usuario", nuevoNombreUsuario);
       setNombreUsuario(nuevoNombreUsuario);
     }

@@ -61,7 +61,6 @@ function PaginaPartidaAjedrezContenido() {
 
   const mostrarTablaMovimientos = (lista_movimientos: string[]) => {
     setHistorialMovimientos(lista_movimientos);
-    console.log("Movimientos realizados en la partida mi brother: ", lista_movimientos);
   };
 
   const toggleTablaMovimientos = (visible: boolean) => {
@@ -98,9 +97,6 @@ function PaginaPartidaAjedrezContenido() {
           setUsuarioBlancas(await obtenerNombrePorId(nombres[0]));
           setUsuarioNegras(await obtenerNombrePorId(nombres[1]));
         }
-
-        //console.log("Nombres de usuarios en la partida: ", { nombreBlancas, nombreNegras });
-        //console.log("ID de usuarios en la partida: ", nombres);
       }catch(error){
         console.error("No se pudieron obtener los nombres de los usuarios en la partida: ", error);
       }

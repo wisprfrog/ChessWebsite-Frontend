@@ -30,7 +30,7 @@ export default function PaginaRegistro() {
           setNombreUsuario(nombre_usuario);
         }
       } catch (error) {
-        console.log("Error al verificar el token:", error);
+        console.error("Error al verificar el token:", error);
       }
     }
   }

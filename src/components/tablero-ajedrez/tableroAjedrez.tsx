@@ -191,38 +191,27 @@ export const TableroAjedrez = ({nombre_jugador, manejarVisibilidadTablaMovimient
     socketRef.current.connect();
 
     socketRef.current?.on("connect", () => {
-      console.log("Conectando al chess mi bro");
     });
 
     socketRef.current?.on("connect_error", (error) => {
       console.error("Error de conexión:", error);
     });
 
-    socketRef.current?.on(
-      "intentar_reconexion",
-      ({ sala_a_reconectar, nombre_usuario_conectado }) => {
+    socketRef.current?.on("intentar_reconexion", 
+      ({sala_a_reconectar, nombre_usuario_conectado }) =>
+        {
         if(nombre_usuario_conectado == nombre_jugador){
           if(sala_a_reconectar !== null){
-            console.log(`Reconexion exitosa a la sala ${sala_a_reconectar}`);
             setSala(sala_a_reconectar);
           }
           else{
-            if(localStorage.getItem("sala_partida_amigos")){
-              const sala_guardada = localStorage.getItem("sala_partida_amigos");
-              localStorage.removeItem("sala_partida_amigos");
-
-              setSala(sala_guardada);
-            }
-            else{
-              socketRef.current?.emit("buscar_partida", nombre_jugador);
-            }
+            socketRef.current?.emit("buscar_partida", nombre_jugador);
           }
         }
       },
     );
 
-    socketRef.current?.on(
-      "partida_encontrada",
+    socketRef.current?.on("partida_encontrada",
       ({
         sala_asignada,
         nombre_usuario1,
@@ -290,15 +279,22 @@ export const TableroAjedrez = ({nombre_jugador, manejarVisibilidadTablaMovimient
       },
     );
 
-    // Limpieza: desconectar el socket si el usuario sale de la pantalla
+    // Limpieza: remover listeners y desconectar el socket si el usuario sale de la pantalla
     return () => {
+      socketRef.current?.off("connect");
+      socketRef.current?.off("connect_error");
+      socketRef.current?.off("intentar_reconexion");
+      socketRef.current?.off("partida_encontrada");
+      socketRef.current?.off("cargar_juego");
+      socketRef.current?.off("asignar_rol");
+      socketRef.current?.off("actualizar_tiempos");
+      socketRef.current?.off("terminar_partida");
       socketRef.current?.disconnect();
     };
-  }, [socketRef.current]);
+  }, [nombre_jugador]);
 
   useEffect(() => {
     if(sala !== null){
-      console.log(`Uniendose a la sala a la sala: ${sala}`);
       socketRef.current?.emit("unirse_sala", {
         sala: sala,
         nombre_jugador,

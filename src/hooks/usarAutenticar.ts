@@ -25,7 +25,7 @@ export function usarAutenticar() {
           localStorage.removeItem("nombre_usuario");
         }
       } catch (error) {
-        console.log("Error al verificar el token:", error);
+        console.error("Error al verificar el token:", error);
         setFuncionaToken(false);
       }
     };

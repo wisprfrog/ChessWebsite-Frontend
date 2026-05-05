@@ -33,7 +33,7 @@ export default function PaginaInicio() {
 
       <div className="flex w-full flex-1 flex-col items-center justify-center px-20 py-20 md:py-0 md:items-start md:pl-20 gap-8 md:gap-12">
 
-      <h1 className="text-center md:text-left text-3xl sm:text-4xl md:text-5xl font-bold text-emerald-100">¡Bienvenid@, {nombreUsuario}!</h1>
+      <h1 className="text-center md:text-left text-3xl sm:text-4xl md:text-5xl font-bold text-white">¡Bienvenid@, {nombreUsuario}!</h1>
 
         <div className="flex flex-col md:flex-row w-full md:w-auto items-center md:justify-start gap-6 md:gap-20 mt-4 mb-8">
           <div className="w-content sm:w-2/3 md:w-auto">

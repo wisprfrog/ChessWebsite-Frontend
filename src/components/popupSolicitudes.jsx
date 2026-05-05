@@ -11,6 +11,7 @@ export default function PopupSolicitudes({
 }) {
   const [mostrarPopupSolicitudes, setMostrarPopupSolicitudes] = useState(false);
   const [invitacionesActivas, setInvitacionesActivas] = useState([]);
+  const [modal, contextHolder] = Modal.useModal();
 
   const { emitirAceptarInvitacionPartida, emitirRechazarInvitacionPartida } =
     useMonsterSocket({
@@ -23,10 +24,66 @@ export default function PopupSolicitudes({
     });
 
   const manejarAceptarInvitacion = (nombreJugador) => {
-    emitirAceptarInvitacionPartida(nombreJugador);
-    setInvitacionesActivas((prev) =>
-      prev.filter((invitacion) => invitacion !== nombreJugador),
-    );
+    modal.confirm({
+      title: "Confirmar invitación",
+      icon: null,
+      centered: true,
+      content: (
+        <div className="space-y-2 text-slate-100">
+          <p className="text-sm leading-relaxed">
+            ¿Estás seguro de que deseas aceptar la invitación de {nombreJugador}?
+          </p>
+          <p className="text-sm leading-relaxed text-amber-300">
+            <strong>Saldrás de todas las partidas en las que estés actualmente.</strong>
+          </p>
+        </div>
+      ),
+      okText: "Aceptar",
+      cancelText: "Cancelar",
+      styles: {
+        content: {
+          background: "#0f172a",
+          border: "1px solid #1e3a5f",
+          borderRadius: 12,
+          boxShadow: "0 20px 45px rgba(2, 6, 23, 0.45)",
+        },
+        header: {
+          background: "#0f172a",
+          borderBottom: "1px solid #1e3a5f",
+          paddingBottom: 12,
+        },
+        body: {
+          background: "#0f172a",
+          paddingTop: 12,
+        },
+        footer: {
+          borderTop: "1px solid #1e3a5f",
+          paddingTop: 12,
+        },
+      },
+      okButtonProps: {
+        style: {
+          backgroundColor: "#2563eb",
+          borderColor: "#2563eb",
+          color: "#f8fafc",
+          fontWeight: 600,
+        },
+      },
+      cancelButtonProps: {
+        style: {
+          backgroundColor: "transparent",
+          borderColor: "#334155",
+          color: "#f8fafc",
+          fontWeight: 600,
+        },
+      },
+      onOk() {
+        emitirAceptarInvitacionPartida(nombreJugador);
+        setInvitacionesActivas((prev) =>
+          prev.filter((invitacion) => invitacion !== nombreJugador),
+        );
+      },
+    });
   };
 
   const manejarCancelarInvitacion = (nombreJugador) => {
@@ -48,15 +105,25 @@ export default function PopupSolicitudes({
       render: (_, registro) => (
         <div className="flex gap-2 justify-end">
           <Button
-            type="primary"
             size="small"
+            style={{
+              backgroundColor: "#2563eb",
+              borderColor: "#2563eb",
+              color: "#f8fafc",
+              fontWeight: 600,
+            }}
             onClick={() => manejarAceptarInvitacion(registro.jugador)}
           >
             Aceptar
           </Button>
           <Button
-            danger
             size="small"
+            style={{
+              backgroundColor: "transparent",
+              borderColor: "#334155",
+              color: "#f8fafc",
+              fontWeight: 600,
+            }}
             onClick={() => manejarCancelarInvitacion(registro.jugador)}
           >
             Cancelar
@@ -145,6 +212,7 @@ export default function PopupSolicitudes({
           },
         }}
       >
+        {contextHolder}
         <Modal
           title="Invitaciones a partidas"
           open={mostrarPopupSolicitudes}
